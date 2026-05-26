@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>KalenderWindow</class>
+ <widget class="QWidget" name="KalenderWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>390</width>
+    <height>844</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Kalender – FemHealth</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+/* ══ Global ══ */
+QWidget#KalenderWindow {
+    background-color: #FDF6F0;
+    font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
+}
+
+/* ══ Header – rosa Gradient wie Dashboard ══ */
+QFrame#headerFrame {
+    background-color: qlineargradient(
+        spread:pad, x1:0, y1:0, x2:1, y2:1,
+        stop:0 #FCE4EC, stop:0.5 #F8BBD9, stop:1 #F48FB1
+    );
+    border: none;
+}
+QPushButton#btnBack {
+    background-color: rgba(255,255,255,0.35);
+    border: none;
+    border-radius: 18px;
+    color: #880E4F;
+    font-size: 20px;
+    font-weight: bold;
+}
+QPushButton#btnBack:hover { background-color: rgba(255,255,255,0.55); }
+QPushButton#btnBack:pressed { background-color: rgba(255,255,255,0.75); }
+
+QLabel#lblTitle {
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: bold;
+    background: transparent;
+}
+QLabel#lblDrop {
+    color: #E91E63;
+    font-size: 20px;
+    background: transparent;
+}
+
+/* ══ Wochentag-Header ══ */
+QLabel#lblWdM, QLabel#lblWdD1, QLabel#lblWdM2,
+QLabel#lblWdD2, QLabel#lblWdF, QLabel#lblWdS1, QLabel#lblWdS2 {
+    color: #C2A0AD;
+    font-size: 11px;
+    font-weight: 600;
+    background: transparent;
+}
+
+/* ══ Monats-Label ══ */
+QLabel#lblMonthName {
+    color: #880E4F;
+    font-size: 14px;
+    font-weight: bold;
+    background: transparent;
+    padding: 8px 0 4px;
+}
+
+/* ══ Scroll-Bereich ══ */
+QScrollArea#calScrollArea {
+    background: transparent;
+    border: none;
+}
+QScrollArea#calScrollArea > QWidget > QWidget {
+    background: transparent;
+}
+QScrollBar:vertical {
+    width: 4px;
+    background: #F8BBD9;
+    border-radius: 2px;
+}
+QScrollBar::handle:vertical {
+    background: #F48FB1;
+    border-radius: 2px;
+    min-height: 20px;
+}
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical { height: 0; }
+
+/* ══ Tag-Buttons ══ */
+QPushButton.dayBtn {
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4A0010;
+    min-height: 40px;
+    max-height: 40px;
+}
+QPushButton.dayBtn:hover { background: #FCE4EC; }
+
+/* Heute */
+QPushButton.dayToday {
+    color: #E91E63;
+    font-weight: 700;
+    border: 2px solid #E91E63;
+    border-radius: 10px;
+}
+
+/* Perioden-Block (rot durchgehend) */
+QPushButton.dayPeriod {
+    background-color: #E91E63;
+    color: #FFFFFF;
+    font-weight: 600;
+    border-radius: 2px;
+}
+QPushButton.dayPeriodStart { border-radius: 10px 2px 2px 10px; }
+QPushButton.dayPeriodEnd   { border-radius: 2px 10px 10px 2px; }
+QPushButton.dayPeriod:hover { background-color: #C2185B; }
+
+/* Eisprung-Zone (hellblau wie original .ui) */
+QPushButton.dayOvulation {
+    background-color: #E3F2FD;
+    color: #1565C0;
+    border-radius: 2px;
+}
+QPushButton.dayOvulationStart { border-radius: 10px 2px 2px 10px; }
+QPushButton.dayOvulationEnd   { border-radius: 2px 10px 10px 2px; }
+QPushButton.dayOvulation:hover { background-color: #BBDEFB; }
+
+/* Zukunft ausgegraut */
+QPushButton.dayFuture {
+    color: #CBA8B5;
+}
+QPushButton.dayFuture:hover { background: transparent; }
+
+/* ══ Trenn-Linie ══ */
+QFrame#divider {
+    background-color: #F8BBD9;
+    max-height: 1px;
+    min-height: 1px;
+    border: none;
+}
+
+/* ══ Detail-Sheet unten (weiß wie Dashboard-Cards) ══ */
+QFrame#sheetFrame {
+    background-color: #FFFFFF;
+    border-top: 1.5px solid #F8BBD9;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+QLabel#sheetHandle {
+    background: #F8BBD9;
+    border-radius: 2px;
+    max-height: 4px;
+    min-height: 4px;
+    max-width: 40px;
+    min-width: 40px;
+}
+
+/* "Getrackt am 26. Mai" */
+QLabel#sheetDate {
+    color: #880E4F;
+    font-size: 15px;
+    font-weight: bold;
+    background: transparent;
+}
+
+/* "Zyklustag 22" rechts */
+QLabel#sheetCycleDay {
+    color: #F48FB1;
+    font-size: 12px;
+    font-weight: 600;
+    background: transparent;
+}
+
+/* Phasenname */
+QLabel#sheetPhase {
+    color: #AD1457;
+    font-size: 13px;
+    font-weight: 600;
+    background: transparent;
+}
+
+/* Placeholder-Text */
+QLabel#sheetEmpty {
+    color: #BDBDBD;
+    font-size: 13px;
+    background: transparent;
+}
+
+/* "Mehr erfahren"-Button – Chip-Stil wie News-Filter im Dashboard */
+QPushButton#btnMehrErfahren {
+    background-color: #FCE4EC;
+    color: #AD1457;
+    border: 1.5px solid #F48FB1;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    min-height: 32px;
+}
+QPushButton#btnMehrErfahren:hover { background-color: #F8BBD9; }
+
+/* Haupt-Tracken-Button – groß, rosa ausgefüllt */
+QPushButton#btnTracken {
+    background-color: #E91E63;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 700;
+    min-height: 52px;
+}
+QPushButton#btnTracken:hover { background-color: #C2185B; }
+QPushButton#btnTracken:pressed { background-color: #880E4F; }
+   </string>
+  </property>
+
+  <!-- ══ HEADER ══ -->
+  <widget class="QFrame" name="headerFrame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>390</width>
+     <height>88</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+
+   <!-- Zurück-Button links -->
+   <widget class="QPushButton" name="btnBack">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>44</y>
+      <width>36</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="toolTip">
+     <string>Zurück zum Dashboard</string>
+    </property>
+    <property name="text">
+     <string>‹</string>
+    </property>
+   </widget>
+
+   <!-- Titel mittig -->
+   <widget class="QLabel" name="lblTitle">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>44</y>
+      <width>270</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Kalender</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+
+   <!-- Tropfen-Icon rechts -->
+   <widget class="QLabel" name="lblDrop">
+    <property name="geometry">
+     <rect>
+      <x>348</x>
+      <y>48</y>
+      <width>30</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>🩸</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
+
+  <!-- ══ WOCHENTAG-HEADER ══ -->
+  <widget class="QFrame" name="weekdayHeader">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>88</y>
+     <width>390</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: transparent;</string>
+   </property>
+
+   <widget class="QLabel" name="lblWdM">
+    <property name="geometry"><rect><x>4</x><y>4</y><width>52</width><height>20</height></rect></property>
+    <property name="text"><string>M</string></property>
+    <property name="alignment"><set>Qt::AlignCenter</set></property>
+   </widget>
+   <widget class="QLabel" name="lblWdD1">
+    <property name="geometry"><rect><x>56</x><y>4</y><width>52</width><height>20</height></rect></property>
+    <property name="text"><string>D</string></property>
+    <property name="alignment"><set>Qt::AlignCenter</set></property>
+   </widget>
+   <widget class="QLabel" name="lblWdM2">
+    <property name="geometry"><rect><x>108</x><y>4</y><width>52</width><height>20</height></rect></property>
+    <property name="text"><string>M</string></property>
+    <property name="alignment"><set>Qt::AlignCenter</set></property>
+   </widget>
+   <widget class="QLabel" name="lblWdD2">
+    <property name="geometry"><rect><x>160</x><y>4</y><width>52</width><height>20</height></rect></property>
+    <property name="text"><string>D</string></property>
+    <property name="alignment"><set>Qt::AlignCenter</set></property>
+   </widget>
+   <widget class="QLabel" name="lblWdF">
+    <property name="geometry"><rect><x>212</x><y>4</y><width>52</width><height>20</height></rect></property>
+    <property name="text"><string>F</string></property>
+    <property name="alignment"><set>Qt::AlignCenter</set></property>
+   </widget>
+   <widget class="QLabel" name="lblWdS1">
+    <property name="geometry"><rect><x>264</x><y>4</y><width>52</width><height>20</height></rect></property>
+    <property name="text"><string>S</string></property>
+    <property name="alignment"><set>Qt::AlignCenter</set></property>
+   </widget>
+   <widget class="QLabel" name="lblWdS2">
+    <property name="geometry"><rect><x>334</x><y>4</y><width>52</width><height>20</height></rect></property>
+    <property name="text"><string>S</string></property>
+    <property name="alignment"><set>Qt::AlignCenter</set></property>
+   </widget>
+  </widget>
+
+  <!-- ══ KALENDER SCROLL-BEREICH ══ -->
+  <widget class="QScrollArea" name="calScrollArea">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>116</y>
+     <width>390</width>
+     <height>360</height>
+    </rect>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <widget class="QWidget" name="calContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>390</width>
+      <height>360</height>
+     </rect>
+    </property>
+    <!-- Platzhalter – wird per Code durch Monate ersetzt -->
+    <widget class="QLabel" name="lblPlaceholderInfo">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>350</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:#C2A0AD; font-size:11px; background:transparent;</string>
+     </property>
+     <property name="text">
+      <string>[ Monate werden per Code dynamisch generiert ]</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+
+  <!-- ══ DETAIL-SHEET (untere Hälfte) ══ -->
+  <widget class="QFrame" name="sheetFrame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>476</y>
+     <width>390</width>
+     <height>368</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+
+   <!-- Grauer Handle-Strich -->
+   <widget class="QLabel" name="sheetHandle">
+    <property name="geometry">
+     <rect>
+      <x>175</x>
+      <y>10</y>
+      <width>40</width>
+      <height>4</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+
+   <!-- "Getrackt am 26. Mai" links -->
+   <widget class="QLabel" name="sheetDate">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>24</y>
+      <width>220</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Getrackt am 26. Mai</string>
+    </property>
+   </widget>
+
+   <!-- "Zyklustag 22" rechts -->
+   <widget class="QLabel" name="sheetCycleDay">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>24</y>
+      <width>114</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Zyklustag 22</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+
+   <!-- Trennlinie -->
+   <widget class="QFrame" name="divider">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>56</y>
+      <width>390</width>
+      <height>1</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::HLine</enum>
+    </property>
+   </widget>
+
+   <!-- Phasenname z.B. "Mittlere Lutealphase" -->
+   <widget class="QLabel" name="sheetPhase">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>68</y>
+      <width>190</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Mittlere Lutealphase</string>
+    </property>
+   </widget>
+
+   <!-- "Mehr erfahren"-Button (Chip, rechts) -->
+   <widget class="QPushButton" name="btnMehrErfahren">
+    <property name="geometry">
+     <rect>
+      <x>224</x>
+      <y>62</y>
+      <width>150</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>Mehr erfahren</string>
+    </property>
+   </widget>
+
+   <!-- Zweite Trennlinie -->
+   <widget class="QFrame" name="divider2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>110</y>
+      <width>390</width>
+      <height>1</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::HLine</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: #F8BBD9; max-height:1px; min-height:1px; border:none;</string>
+    </property>
+   </widget>
+
+   <!-- Placeholder "Keine getrackten Erfahrungen" -->
+   <widget class="QLabel" name="sheetEmpty">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>130</y>
+      <width>358</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Keine getrackten Erfahrungen</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+
+   <!-- ══ TRACKEN-BUTTON ══ -->
+   <widget class="QPushButton" name="btnTracken">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>300</y>
+      <width>358</width>
+      <height>52</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>Tracken</string>
+    </property>
+   </widget>
+
+  </widget>
+
+ </widget>
+ <resources/>
+ <connections/>
+ <slots>
+  <slot>onDayClicked(QDate)</slot>
+  <slot>onBackClicked()</slot>
+  <slot>onTrackClicked()</slot>
+  <slot>onMehrErfahrenClicked()</slot>
+  <slot>renderMonth(int,int)</slot>
+  <slot>updateDetailSheet(QDate)</slot>
+ </slots>
+</ui>
