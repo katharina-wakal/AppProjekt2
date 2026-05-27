@@ -5,7 +5,8 @@ import sys
 import pathlib
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-
+from database import user_anlegen
+import hashlib
 
 class RegisterWindow(QMainWindow):
 
@@ -64,8 +65,27 @@ class RegisterWindow(QMainWindow):
             self.zeige_fehler("Bitte die Datenschutzerklärung akzeptieren.")
             return
 
-        # TODO: Nutzer in Datenbank speichern
-        print("Registrierung: " + vorname + " " + nachname + " – " + email1)
+        # Passwort hashen
+        password_hash = hashlib.sha256(pw1.encode()).hexdigest()
+
+        # Newsletter optional
+        newsletter = 0
+
+        # Geburtsdatum vorerst als Platzhalter
+        geburtsdatum = "2000-01-01"
+
+        # Nutzer speichern
+        user_anlegen(
+            vorname,
+            nachname,
+            geburtsdatum,
+            email1,
+            password_hash,
+            1,
+            newsletter
+        )
+
+        print("Registrierung erfolgreich gespeichert")
 
         QMessageBox.information(self, "Erfolg", "Konto wurde erfolgreich erstellt!")
         self.on_zurueck_zum_login()

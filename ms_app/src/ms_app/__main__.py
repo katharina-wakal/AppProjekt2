@@ -1,4 +1,4 @@
-from ms_app.app import main
+from app import main
 
 if __name__ == "__main__":
     # # For Toga app debugging
@@ -10,5 +10,5 @@ if __name__ == "__main__":
     #     package = os.path.basename(os.path.dirname(__file__))
     #     sys.modules["__main__"].__package__ = package
 
-    main().main_loop()
+    main()
 

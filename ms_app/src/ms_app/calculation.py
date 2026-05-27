@@ -61,10 +61,3 @@ def calculate_cycle_prediction(period_start_dates):  # Hauptfunktion zur Berechn
     }
 
 
-# TESTBEREICH
-
-periods = ["2026-05-01"]  # Beispiel-Eingabe mit nur einem Periodenstart
-
-result = calculate_cycle_prediction(periods)  # Führt Berechnung aus
-
-print(result)  # Gibt Ergebnis in der Konsole aus

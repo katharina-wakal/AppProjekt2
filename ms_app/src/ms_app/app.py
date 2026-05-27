@@ -6,8 +6,8 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtCore import pyqtSignal
 import sys
 
-from ms_app.settings import Settings
-from ms_app.socialMedia import SocialMedia
+from settings import SettingsWindow
+from socialMedia import SocialMedia
 
 
 """
@@ -51,7 +51,7 @@ class MainPage(QtWidgets.QMainWindow):
         # creating the other windows by creating an object of their class
         # the passed signal is important!
         self.social_media_window = SocialMedia(self.s_show_main_page)
-        self.settings_window = Settings(self.s_show_main_page)
+        self.settings_window = SettingsWindow(self.s_show_main_page)
 
         self.button_pressed()
         self.show()

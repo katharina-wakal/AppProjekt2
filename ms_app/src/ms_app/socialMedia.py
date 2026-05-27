@@ -2,7 +2,7 @@ import pathlib
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtCore import pyqtSignal
 
-from ms_app.contact import Contact
+from contact import Contact
 
 
 class SocialMedia(QtWidgets.QWidget):

@@ -10,8 +10,9 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 
 class SettingsWindow(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, s_show_main_page=None):
         super().__init__()
+        self.s_show_main_page = s_show_main_page
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
@@ -131,8 +132,10 @@ class SettingsWindow(QMainWindow):
     # ── Account-Slots ──────────────────────────────────────────────────────
 
     def on_zurueck(self):
-        # Settings-Fenster schließen → Dashboard bleibt offen
         self.close()
+
+        if self.s_show_main_page is not None:
+            self.s_show_main_page.emit()
 
     def on_email_aendern(self):
         # TODO: E-Mail-Änderungs-Dialog einbauen
@@ -192,8 +195,10 @@ class SettingsWindow(QMainWindow):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if antwort == QMessageBox.StandardButton.Yes:
-            # TODO: Session beenden, Login-Fenster öffnen
+
+            #TODO: zur Loginseite zurück
             print("Nutzer abgemeldet")
+
             self.close()
 
     def on_account_loeschen(self):

@@ -4,7 +4,9 @@ import sys
 import pathlib
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-
+import hashlib
+from database import login_pruefen
+from dashboard import DashboardWindow
 
 class LoginWindow(QMainWindow):
 
@@ -31,12 +33,25 @@ class LoginWindow(QMainWindow):
             self.zeige_fehler("Bitte E-Mail und Passwort eingeben.")
             return
 
-        # TODO: Datenbankabfrage hier einfügen
-        # Beispiel: if not user_db.verify_login(email, passwort): ...
-        print("Login mit: " + email)
+        passwort_hash = hashlib.sha256(passwort.encode()).hexdigest()
 
-        # Erfolg → Hauptfenster öffnen (TODO)
-        QMessageBox.information(self, "Erfolg", "Willkommen zurück! 👋")
+        user = login_pruefen(email, passwort_hash)
+
+        if user is None:
+            self.zeige_fehler("E-Mail oder Passwort ist falsch.")
+            return
+
+        print("Login erfolgreich:", user)
+
+        user_id = user[0]
+        vorname = user[1]
+
+        self.dashboard = DashboardWindow(
+            vorname=vorname,
+            user_id=user_id
+        )
+        self.dashboard.show()
+        self.close()
 
     def on_register(self):
         # Registrierungsfenster öffnen

@@ -9,25 +9,35 @@ from PyQt6.QtWidgets import (
     QGridLayout, QVBoxLayout, QMessageBox
 )
 from PyQt6.QtCore import Qt
+from database import perioden_tage_laden, eintrag_fuer_tag_laden
+from datetime import datetime
 
 
 class KalenderWindow(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, user_id=None):
+
         super().__init__()
+        self.user_id = user_id
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
         self.main_window = uic.loadUi(working_dir + "/kalender.ui", self)
 
-        # ── Zyklus-Beispieldaten (TODO: aus Datenbank laden) ──────────────────
-        self.perioden_tage = [
-            date(2026, 5, 5),
-            date(2026, 5, 6),
-            date(2026, 5, 7),
-            date(2026, 5, 8),
-            date(2026, 5, 9),
-        ]
+        self.perioden_tage = []
+
+        if self.user_id is not None:
+
+            perioden_daten = perioden_tage_laden(self.user_id)
+
+            for datum_text in perioden_daten:
+                datum = datetime.strptime(
+                    datum_text,
+                    "%Y-%m-%d"
+                ).date()
+
+                self.perioden_tage.append(datum)
+
         self.eisprung_zone = [
             date(2026, 5, 14),
             date(2026, 5, 15),
@@ -178,6 +188,58 @@ class KalenderWindow(QMainWindow):
         self.main_window.sheetDate.setText("Getrackt am " + datum_text)
         self.main_window.sheetCycleDay.setText("Zyklustag " + str(zyklus_tag))
         self.main_window.sheetPhase.setText(phase)
+
+        # ── Tagesdaten laden ─────────────────────────────
+
+        if self.user_id is not None:
+
+            eintrag = eintrag_fuer_tag_laden(
+                self.user_id,
+                datum.strftime("%Y-%m-%d")
+            )
+
+            if eintrag is not None:
+
+                labels = [
+                    ("🩸 Periode", eintrag[0]),
+                    ("🔴 Schmierblutung", eintrag[1]),
+                    ("💭 Gefühle", eintrag[2]),
+                    ("🤕 Schmerzen", eintrag[3]),
+                    ("❤️ Sexleben", eintrag[4]),
+                    ("📝 Notiz", eintrag[5]),
+                    ("💧 Ausfluss", eintrag[6]),
+                    ("✨ Haut", eintrag[7]),
+                    ("🍽 Verdauung", eintrag[8]),
+                    ("🚽 Stuhlgang", eintrag[9]),
+                    ("🧪 Tests", eintrag[10]),
+                    ("💊 Pille", eintrag[11]),
+                    ("🔵 Spirale", eintrag[12]),
+                    ("💉 Spritze", eintrag[13]),
+                    ("🌱 Implantat", eintrag[14]),
+                    ("🩹 Pflaster", eintrag[15]),
+                    ("⭕ Ring", eintrag[16]),
+                ]
+
+                text = ""
+
+                for name, wert in labels:
+                    if wert:
+                        text += name + ": " + wert + "\n"
+
+                if text:
+                    self.main_window.sheetEmpty.setText(text.strip())
+                else:
+                    self.main_window.sheetEmpty.setText("Keine getrackten Erfahrungen")
+
+            else:
+                self.main_window.sheetEmpty.setText("Keine getrackten Erfahrungen")
+
+        else:
+            self.main_window.sheetEmpty.setText("Keine getrackten Erfahrungen")
+
+
+
+
 
         print("Sheet: " + datum_text + " – Zyklustag " + str(zyklus_tag) + " – " + phase)
 

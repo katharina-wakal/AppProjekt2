@@ -5,12 +5,15 @@ import pathlib
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt6.QtCore import QDate, QTime
+from database import arzttermin_speichern
 
 
 class ArztterminWindow(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, user_id=None):
+
         super().__init__()
+        self.user_id = user_id
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
@@ -83,16 +86,43 @@ class ArztterminWindow(QMainWindow):
             self.zeige_fehler("Bitte eine Fachrichtung auswählen.")
             return
 
-        # TODO: Termin in Datenbank speichern
-        print("Neuer Arzttermin gespeichert:")
-        print("  Arzt:      " + arzt_name)
-        print("  Typ:       " + arzt_typ)
-        print("  Ort:       " + ort)
-        print("  Datum:     " + datum)
-        print("  Uhrzeit:   " + uhrzeit)
-        print("  Notiz:     " + notiz)
-        print("  Vorberei.: " + vorbereitung)
-        print("  Befund:    " + befund)
+        if self.user_id is None:
+            self.zeige_fehler("Kein Benutzer angemeldet.")
+            return
+
+        erinnerung = ""
+
+        if self.main_window.chipAmTag.isChecked():
+            erinnerung = "Am selben Tag"
+        elif self.main_window.chip1Tag.isChecked():
+            erinnerung = "1 Tag vorher"
+        elif self.main_window.chip3Tage.isChecked():
+            erinnerung = "3 Tage vorher"
+        elif self.main_window.chip1Woche.isChecked():
+            erinnerung = "1 Woche vorher"
+
+        folgetermin = 0
+
+        if self.main_window.chipFolgeJa.isChecked():
+            folgetermin = 1
+        elif self.main_window.chipFolgeNein.isChecked():
+            folgetermin = 0
+
+        arzttermin_speichern(
+            self.user_id,
+            arzt_name,
+            arzt_typ,
+            ort,
+            datum,
+            uhrzeit,
+            erinnerung,
+            notiz,
+            vorbereitung,
+            befund,
+            folgetermin
+        )
+
+        print("Arzttermin wurde in der Datenbank gespeichert.")
 
         QMessageBox.information(self, "Gespeichert", "Termin wurde erfolgreich eingetragen! 🩺")
         self.close()

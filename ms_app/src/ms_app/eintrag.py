@@ -5,12 +5,14 @@ import pathlib
 from datetime import date
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-
+from database import eintrag_speichern, eintrag_fuer_bearbeitung_laden
 
 class EintragWindow(QMainWindow):
 
-    def __init__(self, eintrag_datum=None):
+    def __init__(self, eintrag_datum=None, user_id=None):
+
         super().__init__()
+        self.user_id = user_id
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
@@ -74,6 +76,11 @@ class EintragWindow(QMainWindow):
             lambda: self.on_mehr_erfahren("Verhütungspflaster"))
         self.main_window.btnMehrRing.clicked.connect(
             lambda: self.on_mehr_erfahren("Verhütungsring"))
+
+        # Bereits gespeicherte Daten laden
+        self.gespeicherten_eintrag_laden()
+
+
 
     # ── Datum anzeigen ────────────────────────────────────────────────────────
 
@@ -354,8 +361,31 @@ class EintragWindow(QMainWindow):
         print("Pflaster:         " + pflaster)
         print("Ring:             " + ring)
 
-        # TODO: Eintrag in Datenbank speichern
-        # Beispiel: db.speichere_eintrag(self.eintrag_datum, periode, gefuehle, ...)
+        if self.user_id is None:
+            self.zeige_fehler("Kein Benutzer angemeldet.")
+            return
+
+        eintrag_speichern(
+            self.user_id,
+            str(self.eintrag_datum),
+            periode,
+            schmier,
+            ", ".join(gefuehle),
+            ", ".join(schmerzen),
+            ", ".join(sexleben),
+            notiz,
+            ", ".join(ausfluss),
+            ", ".join(haut),
+            ", ".join(verdauung),
+            stuhlgang,
+            ", ".join(tests),
+            pille,
+            spirale,
+            spritze,
+            implantat,
+            pflaster,
+            ring
+        )
 
         QMessageBox.information(self, "Gespeichert", "Dein Eintrag wurde gespeichert! ✅")
         self.close()
@@ -364,6 +394,85 @@ class EintragWindow(QMainWindow):
 
     def zeige_fehler(self, text):
         QMessageBox.warning(self, "Fehler", text)
+
+    def gespeicherten_eintrag_laden(self):
+
+        if self.user_id is None:
+            return
+
+        datum = self.eintrag_datum.strftime("%Y-%m-%d")
+
+        eintrag = eintrag_fuer_bearbeitung_laden(
+            self.user_id,
+            datum
+        )
+
+        if eintrag is None:
+            return
+
+        periode = eintrag[0]
+        gefuehle = eintrag[2]
+        schmerzen = eintrag[3]
+        sexleben = eintrag[4]
+
+        # Periode
+        if periode == "Leicht":
+            self.main_window.cardLeicht.setChecked(True)
+        elif periode == "Mittel":
+            self.main_window.cardMittel.setChecked(True)
+        elif periode == "Stark":
+            self.main_window.cardStark.setChecked(True)
+        elif periode == "Sehr stark":
+            self.main_window.cardSehrStark.setChecked(True)
+
+        # Gefühle
+        if gefuehle:
+            if "Stimmungsschwankungen" in gefuehle:
+                self.main_window.cardStimmung.setChecked(True)
+            if "Gut" in gefuehle:
+                self.main_window.cardGut.setChecked(True)
+            if "Traurig" in gefuehle:
+                self.main_window.cardTraurig.setChecked(True)
+            if "Sensibel" in gefuehle:
+                self.main_window.cardSensibel.setChecked(True)
+            if "Wütend" in gefuehle:
+                self.main_window.cardWuetend.setChecked(True)
+            if "Reizbar" in gefuehle:
+                self.main_window.cardReizbar.setChecked(True)
+            if "Unruhig" in gefuehle:
+                self.main_window.cardUnruhig.setChecked(True)
+            if "Gleichmütig" in gefuehle:
+                self.main_window.cardGleichweit.setChecked(True)
+
+        # Schmerzen
+        if schmerzen:
+            if "Schmerzfrei" in schmerzen:
+                self.main_window.cardSchmerzfrei.setChecked(True)
+            if "Krämpfe" in schmerzen:
+                self.main_window.cardKraempfe.setChecked(True)
+            if "Sensible Brüste" in schmerzen:
+                self.main_window.cardBrueste.setChecked(True)
+            if "Kopfschmerzen" in schmerzen:
+                self.main_window.cardKopf.setChecked(True)
+            if "Rückenschmerzen" in schmerzen:
+                self.main_window.cardRuecken.setChecked(True)
+
+        # Sexleben
+        if sexleben:
+            if "Geschützt" in sexleben:
+                self.main_window.cardGeschuetzt.setChecked(True)
+            if "Ungeschützt" in sexleben:
+                self.main_window.cardUngeschuetzt.setChecked(True)
+            if "Interruptus" in sexleben:
+                self.main_window.cardInterruptus.setChecked(True)
+            if "Kein Sex" in sexleben:
+                self.main_window.cardKeinSex.setChecked(True)
+            if "Starke Libido" in sexleben:
+                self.main_window.cardStarkLib.setChecked(True)
+            if "Schwache Libido" in sexleben:
+                self.main_window.cardSchwachLib.setChecked(True)
+            if "Schmerzhafter Sex" in sexleben:
+                self.main_window.cardSchmerzSex.setChecked(True)
 
 
 # ── Programm starten ──────────────────────────────────────────────────────────
