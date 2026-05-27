@@ -18,7 +18,7 @@ class KalenderWindow(QMainWindow):
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
-        self.main_window = uic.loadUi(working_dir + "/kalender_femhealth_neu(1).ui", self)
+        self.main_window = uic.loadUi(working_dir + "/kalender.ui", self)
 
         # ── Zyklus-Beispieldaten (TODO: aus Datenbank laden) ──────────────────
         self.perioden_tage = [

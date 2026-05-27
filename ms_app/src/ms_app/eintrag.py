@@ -14,7 +14,7 @@ class EintragWindow(QMainWindow):
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
-        self.main_window = uic.loadUi(working_dir + "/eintrag_femhealth.ui", self)
+        self.main_window = uic.loadUi(working_dir + "/eintrag.ui", self)
 
         # Datum setzen (Standard: heute)
         if eintrag_datum is None:

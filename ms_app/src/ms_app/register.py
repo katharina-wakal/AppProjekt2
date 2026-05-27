@@ -14,7 +14,7 @@ class RegisterWindow(QMainWindow):
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
-        self.main_window = uic.loadUi(working_dir + "/register_femhealth.ui", self)
+        self.main_window = uic.loadUi(working_dir + "/register.ui", self)
 
         # Buttons mit Funktionen verbinden
         self.main_window.registerButton.clicked.connect(self.on_registrieren)

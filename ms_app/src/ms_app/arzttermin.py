@@ -14,7 +14,7 @@ class ArztterminWindow(QMainWindow):
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
-        self.main_window = uic.loadUi(working_dir + "/arzttermin_femhealth.ui", self)
+        self.main_window = uic.loadUi(working_dir + "/arzttermin.ui", self)
 
         # Datum auf heute setzen beim Öffnen
         heute = QDate.currentDate()

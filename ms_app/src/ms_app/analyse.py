@@ -13,7 +13,7 @@ class AnalyseWindow(QMainWindow):
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
-        self.main_window = uic.loadUi(working_dir + "/analyse_femhealth.ui", self)
+        self.main_window = uic.loadUi(working_dir + "/analyse.ui", self)
 
         # Eingetragene Daten aus anderen Fenstern übernehmen (optional)
         # daten = Dictionary mit Einträgen aus Eintrag- und Arzttermin-Fenster
