@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 
 
 DB_NAME = "femhealth.db"
@@ -292,10 +293,31 @@ def periodenstarts_laden(user_id):
     daten = cursor.fetchall()
     connection.close()
 
-    periodenstarts = []
+    perioden_tage = []
 
     for eintrag in daten:
-        periodenstarts.append(eintrag[0])
+        perioden_tage.append(eintrag[0])
+
+    if len(perioden_tage) == 0:
+        return []
+
+    periodenstarts = []
+
+    letzter_periodenstart = None
+
+    for datum_text in perioden_tage:
+        aktuelles_datum = datetime.strptime(datum_text, "%Y-%m-%d").date()
+
+        if letzter_periodenstart is None:
+            periodenstarts.append(datum_text)
+            letzter_periodenstart = aktuelles_datum
+
+        else:
+            unterschied = (aktuelles_datum - letzter_periodenstart).days
+
+            if unterschied >= 21:
+                periodenstarts.append(datum_text)
+                letzter_periodenstart = aktuelles_datum
 
     return periodenstarts
 
@@ -438,6 +460,68 @@ def eintrag_fuer_bearbeitung_laden(user_id, datum):
 
     return eintrag
 
+def zykluslaengen_laden(user_id):
+    periodenstarts = periodenstarts_laden(user_id)
+
+    zykluslaengen = []
+
+    for i in range(1, len(periodenstarts)):
+        start_vorher = datetime.strptime(
+            periodenstarts[i - 1],
+            "%Y-%m-%d"
+        ).date()
+
+        start_aktuell = datetime.strptime(
+            periodenstarts[i],
+            "%Y-%m-%d"
+        ).date()
+
+        differenz = (start_aktuell - start_vorher).days
+        zykluslaengen.append(differenz)
+
+    return zykluslaengen
+
+def perioden_dauer_laden(user_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT entry_date
+        FROM daily_entries
+        WHERE user_id = ?
+        AND period_strength IS NOT NULL
+        AND period_strength != ''
+        ORDER BY entry_date ASC
+    """, (user_id,))
+
+    daten = cursor.fetchall()
+    connection.close()
+
+    if len(daten) == 0:
+        return []
+
+    tage = []
+
+    for eintrag in daten:
+        tage.append(
+            datetime.strptime(eintrag[0], "%Y-%m-%d").date()
+        )
+
+    dauern = []
+    aktuelle_dauer = 1
+
+    for i in range(1, len(tage)):
+        unterschied = (tage[i] - tage[i - 1]).days
+
+        if unterschied <= 1:
+            aktuelle_dauer += 1
+        else:
+            dauern.append(aktuelle_dauer)
+            aktuelle_dauer = 1
+
+    dauern.append(aktuelle_dauer)
+
+    return dauern
 
 
 

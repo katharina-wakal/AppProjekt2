@@ -2,7 +2,7 @@
 
 import sys
 import pathlib
-from datetime import date
+from datetime import date, timedelta
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from database import eintrag_speichern, eintrag_fuer_bearbeitung_laden
@@ -34,15 +34,21 @@ class EintragWindow(QMainWindow):
         self.main_window.btnSpeichern.clicked.connect(self.on_speichern)
         self.main_window.btnPersonalisieren.clicked.connect(self.on_personalisieren)
 
-        # Wochenstreifen – Tage
-        self.main_window.btnDay25.clicked.connect(lambda: self.on_tag_gewaehlt(25))
-        self.main_window.dayToday.clicked.connect(lambda: self.on_tag_gewaehlt(26))
-        self.main_window.btnDay27.clicked.connect(lambda: self.on_tag_gewaehlt(27))
-        self.main_window.btnDay28.clicked.connect(lambda: self.on_tag_gewaehlt(28))
-        self.main_window.btnDay29.clicked.connect(lambda: self.on_tag_gewaehlt(29))
-        self.main_window.btnDay30.clicked.connect(lambda: self.on_tag_gewaehlt(30))
-        self.main_window.btnDay31.clicked.connect(lambda: self.on_tag_gewaehlt(31))
+        # Wochenstreifen – Tage dynamisch vorbereiten
+        self.tages_buttons = [
+            self.main_window.btnDay25,
+            self.main_window.dayToday,
+            self.main_window.btnDay27,
+            self.main_window.btnDay28,
+            self.main_window.btnDay29,
+            self.main_window.btnDay30,
+            self.main_window.btnDay31,
+        ]
 
+        for i, button in enumerate(self.tages_buttons):
+            button.clicked.connect(lambda checked, index=i: self.on_tag_gewaehlt(index))
+
+        self.woche_aktualisieren()
         # "Mehr erfahren"-Links
         self.main_window.btnMehrPeriode.clicked.connect(
             lambda: self.on_mehr_erfahren("Periode"))
@@ -108,15 +114,123 @@ class EintragWindow(QMainWindow):
 
     # ── Slots: Wochenstreifen ─────────────────────────────────────────────────
 
-    def on_tag_gewaehlt(self, tag_nr):
-        # Ausgewählten Tag im aktuellen Monat setzen
-        self.eintrag_datum = date(
-            self.eintrag_datum.year,
-            self.eintrag_datum.month,
-            tag_nr
-        )
+    def on_tag_gewaehlt(self, index):
+
+        self.eintrag_datum = self.button_daten[index]
+
         self.datum_anzeigen()
+
+        # Wochenstreifen aktualisieren
+        self.woche_aktualisieren()
+
+        # Alte Auswahl entfernen
+        self.auswahl_zuruecksetzen()
+
+        # Gespeicherte Daten des Tages laden
+        self.gespeicherten_eintrag_laden()
+
         print("Tag gewählt: " + str(self.eintrag_datum))
+
+    # ── Alte Auswahl zurücksetzen ─────────────────────────────────────────────
+    # Wird verwendet wenn zwischen Tagen gewechselt wird.
+    #
+    # Beispiel:
+    # Tag 25 → Periode „Leicht“
+    # Tag 28 → Pflaster „Aufgeklebt“
+    #
+    # Ohne Zurücksetzen würden beim Wechseln alte ausgewählte Karten
+    # sichtbar bleiben obwohl sie gar nicht zu diesem Tag gehören.
+    #
+    # Deshalb:
+    # 1. Alle Karten deaktivieren
+    # 2. Notizfeld leeren
+    # 3. Danach gespeicherte Daten des neuen Tages laden
+    #
+    # So zeigt die Eintragsseite immer exakt die Daten des aktuell
+    # ausgewählten Tages an.
+
+    def auswahl_zuruecksetzen(self):
+        alle_karten = [
+            self.main_window.cardLeicht,
+            self.main_window.cardMittel,
+            self.main_window.cardStark,
+            self.main_window.cardSehrStark,
+            self.main_window.cardRot,
+            self.main_window.cardBraun,
+            self.main_window.cardStimmung,
+            self.main_window.cardGut,
+            self.main_window.cardTraurig,
+            self.main_window.cardSensibel,
+            self.main_window.cardWuetend,
+            self.main_window.cardReizbar,
+            self.main_window.cardUnruhig,
+            self.main_window.cardGleichweit,
+            self.main_window.cardSchmerzfrei,
+            self.main_window.cardKraempfe,
+            self.main_window.cardBrueste,
+            self.main_window.cardKopf,
+            self.main_window.cardRuecken,
+            self.main_window.cardGeschuetzt,
+            self.main_window.cardUngeschuetzt,
+            self.main_window.cardInterruptus,
+            self.main_window.cardKeinSex,
+            self.main_window.cardStarkLib,
+            self.main_window.cardSchwachLib,
+            self.main_window.cardSchmerzSex,
+            self.main_window.cardKeinAusfluss,
+            self.main_window.cardKlebrig,
+            self.main_window.cardCremig,
+            self.main_window.cardFadenziehend,
+            self.main_window.cardUntypisch,
+            self.main_window.cardHautOk,
+            self.main_window.cardHautGut,
+            self.main_window.cardPickel,
+            self.main_window.cardTrocken,
+            self.main_window.cardFettig,
+            self.main_window.cardJuckend,
+            self.main_window.cardVerdOk,
+            self.main_window.cardBlaehbauch,
+            self.main_window.cardBlaehungen,
+            self.main_window.cardSodbrennen,
+            self.main_window.cardUebel,
+            self.main_window.cardErbrechen,
+            self.main_window.cardStOk,
+            self.main_window.cardVerstopfung,
+            self.main_window.cardDurchfall,
+            self.main_window.cardPosOvu,
+            self.main_window.cardNegOvu,
+            self.main_window.cardPosSchwanger,
+            self.main_window.cardNegSchwanger,
+            self.main_window.cardPilleGenommen,
+            self.main_window.cardPilleVergessen,
+            self.main_window.cardPilleSpat,
+            self.main_window.cardPilleDoppel,
+            self.main_window.cardPillenfrei,
+            self.main_window.cardSpirFaden,
+            self.main_window.cardSpirEingesetzt,
+            self.main_window.cardSpirEntfernt,
+            self.main_window.cardSpirAusgewechselt,
+            self.main_window.cardSpritzVer,
+            self.main_window.cardImplEingesetzt,
+            self.main_window.cardImplEntfernt,
+            self.main_window.cardImplAusgewechselt,
+            self.main_window.cardPflAufgeklebt,
+            self.main_window.cardPflEntfernt,
+            self.main_window.cardPflSpatAuf,
+            self.main_window.cardPflSpatEnt,
+            self.main_window.cardPflAusgewechselt,
+            self.main_window.cardRingEingesetzt,
+            self.main_window.cardRingEntfernt,
+            self.main_window.cardRingSpatEin,
+            self.main_window.cardRingSpatEnt,
+            self.main_window.cardRingAusgewechselt,
+        ]
+
+        for karte in alle_karten:
+            karte.setChecked(False)
+
+        self.main_window.txtNotiz.clear()
+
 
     # ── Slots: Allgemein ──────────────────────────────────────────────────────
 
@@ -411,9 +525,22 @@ class EintragWindow(QMainWindow):
             return
 
         periode = eintrag[0]
+        schmier = eintrag[1]
         gefuehle = eintrag[2]
         schmerzen = eintrag[3]
         sexleben = eintrag[4]
+        notiz = eintrag[5]
+        ausfluss = eintrag[6]
+        haut = eintrag[7]
+        verdauung = eintrag[8]
+        stuhlgang = eintrag[9]
+        tests = eintrag[10]
+        pille = eintrag[11]
+        spirale = eintrag[12]
+        spritze = eintrag[13]
+        implantat = eintrag[14]
+        pflaster = eintrag[15]
+        ring = eintrag[16]
 
         # Periode
         if periode == "Leicht":
@@ -474,6 +601,192 @@ class EintragWindow(QMainWindow):
             if "Schmerzhafter Sex" in sexleben:
                 self.main_window.cardSchmerzSex.setChecked(True)
 
+        # Schmierblutung
+        if schmier:
+            if "Rot" in schmier:
+                self.main_window.cardRot.setChecked(True)
+            if "Braun" in schmier:
+                self.main_window.cardBraun.setChecked(True)
+
+        # Notiz
+        if notiz:
+            self.main_window.txtNotiz.setPlainText(notiz)
+
+        # Ausfluss
+        if ausfluss:
+            if "Keinen" in ausfluss:
+                self.main_window.cardKeinAusfluss.setChecked(True)
+            if "Klebrig" in ausfluss:
+                self.main_window.cardKlebrig.setChecked(True)
+            if "Cremig" in ausfluss:
+                self.main_window.cardCremig.setChecked(True)
+            if "Fadenziehend" in ausfluss:
+                self.main_window.cardFadenziehend.setChecked(True)
+            if "Untypisch" in ausfluss:
+                self.main_window.cardUntypisch.setChecked(True)
+
+        # Haut
+        if haut:
+            if "Ok" in haut:
+                self.main_window.cardHautOk.setChecked(True)
+            if "Gut" in haut:
+                self.main_window.cardHautGut.setChecked(True)
+            if "Pickel" in haut:
+                self.main_window.cardPickel.setChecked(True)
+            if "Trocken" in haut:
+                self.main_window.cardTrocken.setChecked(True)
+            if "Fettig" in haut:
+                self.main_window.cardFettig.setChecked(True)
+            if "Juckend" in haut:
+                self.main_window.cardJuckend.setChecked(True)
+
+        # Verdauung
+        if verdauung:
+            if "Ok" in verdauung:
+                self.main_window.cardVerdOk.setChecked(True)
+            if "Aufgebläht" in verdauung:
+                self.main_window.cardBlaehbauch.setChecked(True)
+            if "Blähungen" in verdauung:
+                self.main_window.cardBlaehungen.setChecked(True)
+            if "Sodbrennen" in verdauung:
+                self.main_window.cardSodbrennen.setChecked(True)
+            if "Übel" in verdauung:
+                self.main_window.cardUebel.setChecked(True)
+            if "Erbrechen" in verdauung:
+                self.main_window.cardErbrechen.setChecked(True)
+
+        # Stuhlgang
+        if stuhlgang:
+            if "Ok" in stuhlgang:
+                self.main_window.cardStOk.setChecked(True)
+            elif "Verstopfung" in stuhlgang:
+                self.main_window.cardVerstopfung.setChecked(True)
+            elif "Durchfall" in stuhlgang:
+                self.main_window.cardDurchfall.setChecked(True)
+
+        # Tests
+        if tests:
+            if "Pos. Ovulationstest" in tests:
+                self.main_window.cardPosOvu.setChecked(True)
+            if "Neg. Ovulationstest" in tests:
+                self.main_window.cardNegOvu.setChecked(True)
+            if "Pos. Schwangerschaftstest" in tests:
+                self.main_window.cardPosSchwanger.setChecked(True)
+            if "Neg. Schwangerschaftstest" in tests:
+                self.main_window.cardNegSchwanger.setChecked(True)
+
+        # Pille
+        if pille:
+            if "Genommen" in pille:
+                self.main_window.cardPilleGenommen.setChecked(True)
+            elif "Vergessen" in pille:
+                self.main_window.cardPilleVergessen.setChecked(True)
+            elif "Spät genommen" in pille:
+                self.main_window.cardPilleSpat.setChecked(True)
+            elif "Doppelte Dosis" in pille:
+                self.main_window.cardPilleDoppel.setChecked(True)
+            elif "Pillenfreier Tag" in pille:
+                self.main_window.cardPillenfrei.setChecked(True)
+
+        # Spirale
+        if spirale:
+            if "Faden überprüft" in spirale:
+                self.main_window.cardSpirFaden.setChecked(True)
+            elif "Eingesetzt" in spirale:
+                self.main_window.cardSpirEingesetzt.setChecked(True)
+            elif "Entfernt" in spirale:
+                self.main_window.cardSpirEntfernt.setChecked(True)
+            elif "Ausgewechselt" in spirale:
+                self.main_window.cardSpirAusgewechselt.setChecked(True)
+
+        # Spritze
+        if spritze:
+            if "Verabreicht" in spritze:
+                self.main_window.cardSpritzVer.setChecked(True)
+
+        # Implantat
+        if implantat:
+            if "Eingesetzt" in implantat:
+                self.main_window.cardImplEingesetzt.setChecked(True)
+            elif "Entfernt" in implantat:
+                self.main_window.cardImplEntfernt.setChecked(True)
+            elif "Ausgewechselt" in implantat:
+                self.main_window.cardImplAusgewechselt.setChecked(True)
+
+        # Pflaster
+        if pflaster:
+            if "Aufgeklebt" in pflaster:
+                self.main_window.cardPflAufgeklebt.setChecked(True)
+            elif "Entfernt" in pflaster:
+                self.main_window.cardPflEntfernt.setChecked(True)
+            elif "Spät aufgeklebt" in pflaster:
+                self.main_window.cardPflSpatAuf.setChecked(True)
+            elif "Spät entfernt" in pflaster:
+                self.main_window.cardPflSpatEnt.setChecked(True)
+            elif "Ausgewechselt" in pflaster:
+                self.main_window.cardPflAusgewechselt.setChecked(True)
+
+        # Ring
+        if ring:
+            if "Eingesetzt" in ring:
+                self.main_window.cardRingEingesetzt.setChecked(True)
+            elif "Entfernt" in ring:
+                self.main_window.cardRingEntfernt.setChecked(True)
+            elif "Spät eingesetzt" in ring:
+                self.main_window.cardRingSpatEin.setChecked(True)
+            elif "Spät entfernt" in ring:
+                self.main_window.cardRingSpatEnt.setChecked(True)
+            elif "Ausgewechselt" in ring:
+                self.main_window.cardRingAusgewechselt.setChecked(True)
+
+    def woche_start_berechnen(self, datum):
+        return datum - timedelta(days=datum.weekday())
+
+    def woche_aktualisieren(self):
+
+        montag = self.woche_start_berechnen(
+            self.eintrag_datum
+        )
+
+        self.button_daten = []
+
+        normal_style = """
+            QPushButton {
+                background: transparent;
+                border: none;
+                color: #CBA8B5;
+                font-size: 13px;
+                font-weight: 500;
+                border-radius: 10px;
+            }
+            QPushButton:hover {
+                background: #FCE4EC;
+            }
+        """
+
+        aktiv_style = """
+            QPushButton {
+                background: transparent;
+                border: 2px solid #E91E63;
+                border-radius: 10px;
+                color: #E91E63;
+                font-size: 13px;
+                font-weight: 700;
+            }
+        """
+
+        for i, button in enumerate(self.tages_buttons):
+
+            button_datum = montag + timedelta(days=i)
+
+            self.button_daten.append(button_datum)
+
+            button.setText(str(button_datum.day))
+
+            if button_datum == self.eintrag_datum:
+                button.setStyleSheet(aktiv_style)
+            else:
+                button.setStyleSheet(normal_style)
 
 # ── Programm starten ──────────────────────────────────────────────────────────
 

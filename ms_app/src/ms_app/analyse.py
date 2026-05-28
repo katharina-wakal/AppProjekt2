@@ -4,12 +4,18 @@ import sys
 import pathlib
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-
+from database import zykluslaengen_laden, perioden_dauer_laden, periodenstarts_laden
+from calculation import calculate_cycle_prediction
+from kalender import KalenderWindow
+from eintrag import EintragWindow
+from arzttermin import ArztterminWindow
 
 class AnalyseWindow(QMainWindow):
 
-    def __init__(self, daten=None):
+    def __init__(self, daten=None, user_id=None):
+
         super().__init__()
+        self.user_id = user_id
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
@@ -19,8 +25,7 @@ class AnalyseWindow(QMainWindow):
         # daten = Dictionary mit Einträgen aus Eintrag- und Arzttermin-Fenster
         self.daten = daten if daten is not None else {}
 
-        # Anzeige mit Beispieldaten befüllen
-        # TODO: echte Berechnungen aus Datenbank einfügen
+        # Anzeige mit echten Nutzerdaten befüllen
         self.anzeige_befuellen()
 
         # ── Buttons mit Funktionen verbinden ──────────────────────────────────
@@ -42,33 +47,79 @@ class AnalyseWindow(QMainWindow):
 
     def anzeige_befuellen(self):
         # Zyklusstatistiken berechnen und anzeigen
-        # TODO: Werte aus Datenbank berechnen statt Beispielwerte
+        # Zyklusstatistiken aus gespeicherten Nutzerdaten berechnen
         zyklus_dauer  = self.zyklus_dauer_berechnen()
         schwankung    = self.schwankung_berechnen()
         periode_dauer = self.periode_dauer_berechnen()
         score         = self.score_berechnen(zyklus_dauer, schwankung)
 
+        anzahl_zyklen = 0
+
+        if self.user_id is not None:
+            anzahl_zyklen = len(zykluslaengen_laden(self.user_id))
+
+        if anzahl_zyklen == 0:
+            self.main_window.lblStatSubInfo.setText("Noch nicht genug Zyklusdaten")
+            self.main_window.lblStatistikSub.setText("Erste Werte basieren auf Standardannahmen")
+        else:
+            self.main_window.lblStatSubInfo.setText(
+                "Basierend auf " + str(anzahl_zyklen) + " Zyklen"
+            )
+            self.main_window.lblStatistikSub.setText(
+                "Durchschnittswerte deiner letzten " + str(min(anzahl_zyklen, 6)) + " Zyklen"
+            )
+
+        # Werte in UI eintragen
         # Werte in UI eintragen
         self.main_window.lblZyklusDauerWert.setText(str(zyklus_dauer) + " Tage")
-        self.main_window.lblSchwankungWert.setText("±" + str(schwankung) + " Tage")
-        self.main_window.lblPeriodeDauerWert.setText(str(periode_dauer) + " Tage")
-        self.main_window.lblScoreWert.setText(str(score) + " / 100")
-        self.main_window.lblStatScore.setText(str(score) + " / 100")
+
+        # Badge für Zyklus-Schwankung anpassen
+        if schwankung <= 2:
+            self.main_window.badgeUntypisch.setText("✓ stabil")
+        elif schwankung <= 5:
+            self.main_window.badgeUntypisch.setText("~ normal")
+        else:
+            self.main_window.badgeUntypisch.setText("⚠ unregelmäßig")
+
+
+        #Periodendauer grammatikalisch richtig ausgeben
+        if periode_dauer == 1:
+            self.main_window.lblPeriodeDauerWert.setText("1 Tag")
+        else:
+            self.main_window.lblPeriodeDauerWert.setText(
+                str(periode_dauer) + " Tage"
+            )
+
+        if anzahl_zyklen == 0:
+            self.main_window.lblScoreWert.setText("-")
+            self.main_window.lblStatScore.setText("-")
+        else:
+            self.main_window.lblScoreWert.setText(str(score) + " / 100")
+            self.main_window.lblStatScore.setText(str(score) + " / 100")
 
         # Score-Badge und Hauptkarte anpassen
-        if score >= 80:
+        # Score-Badge und Hauptkarte anpassen
+        if anzahl_zyklen == 0:
+            self.main_window.badgeStabil.setText("neu")
+            self.main_window.lblStatScoreSub.setText("Noch nicht aussagekräftig")
+            self.main_window.lblStatTrend.setText(
+                "💡 Trage weitere Perioden ein, damit die Analyse genauer wird."
+            )
+
+        elif score >= 80:
             self.main_window.badgeStabil.setText("stabil")
             self.main_window.lblStatScoreSub.setText("Dein Zyklus ist sehr regelmäßig")
             self.main_window.lblStatTrend.setText("💡 Weiter so – sehr gute Regelmäßigkeit!")
+
         elif score >= 60:
             self.main_window.badgeStabil.setText("leicht unreg.")
             self.main_window.lblStatScoreSub.setText("Leicht unregelmäßig")
             self.main_window.lblStatTrend.setText("💡 Dein Zyklus wird stabiler – weiter so!")
+
         else:
             self.main_window.badgeStabil.setText("stark schwankend")
             self.main_window.lblStatScoreSub.setText("Stärkere Schwankungen erkannt")
             self.main_window.lblStatTrend.setText("💡 Bitte beobachte deine Schwankungen weiter.")
-
         # Trend-Text anpassen je nach Schwankung
         if schwankung <= 2:
             self.main_window.lblTrendText.setText("Dein Zyklus wird stabiler  📈")
@@ -77,46 +128,107 @@ class AnalyseWindow(QMainWindow):
         else:
             self.main_window.lblTrendText.setText("Schwankungen nehmen zu  ⚠️")
 
-        # Prognosen eintragen
-        # TODO: Datum aus letzter Periode berechnen
-        self.main_window.lblPrognoseWert.setText(
-            "Voraussichtlich in 5 Tagen · 31. Mai"
-        )
-        self.main_window.lblPrognoseGenau.setText("Genauigkeit: 82 %")
-        self.main_window.lblEissprungWert.setText(
-            "Voraussichtlich 10.–15. Juni"
-        )
-        self.main_window.lblEissprungInfo.setText("Eissprung: ca. 12. Juni")
+        # Prognosen aus echten Periodendaten berechnen
+        if self.user_id is None:
+            self.main_window.lblPrognoseWert.setText("Noch keine Prognose verfügbar")
+            self.main_window.lblPrognoseGenau.setText("Genauigkeit: -")
+            self.main_window.lblEissprungWert.setText("Noch keine Eisprung-Prognose")
+            self.main_window.lblEissprungInfo.setText("Eisprung: -")
+        else:
+            periodenstarts = periodenstarts_laden(self.user_id)
 
-        print("Analyse geladen – Score: " + str(score))
+            if len(periodenstarts) == 0:
+                self.main_window.lblPrognoseWert.setText("Noch keine Periode eingetragen")
+                self.main_window.lblPrognoseGenau.setText("Genauigkeit: -")
+                self.main_window.lblEissprungWert.setText("Noch keine Eisprung-Prognose")
+                self.main_window.lblEissprungInfo.setText("Eisprung: -")
+
+            else:
+                prognose = calculate_cycle_prediction(periodenstarts)
+
+                naechste_periode = prognose["predicted_period_start"]
+                frueheste_periode = prognose["earliest_period_start"]
+                spaeteste_periode = prognose["latest_period_start"]
+                eisprung = prognose["predicted_ovulation"]
+
+                self.main_window.lblPrognoseWert.setText(
+                    "Voraussichtlich am " + naechste_periode.strftime("%d.%m.%Y")
+                )
+
+                # Einfache Genauigkeit: mehr gespeicherte Periodenstarts = höhere Genauigkeit
+                if len(periodenstarts) == 1:
+                    genauigkeit = 50
+                elif len(periodenstarts) == 2:
+                    genauigkeit = 65
+                elif len(periodenstarts) <= 4:
+                    genauigkeit = 75
+                else:
+                    genauigkeit = 85
+
+                self.main_window.lblPrognoseGenau.setText(
+                    "Genauigkeit: " + str(genauigkeit) + " %"
+                )
+
+                self.main_window.lblEissprungWert.setText(
+                    "Fruchtbare Phase ca. " +
+                    eisprung.strftime("%d.%m.%Y")
+                )
+
+                self.main_window.lblEissprungInfo.setText(
+                    "Eisprung: ca. " + eisprung.strftime("%d.%m.%Y")
+                )
 
     # ── Berechnungs-Hilfsmethoden ─────────────────────────────────────────────
 
     def zyklus_dauer_berechnen(self):
-        # Gibt die durchschnittliche Zyklusdauer zurück
-        # TODO: Aus Datenbankeinträgen berechnen
-        beispiel_zyklen = [27, 28, 29, 28, 27, 28]
+        if self.user_id is None:
+            return 28
+
+        zykluslaengen = zykluslaengen_laden(self.user_id)
+
+        if len(zykluslaengen) == 0:
+            return 28
+
+        letzte_zyklen = zykluslaengen[-6:]
+
         summe = 0
-        for laenge in beispiel_zyklen:
+        for laenge in letzte_zyklen:
             summe = summe + laenge
-        return summe // len(beispiel_zyklen)
+
+        return round(summe / len(letzte_zyklen))
 
     def schwankung_berechnen(self):
-        # Gibt die Schwankungsbreite zurück (Max minus Min, halbiert)
-        # TODO: Aus Datenbankeinträgen berechnen
-        beispiel_zyklen = [27, 28, 29, 28, 27, 28]
-        maximum = max(beispiel_zyklen)
-        minimum = min(beispiel_zyklen)
+        if self.user_id is None:
+            return 0
+
+        zykluslaengen = zykluslaengen_laden(self.user_id)
+
+        if len(zykluslaengen) == 0:
+            return 0
+
+        letzte_zyklen = zykluslaengen[-6:]
+
+        maximum = max(letzte_zyklen)
+        minimum = min(letzte_zyklen)
+
         return (maximum - minimum) // 2
 
     def periode_dauer_berechnen(self):
-        # Gibt die durchschnittliche Periodendauer zurück
-        # TODO: Aus Datenbankeinträgen berechnen
-        beispiel_perioden = [4, 4, 5, 3, 4, 4]
+        if self.user_id is None:
+            return 0
+
+        perioden_dauern = perioden_dauer_laden(self.user_id)
+
+        if len(perioden_dauern) == 0:
+            return 0
+
+        letzte_perioden = perioden_dauern[-6:]
+
         summe = 0
-        for dauer in beispiel_perioden:
+        for dauer in letzte_perioden:
             summe = summe + dauer
-        return summe // len(beispiel_perioden)
+
+        return round(summe / len(letzte_perioden))
 
     def score_berechnen(self, zyklus_dauer, schwankung):
         # Berechnet den Zyklus-Regelmäßigkeits-Score (0–100)
@@ -167,25 +279,34 @@ class AnalyseWindow(QMainWindow):
     # ── Navigation ────────────────────────────────────────────────────────────
 
     def on_nav_home(self):
-        # TODO: Dashboard öffnen
-        print("Navigation: Start")
+        # Lokaler Import verhindert Circular-Import zwischen analyse.py und dashboard.py
+        from dashboard import DashboardWindow
+
+        self.dashboard = DashboardWindow(
+            user_id=self.user_id
+        )
+        self.dashboard.show()
         self.close()
 
     def on_nav_kalender(self):
-        # TODO: Kalender-Ansicht öffnen
-        print("Navigation: Kalender")
+        self.kalender = KalenderWindow(user_id=self.user_id)
+        self.kalender.show()
+        self.close()
 
     def on_nav_eintrag(self):
-        # TODO: Eintrag-Fenster öffnen
-        print("Navigation: Eintrag")
+        self.eintrag = EintragWindow(user_id=self.user_id)
+        self.eintrag.show()
+        self.close()
 
     def on_nav_arzt(self):
-        # TODO: Arzttermin-Fenster öffnen
-        print("Navigation: Arzt")
+        self.arzt = ArztterminWindow(user_id=self.user_id)
+        self.arzt.show()
+        self.close()
 
     def on_nav_analyse(self):
+        pass
         # Bereits auf der Analyse-Seite
-        print("Navigation: Analyse (aktiv)")
+        print("Analyse bereits geöffnet")
 
 
 # ── Programm starten ──────────────────────────────────────────────────────────

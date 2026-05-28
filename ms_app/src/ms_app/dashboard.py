@@ -17,7 +17,7 @@ from cycle_ring_widget import CycleRingWidget
 from datetime import date
 from arzttermin import ArztterminWindow
 from kalender import KalenderWindow
-
+from analyse import AnalyseWindow
 
 # ═══════════════════════════════════════════════════════════════
 # DASHBOARD
@@ -184,8 +184,13 @@ class DashboardWindow(QMainWindow):
         self.arzt_fenster.show()
 
     def on_nav_analyse(self):
-        # TODO: Analyse-Fenster öffnen
         print("Navigation: Analyse")
+
+        self.analyse_fenster = AnalyseWindow(
+            user_id=self.user_id
+        )
+
+        self.analyse_fenster.show()
 
     def zyklus_prognose_laden(self):
         if self.user_id is None:
