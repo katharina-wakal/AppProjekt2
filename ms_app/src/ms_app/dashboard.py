@@ -22,6 +22,7 @@ from analyse import AnalyseWindow
 # ═══════════════════════════════════════════════════════════════
 # DASHBOARD
 # ═══════════════════════════════════════════════════════════════
+from wissen_fenster import WissenFenster
 
 class DashboardWindow(QMainWindow):
 
@@ -82,6 +83,10 @@ class DashboardWindow(QMainWindow):
         self.main_window.navTracken.clicked.connect(self.on_nav_eintrag)
         self.main_window.navArzt.clicked.connect(self.on_nav_arzt)
         self.main_window.navAnalyse.clicked.connect(self.on_nav_analyse)
+
+        self.main_window.newsCard1.mousePressEvent = lambda event: self.oeffne_endometriose()
+        self.main_window.newsCard2.mousePressEvent = lambda event: self.oeffne_sti()
+        self.main_window.newsCard3.mousePressEvent = lambda event: self.oeffne_zyklus()
 
     # ── Navbar immer am unteren Rand ─────────────────────────────────────
 
@@ -223,6 +228,27 @@ class DashboardWindow(QMainWindow):
         self.main_window.lblCyclePhase.setText(
             "Eisprung ca. am " + eisprung.strftime("%d.%m.%Y")
         )
+
+    def oeffne_endometriose(self):
+        self.wissen_fenster = WissenFenster(
+            "Endometriose",
+            "endometriosis symptoms diagnosis"
+        )
+        self.wissen_fenster.show()
+
+    def oeffne_sti(self):
+        self.wissen_fenster = WissenFenster(
+            "STI & Schutz",
+            "sexually transmitted infections prevention"
+        )
+        self.wissen_fenster.show()
+
+    def oeffne_zyklus(self):
+        self.wissen_fenster = WissenFenster(
+            "Zyklus & PMS",
+            "premenstrual syndrome menstrual cycle"
+        )
+        self.wissen_fenster.show()
 
 
 
