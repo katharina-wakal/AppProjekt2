@@ -7,13 +7,14 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 import hashlib
 from database import login_pruefen
 from dashboard import DashboardWindow
+from register import RegisterWindow
 
 class LoginWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
 
-        # .ui-Datei laden – genau wie in VL 4 gezeigt
+        # .ui-Datei laden
         working_dir = str(pathlib.Path(__file__).parent.resolve())
         self.main_window = uic.loadUi(working_dir + "/login_femhealth.ui", self)
 
@@ -54,16 +55,15 @@ class LoginWindow(QMainWindow):
         self.close()
 
     def on_register(self):
-        # Registrierungsfenster öffnen
-        # TODO: from register_femhealth import RegisterWindow
-        print("Registrieren geöffnet")
+        self.register_window = RegisterWindow()
+        self.register_window.show()
+        self.close()
 
     def on_passwort_vergessen(self):
         QMessageBox.information(
             self,
             "Passwort vergessen",
-            "Bitte wende dich an den Support."
-        )
+            "Bitte wende dich an den Support.")
 
     # ── Hilfsmethode ─────────────────────────────────────────────────────────
 

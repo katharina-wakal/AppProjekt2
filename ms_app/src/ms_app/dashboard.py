@@ -83,16 +83,6 @@ class DashboardWindow(QMainWindow):
         self.main_window.navArzt.clicked.connect(self.on_nav_arzt)
         self.main_window.navAnalyse.clicked.connect(self.on_nav_analyse)
 
-        # Filter-Chips (nur einer aktiv gleichzeitig)
-        self.filter_chips = [
-            self.main_window.chipAlle,
-            self.main_window.chipEndo,
-            self.main_window.chipSTI,
-            self.main_window.chipZyklus,
-        ]
-        for chip in self.filter_chips:
-            chip.clicked.connect(self.on_chip_gewaehlt)
-
     # ── Navbar immer am unteren Rand ─────────────────────────────────────
 
     def navbar_fixieren(self):
@@ -147,14 +137,6 @@ class DashboardWindow(QMainWindow):
         # TODO: Ersetze URL durch euren echten TikTok-Link
         webbrowser.open("https://www.tiktok.com/")
         print("TikTok geöffnet")
-
-    def on_chip_gewaehlt(self):
-        # Nur einen Chip gleichzeitig aktiv halten
-        geklickt = self.sender()
-        for chip in self.filter_chips:
-            if chip is not geklickt:
-                chip.setChecked(False)
-        print("Filter: " + geklickt.text())
 
     # ── Navigation ─────────────────────────────────────────────────────────
 
