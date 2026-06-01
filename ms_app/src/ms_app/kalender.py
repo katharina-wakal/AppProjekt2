@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QLabel, QPushButton,
     QGridLayout, QVBoxLayout, QMessageBox
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from database import perioden_tage_laden, eintrag_fuer_tag_laden
 from datetime import datetime
 
@@ -73,14 +73,37 @@ class KalenderWindow(QMainWindow):
         haupt_layout.setSpacing(0)
 
         # Aktuellen und nächsten Monat anzeigen
-        heute     = date.today()
-        naechster = (heute.replace(day=1) + timedelta(days=32)).replace(day=1)
+        # Mehrere Monate anzeigen: 6 Monate zurück bis 6 Monate voraus
+        heute = date.today()
+        start_monat = heute.replace(day=1)
 
-        self.monat_hinzufuegen(haupt_layout, heute.year, heute.month)
-        self.monat_hinzufuegen(haupt_layout, naechster.year, naechster.month)
+        # 6 Monate zurückgehen
+        for i in range(6):
+            start_monat = (start_monat - timedelta(days=1)).replace(day=1)
+
+        aktueller_monat = start_monat
+
+        for i in range(13):
+            self.monat_hinzufuegen(
+                haupt_layout,
+                aktueller_monat.year,
+                aktueller_monat.month
+            )
+
+            aktueller_monat = (
+                    aktueller_monat.replace(day=28) + timedelta(days=4)
+            ).replace(day=1)
 
         haupt_layout.addStretch()
         self.main_window.calContents.setLayout(haupt_layout)
+
+        # Nach dem Aufbau automatisch zum aktuellen Monat scrollen
+        # Nach dem Anzeigen automatisch ungefähr zum aktuellen Monat scrollen
+        QTimer.singleShot(100, self.zum_aktuellen_monat_scrollen)
+
+    def zum_aktuellen_monat_scrollen(self):
+        scrollbar = self.main_window.calScrollArea.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum() // 2)
 
     def monat_hinzufuegen(self, eltern_layout, jahr, monat):
         # Monatsname als Label
@@ -292,6 +315,8 @@ class KalenderWindow(QMainWindow):
 
     def zeige_fehler(self, text):
         QMessageBox.warning(self, "Fehler", text)
+
+
 
 
 # ── Programm starten ──────────────────────────────────────────────────────────
