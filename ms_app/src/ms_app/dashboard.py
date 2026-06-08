@@ -7,6 +7,9 @@ import webbrowser
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
+
+import webbrowser
 
 # Settings-Fenster importieren – Datei muss im selben Ordner liegen
 from settings import SettingsWindow
@@ -18,6 +21,7 @@ from datetime import date
 from arzttermin import ArztterminWindow
 from kalender import KalenderWindow
 from analyse import AnalyseWindow
+
 
 # ═══════════════════════════════════════════════════════════════
 # DASHBOARD
@@ -39,6 +43,18 @@ class DashboardWindow(QMainWindow):
         working_dir = str(pathlib.Path(__file__).parent.resolve())
         self.main_window = uic.loadUi(
             working_dir + "/dashboard.ui", self
+        )
+
+        #Thumbnail für Youtube Video
+        pixmap = QPixmap(
+            working_dir + "/resources/youtube_thumbnail.png"
+        )
+
+        self.main_window.lblYoutubeThumbnail.setPixmap(
+            pixmap.scaled(
+                self.main_window.lblYoutubeThumbnail.size(),
+                Qt.AspectRatioMode.KeepAspectRatioByExpanding
+            )
         )
 
         # Platzhalter verstecken
@@ -89,6 +105,9 @@ class DashboardWindow(QMainWindow):
         self.main_window.newsCard1.mousePressEvent = lambda event: self.oeffne_endometriose()
         self.main_window.newsCard2.mousePressEvent = lambda event: self.oeffne_sti()
         self.main_window.newsCard3.mousePressEvent = lambda event: self.oeffne_zyklus()
+
+        # Youtube-Video-Button
+        self.main_window.buttonYoutube.clicked.connect(self.on_youtube)
 
     # ── Navbar immer am unteren Rand ─────────────────────────────────────
 
@@ -145,6 +164,9 @@ class DashboardWindow(QMainWindow):
         # TODO: Ersetze URL durch euren echten TikTok-Link
         webbrowser.open("https://www.tiktok.com/")
         print("TikTok geöffnet")
+
+    def on_youtube(self):
+        webbrowser.open("https://www.youtube.com/watch?v=tdj2CIzI7Hs")
 
     # ── Navigation ─────────────────────────────────────────────────────────
 

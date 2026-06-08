@@ -9,6 +9,7 @@ from database import login_pruefen
 from dashboard import DashboardWindow
 from register import RegisterWindow
 
+
 class LoginWindow(QMainWindow):
 
     def __init__(self):
