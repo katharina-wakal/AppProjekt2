@@ -253,8 +253,13 @@ class EintragWindow(QMainWindow):
         )
 
     def on_schliessen(self):
-        # Zurück zum Kalender ohne zu speichern
-        print("Eintrag geschlossen ohne Speichern")
+        from dashboard import DashboardWindow
+
+        self.dashboard = DashboardWindow(
+            user_id=self.user_id
+        )
+
+        self.dashboard.show()
         self.close()
 
     def on_speichern(self):

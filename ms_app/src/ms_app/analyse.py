@@ -253,7 +253,13 @@ class AnalyseWindow(QMainWindow):
     # ── Slots ─────────────────────────────────────────────────────────────────
 
     def on_zurueck(self):
-        # Zurück zum Dashboard
+        from dashboard import DashboardWindow
+
+        self.dashboard = DashboardWindow(
+            user_id=self.user_id
+        )
+
+        self.dashboard.show()
         self.close()
 
     def on_freischalten(self):

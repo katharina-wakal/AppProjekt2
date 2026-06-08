@@ -11,7 +11,7 @@ from PyQt6.QtCore import Qt
 # Settings-Fenster importieren – Datei muss im selben Ordner liegen
 from settings import SettingsWindow
 from eintrag import EintragWindow
-from database import periodenstarts_laden
+from database import periodenstarts_laden, user_vorname_laden
 from calculation import calculate_cycle_prediction
 from cycle_ring_widget import CycleRingWidget
 from datetime import date
@@ -32,6 +32,8 @@ class DashboardWindow(QMainWindow):
         self.vorname = vorname
         self.user_id = user_id
 
+        if not self.vorname and self.user_id is not None:
+            self.vorname = user_vorname_laden(self.user_id)
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
         working_dir = str(pathlib.Path(__file__).parent.resolve())
@@ -122,6 +124,7 @@ class DashboardWindow(QMainWindow):
         # vom Garbage Collector geschlossen wird
         self.settings_fenster = SettingsWindow()
         self.settings_fenster.show()
+        self.close()
 
     def on_help(self):
         QMessageBox.information(
@@ -153,6 +156,7 @@ class DashboardWindow(QMainWindow):
         )
 
         self.kalender_fenster.show()
+        self.close()
 
     def on_nav_eintrag(self):
         self.eintrag_fenster = EintragWindow(
@@ -160,6 +164,7 @@ class DashboardWindow(QMainWindow):
         )
 
         self.eintrag_fenster.show()
+        self.close()
 
     def on_nav_arzt(self):
         print("Navigation: Arzt")
@@ -169,6 +174,7 @@ class DashboardWindow(QMainWindow):
         )
 
         self.arzt_fenster.show()
+        self.close()
 
     def on_nav_analyse(self):
         print("Navigation: Analyse")
@@ -178,6 +184,7 @@ class DashboardWindow(QMainWindow):
         )
 
         self.analyse_fenster.show()
+        self.close()
 
     def zyklus_prognose_laden(self):
         if self.user_id is None:

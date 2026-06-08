@@ -523,6 +523,25 @@ def perioden_dauer_laden(user_id):
 
     return dauern
 
+def user_vorname_laden(user_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT first_name
+        FROM users
+        WHERE id = ?
+    """, (user_id,))
+
+    daten = cursor.fetchone()
+
+    connection.close()
+
+    if daten is None:
+        return ""
+
+    return daten[0]
+
 
 
 

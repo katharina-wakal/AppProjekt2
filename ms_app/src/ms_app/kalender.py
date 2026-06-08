@@ -13,6 +13,7 @@ from database import perioden_tage_laden, eintrag_fuer_tag_laden
 from datetime import datetime
 
 
+
 class KalenderWindow(QMainWindow):
 
     def __init__(self, user_id=None):
@@ -309,6 +310,14 @@ class KalenderWindow(QMainWindow):
     def on_zurueck(self):
         # Zurück zum Dashboard
         print("Zurück zum Dashboard")
+
+        from dashboard import DashboardWindow
+
+        self.dashboard = DashboardWindow(
+            user_id=self.user_id
+        )
+
+        self.dashboard.show()
         self.close()
 
     # ── Hilfsmethode ─────────────────────────────────────────────────────────
