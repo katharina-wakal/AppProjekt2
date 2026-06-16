@@ -684,6 +684,211 @@ def account_loeschen(user_id):
     finally:
         connection.close()
 
+def tracking_daten_laden(user_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            entry_date,
+            period_strength,
+            spotting,
+            feelings,
+            pain,
+            sex_life,
+            note,
+            discharge,
+            skin,
+            digestion,
+            stool,
+            tests,
+            pill,
+            spiral,
+            injection,
+            implant,
+            patch,
+            ring
+        FROM daily_entries
+        WHERE user_id = ?
+        ORDER BY entry_date ASC
+    """, (user_id,))
+
+    daten = cursor.fetchall()
+    connection.close()
+
+    return daten
+
+
+def alle_nutzerdaten_laden(user_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    # Accountdaten
+    cursor.execute("""
+        SELECT
+            id,
+            first_name,
+            last_name,
+            birth_date,
+            email,
+            privacy_accepted,
+            newsletter,
+            created_at
+        FROM users
+        WHERE id = ?
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    # Trackingdaten
+    cursor.execute("""
+        SELECT
+            entry_date,
+            period_strength,
+            spotting,
+            feelings,
+            pain,
+            sex_life,
+            note,
+            discharge,
+            skin,
+            digestion,
+            stool,
+            tests,
+            pill,
+            spiral,
+            injection,
+            implant,
+            patch,
+            ring,
+            created_at
+        FROM daily_entries
+        WHERE user_id = ?
+        ORDER BY entry_date ASC
+    """, (user_id,))
+
+    tracking_daten = cursor.fetchall()
+
+    # Arzttermine
+    cursor.execute("""
+        SELECT
+            doctor_name,
+            doctor_type,
+            location,
+            appointment_date,
+            appointment_time,
+            reminder,
+            notes,
+            preparation,
+            result,
+            follow_up_needed,
+            created_at
+        FROM doctor_appointments
+        WHERE user_id = ?
+        ORDER BY appointment_date ASC, appointment_time ASC
+    """, (user_id,))
+
+    arzttermine = cursor.fetchall()
+
+    # App-Einstellungen
+    cursor.execute("""
+        SELECT
+            face_id_enabled,
+            hide_widget_data,
+            app_lock_enabled,
+            language,
+            design_mode,
+            units,
+            notifications_enabled,
+            created_at,
+            updated_at
+        FROM user_settings
+        WHERE user_id = ?
+    """, (user_id,))
+
+    einstellungen = cursor.fetchone()
+
+    connection.close()
+
+    if user is None:
+        return None
+
+    user_spalten = [
+        "id",
+        "first_name",
+        "last_name",
+        "birth_date",
+        "email",
+        "privacy_accepted",
+        "newsletter",
+        "created_at"
+    ]
+
+    tracking_spalten = [
+        "entry_date",
+        "period_strength",
+        "spotting",
+        "feelings",
+        "pain",
+        "sex_life",
+        "note",
+        "discharge",
+        "skin",
+        "digestion",
+        "stool",
+        "tests",
+        "pill",
+        "spiral",
+        "injection",
+        "implant",
+        "patch",
+        "ring",
+        "created_at"
+    ]
+
+    arzttermin_spalten = [
+        "doctor_name",
+        "doctor_type",
+        "location",
+        "appointment_date",
+        "appointment_time",
+        "reminder",
+        "notes",
+        "preparation",
+        "result",
+        "follow_up_needed",
+        "created_at"
+    ]
+
+    einstellungen_spalten = [
+        "face_id_enabled",
+        "hide_widget_data",
+        "app_lock_enabled",
+        "language",
+        "design_mode",
+        "units",
+        "notifications_enabled",
+        "created_at",
+        "updated_at"
+    ]
+
+    return {
+        "account": dict(zip(user_spalten, user)),
+        "daily_entries": [
+            dict(zip(tracking_spalten, eintrag))
+            for eintrag in tracking_daten
+        ],
+        "doctor_appointments": [
+            dict(zip(arzttermin_spalten, termin))
+            for termin in arzttermine
+        ],
+        "settings": (
+            dict(zip(einstellungen_spalten, einstellungen))
+            if einstellungen is not None
+            else {}
+        )
+    }
+
 
 
 

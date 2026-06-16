@@ -5,13 +5,15 @@ import sys
 import pathlib
 import webbrowser
 from PyQt6 import uic
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, Qt, QTimer
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QInputDialog, QLineEdit,
-                             QDialog, QFormLayout, QVBoxLayout, QPushButton)
+                             QDialog, QFormLayout, QVBoxLayout, QPushButton, QWidget, QFileDialog)
 import re
 from database import (user_email_laden,email_existiert,email_aendern, passwort_pruefen, passwort_aendern,
-                      account_loeschen)
+                      account_loeschen, tracking_daten_laden, alle_nutzerdaten_laden)
 import hashlib
+import csv
+import json
 
 class SettingsWindow(QMainWindow):
 
@@ -19,6 +21,12 @@ class SettingsWindow(QMainWindow):
 
     def __init__(self, user_id=None,s_show_main_page=None):
         super().__init__()
+
+        self.setAttribute(
+            Qt.WidgetAttribute.WA_DeleteOnClose,
+            True
+        )
+
         self.user_id = user_id
         self.s_show_main_page = s_show_main_page
 
@@ -27,6 +35,20 @@ class SettingsWindow(QMainWindow):
         self.main_window = uic.loadUi(
             working_dir + "/settings.ui", self
         )
+
+        # Scrollbereich konfigurieren
+        self.main_window.scrollArea.setWidgetResizable(False)
+
+        self.main_window.scrollArea.setVerticalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAsNeeded
+        )
+
+        self.main_window.scrollArea.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        )
+
+        # Erst ausführen, nachdem die UI vollständig aufgebaut wurde
+        QTimer.singleShot(0, self.scrollbereich_anpassen)
 
         #Passwort-Eingabe als Punkte anzeigen
         self.main_window.txtPwAlt.setEchoMode(
@@ -491,21 +513,150 @@ class SettingsWindow(QMainWindow):
     # ── Datenschutz-Slots ──────────────────────────────────────────────────
 
     def on_daten_download(self):
-        # TODO: Daten-Export als JSON/CSV starten
-        QMessageBox.information(
+        if self.user_id is None:
+            self.zeige_fehler(
+                "Der angemeldete Benutzer konnte nicht ermittelt werden."
+            )
+            return
+
+        daten = alle_nutzerdaten_laden(self.user_id)
+
+        if daten is None:
+            self.zeige_fehler(
+                "Die gespeicherten Nutzerdaten konnten nicht geladen werden."
+            )
+            return
+
+        dateipfad, ausgewaehlter_filter = QFileDialog.getSaveFileName(
             self,
-            "Daten herunterladen",
-            "Deine Daten werden vorbereitet.\n"
-            "Du erhältst eine E-Mail mit dem Download-Link."
+            "Vollständige Datenkopie speichern",
+            "FemHealth_Datenkopie.json",
+            "JSON-Dateien (*.json)"
         )
 
+        if not dateipfad:
+            return
+
+        if not dateipfad.lower().endswith(".json"):
+            dateipfad += ".json"
+
+        try:
+            with open(
+                    dateipfad,
+                    mode="w",
+                    encoding="utf-8"
+            ) as json_datei:
+
+                json.dump(
+                    daten,
+                    json_datei,
+                    ensure_ascii=False,
+                    indent=4
+                )
+
+            QMessageBox.information(
+                self,
+                "Download erfolgreich",
+                "Deine vollständige Datenkopie wurde erfolgreich gespeichert."
+            )
+
+        except OSError as fehler:
+            print("Fehler beim Speichern der Datenkopie:", fehler)
+
+            self.zeige_fehler(
+                "Die Datenkopie konnte nicht gespeichert werden."
+            )
+
+
     def on_daten_export(self):
-        # TODO: Export-Dialog öffnen (z. B. als CSV oder PDF)
-        QMessageBox.information(
+        if self.user_id is None:
+            self.zeige_fehler(
+                "Der angemeldete Benutzer konnte nicht ermittelt werden."
+            )
+            return
+
+        daten = tracking_daten_laden(self.user_id)
+
+        if len(daten) == 0:
+            QMessageBox.information(
+                self,
+                "Keine Trackingdaten",
+                "Es sind noch keine Trackingdaten zum Exportieren vorhanden."
+            )
+            return
+
+        dateipfad, ausgewaehlter_filter = QFileDialog.getSaveFileName(
             self,
-            "Daten exportieren",
-            "Export als CSV/PDF – hier erscheint der Export-Dialog."
+            "Trackingdaten exportieren",
+            "FemHealth_Trackingdaten.csv",
+            "CSV-Dateien (*.csv)"
         )
+
+        # Nutzerin hat den Dialog abgebrochen
+        if not dateipfad:
+            return
+
+        # Dateiendung automatisch ergänzen
+        if not dateipfad.lower().endswith(".csv"):
+            dateipfad += ".csv"
+
+        spaltennamen = [
+            "Datum",
+            "Periodenstärke",
+            "Schmierblutung",
+            "Gefühle",
+            "Schmerzen",
+            "Sexualleben",
+            "Notiz",
+            "Ausfluss",
+            "Haut",
+            "Verdauung",
+            "Stuhlgang",
+            "Tests",
+            "Pille",
+            "Spirale",
+            "Spritze",
+            "Implantat",
+            "Pflaster",
+            "Ring"
+        ]
+
+        try:
+            with open(
+                    dateipfad,
+                    mode="w",
+                    newline="",
+                    encoding="utf-8-sig"
+            ) as csv_datei:
+
+                writer = csv.writer(
+                    csv_datei,
+                    delimiter=";"
+                )
+
+                writer.writerow(spaltennamen)
+
+                for zeile in daten:
+                    # None-Werte durch leere Felder ersetzen
+                    bereinigte_zeile = [
+                        wert if wert is not None else ""
+                        for wert in zeile
+                    ]
+
+                    writer.writerow(bereinigte_zeile)
+
+            QMessageBox.information(
+                self,
+                "Export erfolgreich",
+                "Deine Trackingdaten wurden erfolgreich exportiert."
+            )
+
+        except OSError as fehler:
+            print("Fehler beim Exportieren:", fehler)
+
+            self.zeige_fehler(
+                "Die Datei konnte nicht gespeichert werden."
+            )
 
     def on_daten_loeschen(self):
         antwort = QMessageBox.question(
@@ -541,6 +692,39 @@ class SettingsWindow(QMainWindow):
     def zeige_fehler(self, text):
         QMessageBox.warning(self, "Fehler", text)
 
+    def scrollbereich_anpassen(self):
+        inhalt = self.main_window.scrollArea.widget()
+
+        # Alle sichtbaren direkten Elemente im Scroll-Inhalt prüfen
+        unterste_position = 0
+
+        for widget in inhalt.findChildren(
+                QWidget,
+                options=Qt.FindChildOption.FindDirectChildrenOnly
+        ):
+            if widget.isVisible():
+                unterkante = widget.y() + widget.height()
+                unterste_position = max(
+                    unterste_position,
+                    unterkante
+                )
+
+        # Etwas Abstand unter dem letzten Element
+        neue_hoehe = unterste_position + 40
+
+        viewport_breite = (
+            self.main_window.scrollArea.viewport().width()
+        )
+
+        inhalt.setMinimumSize(
+            viewport_breite,
+            neue_hoehe
+        )
+
+        inhalt.resize(
+            viewport_breite,
+            neue_hoehe
+        )
 
 # ── Programm starten (nur zum direkten Testen der Settings-Seite) ──────────
 

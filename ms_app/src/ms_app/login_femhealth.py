@@ -15,6 +15,7 @@ class LoginWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+
         # .ui-Datei laden
         working_dir = str(pathlib.Path(__file__).parent.resolve())
         self.main_window = uic.loadUi(working_dir + "/login_femhealth.ui", self)
