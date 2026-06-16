@@ -135,14 +135,46 @@ class DashboardWindow(QMainWindow):
         self.navbar_fixieren()
         super().resizeEvent(event)
 
-    # ── Slots ──────────────────────────────────────────────────────────────
 
     def on_settings(self):
-        # ⚙ Einstellungs-Fenster öffnen
-        # Referenz wird in self gespeichert damit das Fenster nicht sofort
-        # vom Garbage Collector geschlossen wird
-        self.settings_fenster = SettingsWindow()
+        # Einstellungsfenster erstellen
+        self.settings_fenster = SettingsWindow(
+            user_id=self.user_id
+        )
+
+        # Beim Abmelden zurück zum Login wechseln
+        self.settings_fenster.logout_requested.connect(
+            self.on_logout_requested
+        )
+
+        # Beim Schließen der Einstellungen das Dashboard wieder anzeigen
+        self.settings_fenster.destroyed.connect(
+            self.dashboard_wieder_anzeigen
+        )
+
         self.settings_fenster.show()
+
+        # Dashboard nur verstecken, nicht endgültig schließen
+        self.hide()
+
+    def dashboard_wieder_anzeigen(self):
+        # Nur wieder anzeigen, wenn nicht gerade abgemeldet wurde
+        if not getattr(self, "wird_abgemeldet", False):
+            self.show()
+
+    def on_logout_requested(self):
+        self.wird_abgemeldet = True
+
+        # Import an deinen tatsächlichen Dateinamen anpassen
+        from login_femhealth import LoginWindow
+
+        self.login_fenster = LoginWindow()
+        self.login_fenster.show()
+
+        # Einstellungen und Dashboard schließen
+        if hasattr(self, "settings_fenster"):
+            self.settings_fenster.close()
+
         self.close()
 
     def on_help(self):

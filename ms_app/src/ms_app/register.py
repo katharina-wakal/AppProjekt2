@@ -5,10 +5,13 @@ import sys
 import pathlib
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt6.QtCore import pyqtSignal
 from database import user_anlegen
 import hashlib
 
 class RegisterWindow(QMainWindow):
+
+    login_requested = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -91,8 +94,13 @@ class RegisterWindow(QMainWindow):
         self.on_zurueck_zum_login()
 
     def on_zurueck_zum_login(self):
-        # Zurück zum Login-Fenster
         print("Zurück zum Login")
+
+        # Dem bestehenden Loginfenster mitteilen,
+        # dass es wieder angezeigt werden soll
+        self.login_requested.emit()
+
+        # Registrierungsfenster schließen
         self.close()
 
     def passwort_regeln_pruefen(self):

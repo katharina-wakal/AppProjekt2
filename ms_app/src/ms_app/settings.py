@@ -5,13 +5,21 @@ import sys
 import pathlib
 import webbrowser
 from PyQt6 import uic
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QInputDialog, QLineEdit,
+                             QDialog, QFormLayout, QVBoxLayout, QPushButton)
+import re
+from database import (user_email_laden,email_existiert,email_aendern, passwort_pruefen, passwort_aendern,
+                      account_loeschen)
+import hashlib
 
 class SettingsWindow(QMainWindow):
 
-    def __init__(self, s_show_main_page=None):
+    logout_requested = pyqtSignal()
+
+    def __init__(self, user_id=None,s_show_main_page=None):
         super().__init__()
+        self.user_id = user_id
         self.s_show_main_page = s_show_main_page
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
@@ -19,6 +27,18 @@ class SettingsWindow(QMainWindow):
         self.main_window = uic.loadUi(
             working_dir + "/settings.ui", self
         )
+
+        #Passwort-Eingabe als Punkte anzeigen
+        self.main_window.txtPwAlt.setEchoMode(
+            QLineEdit.EchoMode.Password
+        )
+        self.main_window.txtPwNeu.setEchoMode(
+            QLineEdit.EchoMode.Password
+        )
+        self.main_window.txtPwNeu2.setEchoMode(
+            QLineEdit.EchoMode.Password
+        )
+
 
         # Passwort-Felder zu Beginn versteckt
         self.pw_offen = False
@@ -31,8 +51,7 @@ class SettingsWindow(QMainWindow):
 
         # ── Account ───────────────────────────────────────────────────────
         self.main_window.btnEmailAendern.clicked.connect(self.on_email_aendern)
-        self.main_window.btnPasswortAendern.clicked.connect(self.on_passwort_toggle)
-        self.main_window.btnPwSpeichern.clicked.connect(self.on_passwort_speichern)
+        self.main_window.btnPasswortAendern.clicked.connect(self.on_passwort_dialog)
         self.main_window.btnEmailVerify.clicked.connect(self.on_email_verify)
         self.main_window.btnAbmelden.clicked.connect(self.on_abmelden)
         self.main_window.btnLoeschen.clicked.connect(self.on_account_loeschen)
@@ -104,80 +123,227 @@ class SettingsWindow(QMainWindow):
             widget.setVisible(False)
             widget.setMaximumHeight(0)
 
-    def passwort_felder_zeigen(self):
-        # Felder aufklappen und untereinander positionieren
-        y_start = 248
-        abstand = 50
-        hoehe   = 40
+    def on_passwort_dialog(self):
+        if self.user_id is None:
+            self.zeige_fehler(
+                "Der angemeldete Benutzer konnte nicht ermittelt werden."
+            )
+            return
 
-        felder = [
-            self.main_window.txtPwAlt,
-            self.main_window.txtPwNeu,
-            self.main_window.txtPwNeu2,
-        ]
-        for i in range(len(felder)):
-            felder[i].setVisible(True)
-            felder[i].setMaximumHeight(hoehe)
-            felder[i].setGeometry(14, y_start + i * abstand, 339, hoehe)
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Passwort ändern")
+        dialog.setMinimumWidth(380)
 
-        btn = self.main_window.btnPwSpeichern
-        btn.setVisible(True)
-        btn.setMaximumHeight(40)
-        btn.setGeometry(14, y_start + 3 * abstand, 339, 40)
+        haupt_layout = QVBoxLayout(dialog)
+        formular = QFormLayout()
 
-        # Karte etwas größer machen damit Felder reinpassen
-        karte = self.main_window.cardAccount
-        karte.setGeometry(10, 40, 367, 490)
+        txt_alt = QLineEdit()
+        txt_alt.setPlaceholderText("Aktuelles Passwort")
+        txt_alt.setEchoMode(QLineEdit.EchoMode.Password)
+
+        txt_neu = QLineEdit()
+        txt_neu.setPlaceholderText("Neues Passwort")
+        txt_neu.setEchoMode(QLineEdit.EchoMode.Password)
+
+        txt_neu2 = QLineEdit()
+        txt_neu2.setPlaceholderText("Neues Passwort wiederholen")
+        txt_neu2.setEchoMode(QLineEdit.EchoMode.Password)
+
+        formular.addRow("Aktuelles Passwort:", txt_alt)
+        formular.addRow("Neues Passwort:", txt_neu)
+        formular.addRow("Passwort wiederholen:", txt_neu2)
+
+        haupt_layout.addLayout(formular)
+
+        btn_speichern = QPushButton("Passwort speichern")
+        btn_abbrechen = QPushButton("Abbrechen")
+
+        haupt_layout.addWidget(btn_speichern)
+        haupt_layout.addWidget(btn_abbrechen)
+
+        btn_abbrechen.clicked.connect(dialog.reject)
+
+        def passwort_speichern():
+            alt = txt_alt.text()
+            neu = txt_neu.text()
+            neu2 = txt_neu2.text()
+
+            if not alt or not neu or not neu2:
+                QMessageBox.warning(
+                    dialog,
+                    "Fehler",
+                    "Bitte alle Passwortfelder ausfüllen."
+                )
+                return
+
+            if neu != neu2:
+                QMessageBox.warning(
+                    dialog,
+                    "Fehler",
+                    "Die neuen Passwörter stimmen nicht überein."
+                )
+                return
+
+            if len(neu) < 6:
+                QMessageBox.warning(
+                    dialog,
+                    "Fehler",
+                    "Das neue Passwort muss mindestens 6 Zeichen haben."
+                )
+                return
+
+            if alt == neu:
+                QMessageBox.warning(
+                    dialog,
+                    "Fehler",
+                    "Das neue Passwort muss sich vom bisherigen Passwort unterscheiden."
+                )
+                return
+
+            alter_passwort_hash = hashlib.sha256(
+                alt.encode()
+            ).hexdigest()
+
+            if not passwort_pruefen(
+                    self.user_id,
+                    alter_passwort_hash
+            ):
+                QMessageBox.warning(
+                    dialog,
+                    "Fehler",
+                    "Das bisherige Passwort ist nicht korrekt."
+                )
+                return
+
+            neuer_passwort_hash = hashlib.sha256(
+                neu.encode()
+            ).hexdigest()
+
+            erfolgreich = passwort_aendern(
+                self.user_id,
+                neuer_passwort_hash
+            )
+
+            if not erfolgreich:
+                QMessageBox.warning(
+                    dialog,
+                    "Fehler",
+                    "Das Passwort konnte nicht geändert werden."
+                )
+                return
+
+            QMessageBox.information(
+                dialog,
+                "Passwort geändert",
+                "Dein Passwort wurde erfolgreich geändert."
+            )
+
+            dialog.accept()
+
+        btn_speichern.clicked.connect(passwort_speichern)
+
+        dialog.exec()
 
     # ── Account-Slots ──────────────────────────────────────────────────────
 
     def on_zurueck(self):
         self.close()
 
-        if self.s_show_main_page is not None:
-            self.s_show_main_page.emit()
-
     def on_email_aendern(self):
-        # TODO: E-Mail-Änderungs-Dialog einbauen
-        QMessageBox.information(
+        if self.user_id is None:
+            self.zeige_fehler(
+                "Der angemeldete Benutzer konnte nicht ermittelt werden."
+            )
+            return
+
+        aktuelle_email = user_email_laden(self.user_id)
+
+        neue_email, bestaetigt = QInputDialog.getText(
             self,
             "E-Mail ändern",
-            "Bitte gib deine neue E-Mail-Adresse ein.\n(TODO: Eingabefeld einblenden)"
+            "Bitte gib deine neue E-Mail-Adresse ein:",
+            text=aktuelle_email
         )
 
-    def on_passwort_toggle(self):
-        # Passwortfelder ein- oder ausklappen
-        if not self.pw_offen:
-            self.passwort_felder_zeigen()
-            self.pw_offen = True
+        if not bestaetigt:
+            return
+
+        neue_email = neue_email.strip().lower()
+
+        if not neue_email:
+            self.zeige_fehler("Bitte gib eine E-Mail-Adresse ein.")
+            return
+
+        # Einfache Prüfung des E-Mail-Formats
+        email_muster = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+
+        if re.fullmatch(email_muster, neue_email) is None:
+            self.zeige_fehler(
+                "Bitte gib eine gültige E-Mail-Adresse ein."
+            )
+            return
+
+        if neue_email == aktuelle_email.lower():
+            QMessageBox.information(
+                self,
+                "Keine Änderung",
+                "Diese E-Mail-Adresse ist bereits in deinem Account gespeichert."
+            )
+            return
+
+        if email_existiert(neue_email, self.user_id):
+            self.zeige_fehler(
+                "Diese E-Mail-Adresse wird bereits von einem anderen Account verwendet."
+            )
+            return
+
+        email_wiederholung, bestaetigt = QInputDialog.getText(
+            self,
+            "E-Mail bestätigen",
+            "Bitte gib die neue E-Mail-Adresse erneut ein:"
+        )
+
+        if not bestaetigt:
+            return
+
+        email_wiederholung = email_wiederholung.strip().lower()
+
+        if neue_email != email_wiederholung:
+            self.zeige_fehler(
+                "Die beiden E-Mail-Adressen stimmen nicht überein."
+            )
+            return
+
+        antwort = QMessageBox.question(
+            self,
+            "E-Mail ändern",
+            "Möchtest du deine E-Mail-Adresse wirklich ändern?\n\n"
+            f"Alt: {aktuelle_email}\n"
+            f"Neu: {neue_email}",
+            QMessageBox.StandardButton.Yes
+            | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+
+        if antwort != QMessageBox.StandardButton.Yes:
+            return
+
+        erfolgreich = email_aendern(
+            self.user_id,
+            neue_email
+        )
+
+        if erfolgreich:
+            QMessageBox.information(
+                self,
+                "E-Mail geändert",
+                "Deine E-Mail-Adresse wurde erfolgreich geändert.\n\n"
+                "Bitte bestätige anschließend deine neue E-Mail-Adresse."
+            )
         else:
-            self.passwort_felder_verstecken()
-            self.pw_offen = False
-
-    def on_passwort_speichern(self):
-        alt  = self.main_window.txtPwAlt.text()
-        neu  = self.main_window.txtPwNeu.text()
-        neu2 = self.main_window.txtPwNeu2.text()
-
-        # Pflichtfelder prüfen
-        if not alt or not neu or not neu2:
-            self.zeige_fehler("Bitte alle Passwortfelder ausfüllen.")
-            return
-
-        # Neue Passwörter vergleichen
-        if neu != neu2:
-            self.zeige_fehler("Die neuen Passwörter stimmen nicht überein.")
-            return
-
-        # Mindestlänge prüfen
-        if len(neu) < 6:
-            self.zeige_fehler("Das Passwort muss mindestens 6 Zeichen haben.")
-            return
-
-        # TODO: Passwort in Datenbank aktualisieren
-        print("Passwort wird geändert")
-        QMessageBox.information(self, "Erfolg", "Passwort wurde erfolgreich geändert!")
-        self.on_passwort_toggle()
+            self.zeige_fehler(
+                "Die E-Mail-Adresse konnte nicht geändert werden."
+            )
 
     def on_email_verify(self):
         # TODO: Verifizierungs-E-Mail versenden
@@ -192,28 +358,117 @@ class SettingsWindow(QMainWindow):
             self,
             "Abmelden",
             "Möchtest du dich wirklich abmelden?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.StandardButton.Yes
+            | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
         )
-        if antwort == QMessageBox.StandardButton.Yes:
+        if antwort != QMessageBox.StandardButton.Yes:
+            return
 
+        print("Nutzer abgemeldet")
+
+        # Dem Dashboard mitteilen, dass zum Login gewechselt werden soll
+        self.logout_requested.emit()
+
+        # Einstellungsfenster schließen
+        self.close()
             #TODO: zur Loginseite zurück
-            print("Nutzer abgemeldet")
 
-            self.close()
+        #Einstellungsfenster schließen
+        self.close()
 
     def on_account_loeschen(self):
-        antwort = QMessageBox.question(
+        if self.user_id is None:
+            self.zeige_fehler(
+                "Der angemeldete Benutzer konnte nicht ermittelt werden."
+            )
+            return
+
+        # Erste Warnung
+        antwort = QMessageBox.warning(
             self,
-            "Account löschen",
-            "Achtung: Alle deine Daten werden unwiderruflich gelöscht.\n"
-            "Möchtest du fortfahren?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            "Account dauerhaft löschen",
+            "Achtung!\n\n"
+            "Dein Account und alle damit verbundenen Daten werden "
+            "unwiderruflich gelöscht.\n\n"
+            "Dazu gehören unter anderem:\n"
+            "• deine Accountdaten\n"
+            "• alle Tracking-Einträge\n"
+            "• Arzttermine\n"
+            "• App-Einstellungen\n\n"
+            "Möchtest du wirklich fortfahren?",
+            QMessageBox.StandardButton.Yes
+            | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
         )
-        if antwort == QMessageBox.StandardButton.Yes:
-            # TODO: Account aus Datenbank löschen
-            print("Account wird gelöscht")
-            QMessageBox.information(self, "Gelöscht", "Dein Account wurde gelöscht.")
-            self.close()
+
+        if antwort != QMessageBox.StandardButton.Yes:
+            return
+
+        # Passwort zur Bestätigung abfragen
+        passwort, bestaetigt = QInputDialog.getText(
+            self,
+            "Löschen bestätigen",
+            "Bitte gib zur Bestätigung dein aktuelles Passwort ein:",
+            QLineEdit.EchoMode.Password
+        )
+
+        if not bestaetigt:
+            return
+
+        if not passwort:
+            self.zeige_fehler(
+                "Bitte gib dein aktuelles Passwort ein."
+            )
+            return
+
+        passwort_hash = hashlib.sha256(
+            passwort.encode()
+        ).hexdigest()
+
+        if not passwort_pruefen(
+                self.user_id,
+                passwort_hash
+        ):
+            self.zeige_fehler(
+                "Das eingegebene Passwort ist nicht korrekt."
+            )
+            return
+
+        # Letzte Sicherheitsabfrage
+        letzte_bestaetigung = QMessageBox.question(
+            self,
+            "Endgültig löschen",
+            "Dies ist die letzte Bestätigung.\n\n"
+            "Der Account kann nach dem Löschen nicht wiederhergestellt werden.\n\n"
+            "Account jetzt endgültig löschen?",
+            QMessageBox.StandardButton.Yes
+            | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+
+        if letzte_bestaetigung != QMessageBox.StandardButton.Yes:
+            return
+
+        erfolgreich = account_loeschen(
+            self.user_id
+        )
+
+        if not erfolgreich:
+            self.zeige_fehler(
+                "Der Account konnte nicht gelöscht werden."
+            )
+            return
+
+        QMessageBox.information(
+            self,
+            "Account gelöscht",
+            "Dein Account und alle zugehörigen Daten wurden gelöscht."
+        )
+
+        # Dieselbe Fenstersteuerung wie beim Abmelden verwenden
+        self.logout_requested.emit()
+        self.close()
 
     # ── Toggle-Slots ───────────────────────────────────────────────────────
 

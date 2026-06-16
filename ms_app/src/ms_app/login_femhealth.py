@@ -3,7 +3,7 @@
 import sys
 import pathlib
 from PyQt6 import uic
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox)
 import hashlib
 from database import login_pruefen
 from dashboard import DashboardWindow
@@ -57,8 +57,13 @@ class LoginWindow(QMainWindow):
 
     def on_register(self):
         self.register_window = RegisterWindow()
+
+        self.register_window.login_requested.connect(
+            self.login_wieder_anzeigen
+        )
+
         self.register_window.show()
-        self.close()
+        self.hide()
 
     def on_passwort_vergessen(self):
         QMessageBox.information(
@@ -70,6 +75,14 @@ class LoginWindow(QMainWindow):
 
     def zeige_fehler(self, text):
         QMessageBox.warning(self, "Fehler", text)
+
+    def login_wieder_anzeigen(self):
+        self.main_window.emailLineEdit.clear()
+        self.main_window.passwordLineEdit.clear()
+
+        self.show()
+        self.raise_()
+        self.activateWindow()
 
 
 # ── Programm starten ─────────────────────────────────────────────────────────

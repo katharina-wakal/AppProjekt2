@@ -542,6 +542,150 @@ def user_vorname_laden(user_id):
 
     return daten[0]
 
+def user_email_laden(user_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT email
+        FROM users
+        WHERE id = ?
+    """, (user_id,))
+
+    daten = cursor.fetchone()
+    connection.close()
+
+    if daten is None:
+        return ""
+
+    return daten[0]
+
+
+def email_existiert(email, ausgenommen_user_id=None):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    if ausgenommen_user_id is None:
+        cursor.execute("""
+            SELECT id
+            FROM users
+            WHERE LOWER(email) = LOWER(?)
+        """, (email,))
+    else:
+        cursor.execute("""
+            SELECT id
+            FROM users
+            WHERE LOWER(email) = LOWER(?)
+            AND id != ?
+        """, (email, ausgenommen_user_id))
+
+    daten = cursor.fetchone()
+    connection.close()
+
+    return daten is not None
+
+
+def email_aendern(user_id, neue_email):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("""
+            UPDATE users
+            SET email = ?
+            WHERE id = ?
+        """, (neue_email, user_id))
+
+        connection.commit()
+
+        # Prüfen, ob überhaupt ein Benutzer aktualisiert wurde
+        erfolgreich = cursor.rowcount > 0
+
+    except sqlite3.IntegrityError:
+        erfolgreich = False
+
+    finally:
+        connection.close()
+
+    return erfolgreich
+
+def passwort_pruefen(user_id, passwort_hash):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT id
+        FROM users
+        WHERE id = ?
+        AND password_hash = ?
+    """, (user_id, passwort_hash))
+
+    user = cursor.fetchone()
+    connection.close()
+
+    return user is not None
+
+
+def passwort_aendern(user_id, neuer_passwort_hash):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        UPDATE users
+        SET password_hash = ?
+        WHERE id = ?
+    """, (neuer_passwort_hash, user_id))
+
+    connection.commit()
+
+    erfolgreich = cursor.rowcount > 0
+
+    connection.close()
+
+    return erfolgreich
+
+def account_loeschen(user_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    try:
+        # Alle zum Account gehörenden Daten löschen
+        cursor.execute("""
+            DELETE FROM daily_entries
+            WHERE user_id = ?
+        """, (user_id,))
+
+        cursor.execute("""
+            DELETE FROM doctor_appointments
+            WHERE user_id = ?
+        """, (user_id,))
+
+        cursor.execute("""
+            DELETE FROM user_settings
+            WHERE user_id = ?
+        """, (user_id,))
+
+        # Benutzer zuletzt löschen
+        cursor.execute("""
+            DELETE FROM users
+            WHERE id = ?
+        """, (user_id,))
+
+        erfolgreich = cursor.rowcount > 0
+
+        connection.commit()
+        return erfolgreich
+
+    except sqlite3.Error as fehler:
+        connection.rollback()
+        print("Fehler beim Löschen des Accounts:", fehler)
+        return False
+
+    finally:
+        connection.close()
+
+
+
 
 
 
