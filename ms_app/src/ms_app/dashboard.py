@@ -6,8 +6,8 @@ import pathlib
 import webbrowser
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QPixmap, QShowEvent
 
 import webbrowser
 
@@ -17,7 +17,7 @@ from eintrag import EintragWindow
 from database import periodenstarts_laden, user_vorname_laden
 from calculation import calculate_cycle_prediction
 from cycle_ring_widget import CycleRingWidget
-from datetime import date
+from datetime import date, datetime
 from arzttermin import ArztterminWindow
 from kalender import KalenderWindow
 from analyse import AnalyseWindow
@@ -108,6 +108,7 @@ class DashboardWindow(QMainWindow):
 
         # Youtube-Video-Button
         self.main_window.buttonYoutube.clicked.connect(self.on_youtube)
+
 
     # ── Navbar immer am unteren Rand ─────────────────────────────────────
 
@@ -310,6 +311,56 @@ class DashboardWindow(QMainWindow):
             "premenstrual syndrome menstrual cycle"
         )
         self.wissen_fenster.show()
+
+    def zeige_perioden_popup(self):
+        QMessageBox.information(
+            self,
+            "Voraussichtlicher Periodenbeginn",
+            "Deine Periode beginnt voraussichtlich heute.\n\n"
+            "Denke daran, deine Blutungsstärke und mögliche Symptome einzutragen."
+        )
+
+    def zeige_ovulations_popup(self):
+        QMessageBox.information(
+            self,
+            "Voraussichtliche Ovulation",
+            "Heute ist voraussichtlich dein Ovulationstag.\n\n"
+            "Bitte beachte, dass es sich hierbei nur um eine berechnete Prognose handelt."
+        )
+
+    def pruefe_zyklus_benachrichtigungen(
+            self,
+            prognostizierter_periodenstart,
+            prognostizierte_ovulation
+    ):
+        heute = date.today()
+
+        if heute == prognostizierter_periodenstart:
+            self.zeige_perioden_popup()
+
+        if heute == prognostizierte_ovulation:
+            self.zeige_ovulations_popup()
+
+    def showEvent(self, event: QShowEvent):
+        super().showEvent(event)
+
+        app = QApplication.instance()
+
+        if not app.property("zyklus_popups_geprueft"):
+            app.setProperty("zyklus_popups_geprueft", True)
+            QTimer.singleShot(500, self.teste_popups)
+
+    def teste_popups(self):
+        heute = date.today()
+
+        prognostizierter_periodenstart = heute
+        prognostizierte_ovulation = heute
+
+        self.pruefe_zyklus_benachrichtigungen(
+            prognostizierter_periodenstart,
+            prognostizierte_ovulation
+        )
+
 
 
 
