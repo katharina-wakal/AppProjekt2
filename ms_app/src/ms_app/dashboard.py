@@ -348,13 +348,31 @@ class DashboardWindow(QMainWindow):
 
         if not app.property("zyklus_popups_geprueft"):
             app.setProperty("zyklus_popups_geprueft", True)
-            QTimer.singleShot(500, self.teste_popups)
 
-    def teste_popups(self):
-        heute = date.today()
+            QTimer.singleShot(
+                500,
+                self.zyklus_benachrichtigungen_pruefen
+            )
 
-        prognostizierter_periodenstart = heute
-        prognostizierte_ovulation = heute
+    def zyklus_benachrichtigungen_pruefen(self):
+        if self.user_id is None:
+            return
+
+        periodenstarts = periodenstarts_laden(self.user_id)
+
+        # Ohne eingetragene Periodendaten ist keine Prognose möglich
+        if len(periodenstarts) == 0:
+            return
+
+        prognose = calculate_cycle_prediction(periodenstarts)
+
+        prognostizierter_periodenstart = prognose[
+            "predicted_period_start"
+        ]
+
+        prognostizierte_ovulation = prognose[
+            "predicted_ovulation"
+        ]
 
         self.pruefe_zyklus_benachrichtigungen(
             prognostizierter_periodenstart,
