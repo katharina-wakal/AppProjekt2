@@ -5,8 +5,9 @@ import sys
 import pathlib
 import webbrowser
 from PyQt6 import uic
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox,
+                             QDialog, QLabel, QVBoxLayout)
+from PyQt6.QtCore import Qt, QTimer, QSettings
 from PyQt6.QtGui import QPixmap, QShowEvent
 
 import webbrowser
@@ -22,6 +23,64 @@ from arzttermin import ArztterminWindow
 from kalender import KalenderWindow
 from analyse import AnalyseWindow
 
+#push benacrichtigungen
+class NotificationPopup(QDialog):
+
+    def __init__(self, parent, titel, nachricht):
+        super().__init__(parent)
+
+        # Fenster ohne normale Titelleiste
+        self.setWindowFlags(
+            Qt.WindowType.FramelessWindowHint
+            | Qt.WindowType.Dialog
+        )
+
+        self.setFixedSize(380, 120)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 15, 20, 15)
+
+        titel_label = QLabel(titel)
+        titel_label.setStyleSheet("""
+            font-size: 16px;
+            font-weight: bold;
+            color: #6C4A7E;
+        """)
+
+        nachricht_label = QLabel(nachricht)
+        nachricht_label.setWordWrap(True)
+        nachricht_label.setStyleSheet("""
+            font-size: 13px;
+            color: #403744;
+        """)
+
+        layout.addWidget(titel_label)
+        layout.addWidget(nachricht_label)
+
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #F7F0F4;
+                border: 2px solid #B59AC4;
+                border-radius: 16px;
+            }
+        """)
+
+        # Nach fünf Sekunden automatisch schließen
+        QTimer.singleShot(5000, self.close)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+
+        parent = self.parentWidget()
+
+        if parent is not None:
+            x = parent.x() + (
+                parent.width() - self.width()
+            ) // 2
+
+            y = parent.y() + 20
+
+            self.move(x, y)
 
 # ═══════════════════════════════════════════════════════════════
 # DASHBOARD
@@ -354,6 +413,14 @@ class DashboardWindow(QMainWindow):
                 self.zyklus_benachrichtigungen_pruefen
             )
 
+        if not app.property("tracking_reminder_geprueft"):
+            app.setProperty("tracking_reminder_geprueft", True)
+
+            QTimer.singleShot(
+                1000,
+                self.taeglichen_tracking_reminder_pruefen
+            )
+
     def zyklus_benachrichtigungen_pruefen(self):
         if self.user_id is None:
             return
@@ -378,6 +445,44 @@ class DashboardWindow(QMainWindow):
             prognostizierter_periodenstart,
             prognostizierte_ovulation
         )
+
+    def zeige_tracking_reminder(self):
+        self.tracking_reminder = NotificationPopup(
+            self,
+            "Täglicher Check-in",
+            "Zeit für deinen täglichen Eintrag. "
+            "Öffne den Tracking-Bereich und halte dein heutiges Befinden fest."
+        )
+
+        self.tracking_reminder.show()
+
+    def taeglichen_tracking_reminder_pruefen(self):
+        heute = date.today().isoformat()
+
+        settings = QSettings(
+            "FemHealth",
+            "FemHealthApp"
+        )
+
+        # Für jeden Account ein eigener Speicherwert
+        schluessel = f"letzter_tracking_reminder_{self.user_id}"
+
+        letztes_datum = settings.value(
+            schluessel,
+            ""
+        )
+
+        if letztes_datum == heute:
+            return
+
+        self.zeige_tracking_reminder()
+
+        settings.setValue(
+            schluessel,
+            heute
+        )
+
+
 
 
 
