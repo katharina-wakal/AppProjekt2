@@ -4,7 +4,9 @@ import sys
 import pathlib
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from database import zykluslaengen_laden, perioden_dauer_laden, periodenstarts_laden
+from database import (zykluslaengen_laden, perioden_dauer_laden,
+                      periodenstarts_laden, credit_points_laden,
+                      erweiterte_analysen_freischalten, analysen_freigeschaltet_laden)
 from calculation import calculate_cycle_prediction
 from kalender import KalenderWindow
 from eintrag import EintragWindow
@@ -46,6 +48,32 @@ class AnalyseWindow(QMainWindow):
     # ── Anzeige befüllen ──────────────────────────────────────────────────────
 
     def anzeige_befuellen(self):
+        # Status der erweiterten Analysen prüfen
+        if self.user_id is not None:
+            freigeschaltet = analysen_freigeschaltet_laden(
+                self.user_id
+            )
+        else:
+            freigeschaltet = False
+
+        #Symptom-Analyse nur nach Freischaltung anzeigen
+        self.symptom_analyse_anzeigen(freigeschaltet)
+
+        if freigeschaltet:
+            self.main_window.btnFreischalten.setText(
+                "🔓 Erweiterte Analysen freigeschaltet"
+            )
+        else:
+            self.main_window.btnFreischalten.setText(
+                "🔒 Weitere Analysen freischalten"
+            )
+
+        # Credit Points laden
+        if self.user_id is None:
+            credit_points = 0
+        else:
+            credit_points = credit_points_laden(self.user_id)
+
         # Zyklusstatistiken berechnen und anzeigen
         # Zyklusstatistiken aus gespeicherten Nutzerdaten berechnen
         zyklus_dauer  = self.zyklus_dauer_berechnen()
@@ -178,6 +206,19 @@ class AnalyseWindow(QMainWindow):
                     "Eisprung: ca. " + eisprung.strftime("%d.%m.%Y")
                 )
 
+    def symptom_analyse_anzeigen(self, sichtbar):
+        symptom_elemente = [
+            self.main_window.lblSekSymptome,
+            self.main_window.cardSymptom1,
+            self.main_window.cardSymptom2,
+            self.main_window.cardSymptom3,
+            self.main_window.lblKorrelation
+        ]
+
+        for element in symptom_elemente:
+            element.setVisible(sichtbar)
+
+
     # ── Berechnungs-Hilfsmethoden ─────────────────────────────────────────────
 
     def zyklus_dauer_berechnen(self):
@@ -263,12 +304,81 @@ class AnalyseWindow(QMainWindow):
         self.close()
 
     def on_freischalten(self):
-        # Erweiterte Analysen freischalten (TODO: Kauf-Flow)
-        QMessageBox.information(
-            self,
-            "🔒 Analysen freischalten",
-            "Hier würde der Kauf-Prozess für erweiterte Analysen geöffnet."
+
+        if self.user_id is None:
+            QMessageBox.warning(
+                self,
+                "Fehler",
+                "Es ist kein Benutzer angemeldet."
+            )
+            return
+
+        bereits_freigeschaltet = analysen_freigeschaltet_laden(
+            self.user_id
         )
+
+        if bereits_freigeschaltet:
+            QMessageBox.information(
+                self,
+                "🔓 Bereits freigeschaltet",
+                "Die erweiterten Analysen sind für deinen Account bereits freigeschaltet."
+            )
+            return
+
+        credit_points = credit_points_laden(self.user_id)
+
+        if credit_points < 60:
+            fehlende_punkte = 60 - credit_points
+
+            QMessageBox.information(
+                self,
+                "🔒 Analysen freischalten",
+                "Dein aktueller Punktestand: "
+                + str(credit_points)
+                + " / 60 Punkte\n\n"
+                + "Dir fehlen noch "
+                + str(fehlende_punkte)
+                + " Punkte, um die erweiterten Analysen freizuschalten."
+            )
+            return
+
+        antwort = QMessageBox.question(
+            self,
+            "🔓 Analysen freischalten",
+            "Du hast "
+            + str(credit_points)
+            + " Punkte gesammelt.\n\n"
+            + "Möchtest du 60 Punkte einlösen und die erweiterten Analysen dauerhaft freischalten?",
+            QMessageBox.StandardButton.Yes
+            | QMessageBox.StandardButton.No
+        )
+
+        if antwort == QMessageBox.StandardButton.Yes:
+
+            erfolgreich = erweiterte_analysen_freischalten(
+                self.user_id
+            )
+
+            if erfolgreich:
+                neuer_punktestand = credit_points_laden(
+                    self.user_id
+                )
+
+                QMessageBox.information(
+                    self,
+                    "🎉 Freigeschaltet",
+                    "Die erweiterten Analysen wurden erfolgreich freigeschaltet!\n\n"
+                    + "Dein neuer Punktestand: "
+                    + str(neuer_punktestand)
+                    + " Punkte"
+                )
+
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Freischaltung fehlgeschlagen",
+                    "Die erweiterten Analysen konnten nicht freigeschaltet werden."
+                )
 
     def on_mehr_periode(self):
         # Detailansicht Periodenstärke öffnen (TODO)

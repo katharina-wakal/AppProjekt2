@@ -594,6 +594,82 @@ def user_email_laden(user_id):
 
     return daten[0]
 
+def credit_points_laden(user_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT credit_points
+        FROM users
+        WHERE id = ?
+    """, (user_id,))
+
+    daten = cursor.fetchone()
+    connection.close()
+
+    if daten is None:
+        return 0
+
+    return daten[0]
+
+def analysen_freigeschaltet_laden(user_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT advanced_analysis_unlocked
+        FROM users
+        WHERE id = ?
+    """, (user_id,))
+
+    daten = cursor.fetchone()
+    connection.close()
+
+    if daten is None:
+        return False
+
+    return daten[0] == 1
+
+def erweiterte_analysen_freischalten(user_id):
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT credit_points, advanced_analysis_unlocked
+        FROM users
+        WHERE id = ?
+    """, (user_id,))
+
+    daten = cursor.fetchone()
+
+    if daten is None:
+        connection.close()
+        return False
+
+    credit_points = daten[0]
+    bereits_freigeschaltet = daten[1]
+
+    if bereits_freigeschaltet == 1:
+        connection.close()
+        return True
+
+    if credit_points < 60:
+        connection.close()
+        return False
+
+    cursor.execute("""
+        UPDATE users
+        SET
+            credit_points = credit_points - 60,
+            advanced_analysis_unlocked = 1
+        WHERE id = ?
+    """, (user_id,))
+
+    connection.commit()
+    connection.close()
+
+    return True
+
 
 def email_existiert(email, ausgenommen_user_id=None):
     connection = create_connection()
@@ -922,7 +998,6 @@ def alle_nutzerdaten_laden(user_id):
             else {}
         )
     }
-
 
 
 
