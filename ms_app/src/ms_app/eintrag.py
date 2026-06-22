@@ -438,7 +438,7 @@ class EintragWindow(QMainWindow):
         )
 
         QMessageBox.information(self, "Gespeichert", "Dein Eintrag wurde gespeichert! ✅")
-        self.close()
+
 
     # ── Hilfsmethode ─────────────────────────────────────────────────────────
 

@@ -24,6 +24,8 @@ def create_tables():
             password_hash TEXT NOT NULL,
             privacy_accepted INTEGER NOT NULL,
             newsletter INTEGER DEFAULT 0,
+            credit_points INTEGER NOT NULL DEFAULT 0,
+            advanced_analysis_unlocked INTEGER NOT NULL DEFAULT 0,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -94,8 +96,34 @@ def create_tables():
     connection.commit()
     connection.close()
 
+def credit_spalten_ergaenzen():
+    connection = create_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("PRAGMA table_info(users)")
+    vorhandene_spalten = [
+        spalte[1]
+        for spalte in cursor.fetchall()
+    ]
+
+    if "credit_points" not in vorhandene_spalten:
+        cursor.execute("""
+            ALTER TABLE users
+            ADD COLUMN credit_points INTEGER NOT NULL DEFAULT 0
+        """)
+
+    if "advanced_analysis_unlocked" not in vorhandene_spalten:
+        cursor.execute("""
+            ALTER TABLE users
+            ADD COLUMN advanced_analysis_unlocked INTEGER NOT NULL DEFAULT 0
+        """)
+
+    connection.commit()
+    connection.close()
+
 
 create_tables()
+credit_spalten_ergaenzen()
 print("Datenbank wurde erfolgreich erstellt.")
 
 def user_anlegen(
@@ -228,6 +256,12 @@ def eintrag_speichern(
             pflaster,
             ring
         ))
+
+        cursor.execute("""
+                       UPDATE users
+                       SET credit_points = credit_points + 1
+                       WHERE id = ?
+                       """, (user_id,))
 
     else:
         cursor.execute("""
@@ -888,6 +922,7 @@ def alle_nutzerdaten_laden(user_id):
             else {}
         )
     }
+
 
 
 
