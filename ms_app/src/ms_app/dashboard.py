@@ -23,9 +23,6 @@ from kalender import KalenderWindow
 from analyse import AnalyseWindow
 
 
-# ═══════════════════════════════════════════════════════════════
-# DASHBOARD
-# ═══════════════════════════════════════════════════════════════
 from wissen_fenster import WissenFenster
 
 class DashboardWindow(QMainWindow):

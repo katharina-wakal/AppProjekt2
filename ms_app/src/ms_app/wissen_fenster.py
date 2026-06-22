@@ -1,6 +1,6 @@
 import webbrowser
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton
-from wissen_api import erstelle_artikel_links
+
 
 
 class WissenFenster(QMainWindow):

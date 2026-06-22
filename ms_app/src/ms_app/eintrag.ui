@@ -3,7 +3,12 @@
  <class>EintragWindow</class>
  <widget class="QWidget" name="EintragWindow">
   <property name="geometry">
-   <rect><x>0</x><y>0</y><width>390</width><height>844</height></rect>
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>390</width>
+    <height>844</height>
+   </rect>
   </property>
   <property name="windowTitle">
    <string>Eintrag – FemHealth</string>
@@ -12,7 +17,7 @@
    <string notr="true">
 /* ══ Global ══ */
 QWidget {
-    font-family: "Segoe UI", Arial, sans-serif;
+    font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
 }
 QWidget#EintragWindow {
     background-color: #FDF6F0;
@@ -158,7 +163,7 @@ QPushButton#btnMehrPflaster:hover, QPushButton#btnMehrRing:hover {
 }
 
 /* ══ ALLE Auswahl-Karten – einheitlicher Stil über property ══ */
-QPushButton[card="true"] {
+QPushButton[card=&quot;true&quot;] {
     background: #FFFFFF;
     border: 1.5px solid #F8BBD9;
     border-radius: 14px;
@@ -171,19 +176,19 @@ QPushButton[card="true"] {
     max-height: 86px;
     padding: 4px;
 }
-QPushButton[card="true"]:checked {
+QPushButton[card=&quot;true&quot;]:checked {
     background: qlineargradient(x1:0,y1:0,x2:1,y2:1,
         stop:0 #FCE4EC, stop:1 #F8BBD9);
     border: 2px solid #E91E63;
     color: #880E4F;
 }
-QPushButton[card="true"]:hover {
+QPushButton[card=&quot;true&quot;]:hover {
     background: #FFF0F5;
     border-color: #F48FB1;
 }
 
 /* ══ Trennlinien ══ */
-QFrame[divider="true"] {
+QFrame[divider=&quot;true&quot;] {
     background: #F8BBD9;
     max-height: 1px;
     min-height: 1px;
@@ -217,437 +222,2833 @@ QPushButton#btnSpeichern:hover { background: #C2185B; }
 QPushButton#btnSpeichern:pressed { background: #880E4F; }
    </string>
   </property>
-
-  <!-- ══ HEADER ══ -->
   <widget class="QFrame" name="headerFrame">
-   <property name="geometry"><rect><x>0</x><y>0</y><width>390</width><height>56</height></rect></property>
-   <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>390</width>
+     <height>56</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
    <widget class="QPushButton" name="btnClose">
-    <property name="geometry"><rect><x>12</x><y>12</y><width>32</width><height>32</height></rect></property>
-    <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-    <property name="text"><string>✕</string></property>
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>12</y>
+      <width>32</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>✕</string>
+    </property>
    </widget>
    <widget class="QLabel" name="lblHeaderDate">
-    <property name="geometry"><rect><x>55</x><y>12</y><width>220</width><height>32</height></rect></property>
-    <property name="text"><string>Heute: 26. Mai 2026</string></property>
-    <property name="alignment"><set>Qt::AlignCenter</set></property>
+    <property name="geometry">
+     <rect>
+      <x>55</x>
+      <y>12</y>
+      <width>220</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Heute: 26. Mai 2026</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="lblTodayBadge">
-    <property name="geometry"><rect><x>332</x><y>16</y><width>44</width><height>24</height></rect></property>
-    <property name="text"><string>26</string></property>
-    <property name="alignment"><set>Qt::AlignCenter</set></property>
+    <property name="geometry">
+     <rect>
+      <x>332</x>
+      <y>16</y>
+      <width>44</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>26</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
   </widget>
-
-  <!-- ══ WOCHENSTREIFEN ══ -->
   <widget class="QFrame" name="weekFrame">
-   <property name="geometry"><rect><x>0</x><y>56</y><width>390</width><height>68</height></rect></property>
-   <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
-   <widget class="QLabel" name="wdM1"><property name="geometry"><rect><x>6</x><y>4</y><width>48</width><height>16</height></rect></property><property name="text"><string>M</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget>
-   <widget class="QLabel" name="wdD1"><property name="geometry"><rect><x>58</x><y>4</y><width>48</width><height>16</height></rect></property><property name="text"><string>D</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget>
-   <widget class="QLabel" name="wdM2"><property name="geometry"><rect><x>110</x><y>4</y><width>48</width><height>16</height></rect></property><property name="text"><string>M</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget>
-   <widget class="QLabel" name="wdD2"><property name="geometry"><rect><x>162</x><y>4</y><width>48</width><height>16</height></rect></property><property name="text"><string>D</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget>
-   <widget class="QLabel" name="wdF"><property name="geometry"><rect><x>214</x><y>4</y><width>48</width><height>16</height></rect></property><property name="text"><string>F</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget>
-   <widget class="QLabel" name="wdS1"><property name="geometry"><rect><x>266</x><y>4</y><width>48</width><height>16</height></rect></property><property name="text"><string>S</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget>
-   <widget class="QLabel" name="wdS2"><property name="geometry"><rect><x>336</x><y>4</y><width>48</width><height>16</height></rect></property><property name="text"><string>S</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget>
-   <widget class="QPushButton" name="btnDay25"><property name="geometry"><rect><x>6</x><y>22</y><width>48</width><height>40</height></rect></property><property name="text"><string>25</string></property></widget>
-   <widget class="QPushButton" name="dayToday"><property name="geometry"><rect><x>58</x><y>22</y><width>48</width><height>40</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>26</string></property></widget>
-   <widget class="QPushButton" name="btnDay27"><property name="geometry"><rect><x>110</x><y>22</y><width>48</width><height>40</height></rect></property><property name="text"><string>27</string></property></widget>
-   <widget class="QPushButton" name="btnDay28"><property name="geometry"><rect><x>162</x><y>22</y><width>48</width><height>40</height></rect></property><property name="text"><string>28</string></property></widget>
-   <widget class="QPushButton" name="btnDay29"><property name="geometry"><rect><x>214</x><y>22</y><width>48</width><height>40</height></rect></property><property name="text"><string>29</string></property></widget>
-   <widget class="QPushButton" name="btnDay30"><property name="geometry"><rect><x>266</x><y>22</y><width>48</width><height>40</height></rect></property><property name="text"><string>30</string></property></widget>
-   <widget class="QPushButton" name="btnDay31"><property name="geometry"><rect><x>336</x><y>22</y><width>48</width><height>40</height></rect></property><property name="text"><string>31</string></property></widget>
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>56</y>
+     <width>390</width>
+     <height>68</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <widget class="QLabel" name="wdM1">
+    <property name="geometry">
+     <rect>
+      <x>6</x>
+      <y>4</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>M</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wdD1">
+    <property name="geometry">
+     <rect>
+      <x>58</x>
+      <y>4</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>D</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wdM2">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>4</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>M</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wdD2">
+    <property name="geometry">
+     <rect>
+      <x>162</x>
+      <y>4</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>D</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wdF">
+    <property name="geometry">
+     <rect>
+      <x>214</x>
+      <y>4</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>F</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wdS1">
+    <property name="geometry">
+     <rect>
+      <x>266</x>
+      <y>4</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>S</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wdS2">
+    <property name="geometry">
+     <rect>
+      <x>336</x>
+      <y>4</y>
+      <width>48</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>S</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnDay25">
+    <property name="geometry">
+     <rect>
+      <x>6</x>
+      <y>22</y>
+      <width>48</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>25</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="dayToday">
+    <property name="geometry">
+     <rect>
+      <x>58</x>
+      <y>22</y>
+      <width>48</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>26</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnDay27">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>22</y>
+      <width>48</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>27</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnDay28">
+    <property name="geometry">
+     <rect>
+      <x>162</x>
+      <y>22</y>
+      <width>48</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>28</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnDay29">
+    <property name="geometry">
+     <rect>
+      <x>214</x>
+      <y>22</y>
+      <width>48</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>29</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnDay30">
+    <property name="geometry">
+     <rect>
+      <x>266</x>
+      <y>22</y>
+      <width>48</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>30</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnDay31">
+    <property name="geometry">
+     <rect>
+      <x>336</x>
+      <y>22</y>
+      <width>48</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>31</string>
+    </property>
+   </widget>
   </widget>
-
-  <!-- ══ PERSONALISIEREN ══ -->
   <widget class="QPushButton" name="btnPersonalisieren">
-   <property name="geometry"><rect><x>125</x><y>134</y><width>140</width><height>28</height></rect></property>
-   <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-   <property name="text"><string>Personalisieren  ⚙</string></property>
+   <property name="geometry">
+    <rect>
+     <x>125</x>
+     <y>134</y>
+     <width>140</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string>Personalisieren  ⚙</string>
+   </property>
   </widget>
-
-  <!-- ══════════════════════════════════════
-       HAUPT-SCROLL-BEREICH
-  ══════════════════════════════════════ -->
   <widget class="QScrollArea" name="scrollArea">
-   <property name="geometry"><rect><x>0</x><y>170</y><width>390</width><height>540</height></rect></property>
-   <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
-   <property name="widgetResizable"><bool>false</bool></property>
-
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>170</y>
+     <width>390</width>
+     <height>540</height>
+    </rect>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="widgetResizable">
+    <bool>false</bool>
+   </property>
    <widget class="QWidget" name="scrollContents">
-    <property name="geometry"><rect><x>0</x><y>0</y><width>390</width><height>2800</height></rect></property>
-
-    <!-- ════ PERIODE ════ -->
-    <widget class="QLabel" name="lblKatPeriode"><property name="geometry"><rect><x>16</x><y>12</y><width>110</width><height>26</height></rect></property><property name="text"><string>Periode</string></property></widget>
-    <widget class="QPushButton" name="btnMehrPeriode"><property name="geometry"><rect><x>130</x><y>14</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
-
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>-2260</y>
+      <width>390</width>
+      <height>2800</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="lblKatPeriode">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>12</y>
+       <width>110</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Periode</string>
+     </property>
+    </widget>
     <widget class="QPushButton" name="cardLeicht">
-     <property name="geometry"><rect><x>6</x><y>46</y><width>84</width><height>90</height></rect></property>
-     <property name="checkable"><bool>true</bool></property>
-     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>🩸
-Leicht</string></property>
-     <property name="card" stdset="0"><string>true</string></property>
+     <property name="geometry">
+      <rect>
+       <x>6</x>
+       <y>46</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🩸
+Leicht</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
     </widget>
     <widget class="QPushButton" name="cardMittel">
-     <property name="geometry"><rect><x>96</x><y>46</y><width>84</width><height>90</height></rect></property>
-     <property name="checkable"><bool>true</bool></property>
-     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>🩸
-Mittel</string></property>
-     <property name="card" stdset="0"><string>true</string></property>
+     <property name="geometry">
+      <rect>
+       <x>96</x>
+       <y>46</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🩸
+Mittel</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
     </widget>
     <widget class="QPushButton" name="cardStark">
-     <property name="geometry"><rect><x>186</x><y>46</y><width>84</width><height>90</height></rect></property>
-     <property name="checkable"><bool>true</bool></property>
-     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>🩸
-Stark</string></property>
-     <property name="card" stdset="0"><string>true</string></property>
+     <property name="geometry">
+      <rect>
+       <x>186</x>
+       <y>46</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🩸
+Stark</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
     </widget>
     <widget class="QPushButton" name="cardSehrStark">
-     <property name="geometry"><rect><x>276</x><y>46</y><width>106</width><height>90</height></rect></property>
-     <property name="checkable"><bool>true</bool></property>
-     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>🩸
-Sehr stark</string></property>
-     <property name="card" stdset="0"><string>true</string></property>
+     <property name="geometry">
+      <rect>
+       <x>276</x>
+       <y>46</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🩸
+Sehr stark</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
     </widget>
-
-    <widget class="QFrame" name="div1"><property name="geometry"><rect><x>0</x><y>148</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="divider" stdset="0"><string>true</string></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ SCHMIERBLUTUNG ════ -->
-    <widget class="QLabel" name="lblKatSchmier"><property name="geometry"><rect><x>16</x><y>158</y><width>160</width><height>26</height></rect></property><property name="text"><string>Schmierblutung</string></property></widget>
-    <widget class="QPushButton" name="btnMehrSchmier"><property name="geometry"><rect><x>180</x><y>160</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
-
+    <widget class="QFrame" name="div1">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>148</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+     <property name="divider" stdset="0">
+      <string>true</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatSchmier">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>158</y>
+       <width>160</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Schmierblutung</string>
+     </property>
+    </widget>
     <widget class="QPushButton" name="cardRot">
-     <property name="geometry"><rect><x>6</x><y>192</y><width>84</width><height>90</height></rect></property>
-     <property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>🔴
-Rot</string></property>
-     <property name="card" stdset="0"><string>true</string></property>
+     <property name="geometry">
+      <rect>
+       <x>6</x>
+       <y>192</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🔴
+Rot</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
     </widget>
     <widget class="QPushButton" name="cardBraun">
-     <property name="geometry"><rect><x>96</x><y>192</y><width>84</width><height>90</height></rect></property>
-     <property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>🟤
-Braun</string></property>
-     <property name="card" stdset="0"><string>true</string></property>
+     <property name="geometry">
+      <rect>
+       <x>96</x>
+       <y>192</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🟤
+Braun</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
     </widget>
-
-    <widget class="QFrame" name="div2"><property name="geometry"><rect><x>0</x><y>294</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ GEFÜHLE (horizontal scrollbar) ════ -->
-    <widget class="QLabel" name="lblKatGefuehle"><property name="geometry"><rect><x>16</x><y>304</y><width>110</width><height>26</height></rect></property><property name="text"><string>Gefühle</string></property></widget>
-    <widget class="QPushButton" name="btnMehrGefuehle"><property name="geometry"><rect><x>130</x><y>306</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
-
+    <widget class="QFrame" name="div2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>294</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatGefuehle">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>304</y>
+       <width>110</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Gefühle</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollGefuehle">
-     <property name="geometry"><rect><x>0</x><y>338</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
-     <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
-     <property name="widgetResizable"><bool>false</bool></property>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>338</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
      <widget class="QWidget" name="gefuehleContents">
-      <property name="geometry"><rect><x>0</x><y>0</y><width>740</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardStimmung"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🌪
-Stimmungs-schwankungen</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardGut"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>😊
-Gut</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardTraurig"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>😢
-Traurig</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardSensibel"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🌸
-Sensibel</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardWuetend"><property name="geometry"><rect><x>366</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>😤
-Wütend</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardReizbar"><property name="geometry"><rect><x>456</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>😠
-Reizbar</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardUnruhig"><property name="geometry"><rect><x>546</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>😰
-Unruhig</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardGleichweit"><property name="geometry"><rect><x>636</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>😶
-Gleichmütig</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>740</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardStimmung">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🌪
+Stimmungs-schwankungen</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardGut">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>😊
+Gut</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardTraurig">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>😢
+Traurig</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardSensibel">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🌸
+Sensibel</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardWuetend">
+       <property name="geometry">
+        <rect>
+         <x>366</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>😤
+Wütend</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardReizbar">
+       <property name="geometry">
+        <rect>
+         <x>456</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>😠
+Reizbar</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardUnruhig">
+       <property name="geometry">
+        <rect>
+         <x>546</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>😰
+Unruhig</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardGleichweit">
+       <property name="geometry">
+        <rect>
+         <x>636</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>😶
+Gleichmütig</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
-    <widget class="QFrame" name="div3"><property name="geometry"><rect><x>0</x><y>458</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ SCHMERZEN ════ -->
-    <widget class="QLabel" name="lblKatSchmerzen"><property name="geometry"><rect><x>16</x><y>468</y><width>120</width><height>26</height></rect></property><property name="text"><string>Schmerzen</string></property></widget>
-    <widget class="QPushButton" name="btnMehrSchmerzen"><property name="geometry"><rect><x>140</x><y>470</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
-
+    <widget class="QFrame" name="div3">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>458</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatSchmerzen">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>468</y>
+       <width>120</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Schmerzen</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollSchmerzen">
-     <property name="geometry"><rect><x>0</x><y>502</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
-     <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
-     <property name="widgetResizable"><bool>false</bool></property>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>502</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
      <widget class="QWidget" name="schmerzenContents">
-      <property name="geometry"><rect><x>0</x><y>0</y><width>480</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardSchmerzfrei"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>✅
-Schmerzfrei</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardKraempfe"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🌀
-Krämpfe</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardBrueste"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>💗
-Sensible Brüste</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardKopf"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🤕
-Kopfschmerzen</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardRuecken"><property name="geometry"><rect><x>366</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔙
-Rückenschmerzen</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>480</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardSchmerzfrei">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>✅
+Schmerzfrei</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardKraempfe">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🌀
+Krämpfe</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardBrueste">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>💗
+Sensible Brüste</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardKopf">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🤕
+Kopfschmerzen</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardRuecken">
+       <property name="geometry">
+        <rect>
+         <x>366</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔙
+Rückenschmerzen</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
-    <widget class="QFrame" name="div4"><property name="geometry"><rect><x>0</x><y>622</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ SEXLEBEN ════ -->
-    <widget class="QLabel" name="lblKatSexleben"><property name="geometry"><rect><x>16</x><y>632</y><width>110</width><height>26</height></rect></property><property name="text"><string>Sexleben</string></property></widget>
-    <widget class="QPushButton" name="btnMehrSexleben"><property name="geometry"><rect><x>130</x><y>634</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
-
+    <widget class="QFrame" name="div4">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>622</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatSexleben">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>632</y>
+       <width>110</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sexleben</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollSexleben">
-     <property name="geometry"><rect><x>0</x><y>666</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
-     <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
-     <property name="widgetResizable"><bool>false</bool></property>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>666</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
      <widget class="QWidget" name="sexlebenContents">
-      <property name="geometry"><rect><x>0</x><y>0</y><width>660</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardGeschuetzt"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🛡
-Geschützt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardUngeschuetzt"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>⚠️
-Ungeschützt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardInterruptus"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔁
-Interruptus</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardKeinSex"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🚫
-Kein Sex</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardStarkLib"><property name="geometry"><rect><x>366</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔥
-Starke Libido</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardSchwachLib"><property name="geometry"><rect><x>456</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🌙
-Schwache Libido</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardSchmerzSex"><property name="geometry"><rect><x>546</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>💢
-Schmerzhafter Sex</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>660</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardGeschuetzt">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🛡
+Geschützt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardUngeschuetzt">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>⚠️
+Ungeschützt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardInterruptus">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔁
+Interruptus</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardKeinSex">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🚫
+Kein Sex</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardStarkLib">
+       <property name="geometry">
+        <rect>
+         <x>366</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔥
+Starke Libido</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardSchwachLib">
+       <property name="geometry">
+        <rect>
+         <x>456</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🌙
+Schwache Libido</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardSchmerzSex">
+       <property name="geometry">
+        <rect>
+         <x>546</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>💢
+Schmerzhafter Sex</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
-    <widget class="QFrame" name="div5"><property name="geometry"><rect><x>0</x><y>786</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ TÄGLICHE NOTIZEN ════ -->
-    <widget class="QLabel" name="lblKatNotizen"><property name="geometry"><rect><x>16</x><y>796</y><width>180</width><height>26</height></rect></property><property name="text"><string>Tägliche Notizen</string></property></widget>
+    <widget class="QFrame" name="div5">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>786</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatNotizen">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>796</y>
+       <width>180</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Tägliche Notizen</string>
+     </property>
+    </widget>
     <widget class="QTextEdit" name="txtNotiz">
-     <property name="geometry"><rect><x>8</x><y>830</y><width>374</width><height>90</height></rect></property>
-     <property name="placeholderText"><string>Wie fühlst du dich heute? Notiere hier alles …</string></property>
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>830</y>
+       <width>374</width>
+       <height>90</height>
+      </rect>
+     </property>
+     <property name="placeholderText">
+      <string>Wie fühlst du dich heute? Notiere hier alles …</string>
+     </property>
     </widget>
-
-    <widget class="QFrame" name="div6"><property name="geometry"><rect><x>0</x><y>932</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ AUSFLUSS ════ -->
-    <widget class="QLabel" name="lblKatAusfluss"><property name="geometry"><rect><x>16</x><y>942</y><width>110</width><height>26</height></rect></property><property name="text"><string>Ausfluss</string></property></widget>
-    <widget class="QPushButton" name="btnMehrAusfluss"><property name="geometry"><rect><x>130</x><y>944</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
+    <widget class="QFrame" name="div6">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>932</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatAusfluss">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>942</y>
+       <width>110</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Ausfluss</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollAusfluss">
-     <property name="geometry"><rect><x>0</x><y>976</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="widgetResizable"><bool>false</bool></property>
-     <widget class="QWidget" name="ausflussContents"><property name="geometry"><rect><x>0</x><y>0</y><width>480</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardKeinAusfluss"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🚫
-Keinen</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardKlebrig"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🍯
-Klebrig</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardCremig"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🤍
-Cremig</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardFadenziehend"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🌀
-Fadenziehend</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardUntypisch"><property name="geometry"><rect><x>366</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>⚠️
-Untypisch</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>976</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="ausflussContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>480</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardKeinAusfluss">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🚫
+Keinen</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardKlebrig">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🍯
+Klebrig</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardCremig">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🤍
+Cremig</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardFadenziehend">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🌀
+Fadenziehend</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardUntypisch">
+       <property name="geometry">
+        <rect>
+         <x>366</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>⚠️
+Untypisch</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
-    <widget class="QFrame" name="div7"><property name="geometry"><rect><x>0</x><y>1096</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ HAUT ════ -->
-    <widget class="QLabel" name="lblKatHaut"><property name="geometry"><rect><x>16</x><y>1106</y><width>80</width><height>26</height></rect></property><property name="text"><string>Haut</string></property></widget>
-    <widget class="QPushButton" name="btnMehrHaut"><property name="geometry"><rect><x>100</x><y>1108</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
+    <widget class="QFrame" name="div7">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1096</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatHaut">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>1106</y>
+       <width>80</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Haut</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollHaut">
-     <property name="geometry"><rect><x>0</x><y>1140</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="widgetResizable"><bool>false</bool></property>
-     <widget class="QWidget" name="hautContents"><property name="geometry"><rect><x>0</x><y>0</y><width>570</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardHautOk"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>👌
-Ok</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardHautGut"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>✨
-Gut</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardPickel"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>😣
-Pickel</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardTrocken"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🏜
-Trocken</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardFettig"><property name="geometry"><rect><x>366</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>💧
-Fettig</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardJuckend"><property name="geometry"><rect><x>456</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🌿
-Juckend</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1140</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="hautContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>570</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardHautOk">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>👌
+Ok</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardHautGut">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>✨
+Gut</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardPickel">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>😣
+Pickel</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardTrocken">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🏜
+Trocken</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardFettig">
+       <property name="geometry">
+        <rect>
+         <x>366</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>💧
+Fettig</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardJuckend">
+       <property name="geometry">
+        <rect>
+         <x>456</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🌿
+Juckend</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
-    <widget class="QFrame" name="div8"><property name="geometry"><rect><x>0</x><y>1260</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ VERDAUUNG ════ -->
-    <widget class="QLabel" name="lblKatVerdauung"><property name="geometry"><rect><x>16</x><y>1270</y><width>120</width><height>26</height></rect></property><property name="text"><string>Verdauung</string></property></widget>
-    <widget class="QPushButton" name="btnMehrVerdauung"><property name="geometry"><rect><x>140</x><y>1272</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
+    <widget class="QFrame" name="div8">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1260</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatVerdauung">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>1270</y>
+       <width>120</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Verdauung</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollVerdauung">
-     <property name="geometry"><rect><x>0</x><y>1304</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="widgetResizable"><bool>false</bool></property>
-     <widget class="QWidget" name="verdauungContents"><property name="geometry"><rect><x>0</x><y>0</y><width>570</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardVerdOk"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>👌
-Ok</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardBlaehbauch"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🎈
-Aufgebläht</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardBlaehungen"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>💨
-Blähungen</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardSodbrennen"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔥
-Sodbrennen</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardUebel"><property name="geometry"><rect><x>366</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🤢
-Übel</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardErbrechen"><property name="geometry"><rect><x>456</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🤮
-Erbrechen</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1304</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="verdauungContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>570</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardVerdOk">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>👌
+Ok</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardBlaehbauch">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🎈
+Aufgebläht</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardBlaehungen">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>💨
+Blähungen</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardSodbrennen">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔥
+Sodbrennen</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardUebel">
+       <property name="geometry">
+        <rect>
+         <x>366</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🤢
+Übel</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardErbrechen">
+       <property name="geometry">
+        <rect>
+         <x>456</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🤮
+Erbrechen</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
-    <widget class="QFrame" name="div9"><property name="geometry"><rect><x>0</x><y>1424</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ STUHLGANG ════ -->
-    <widget class="QLabel" name="lblKatStuhlgang"><property name="geometry"><rect><x>16</x><y>1434</y><width>120</width><height>26</height></rect></property><property name="text"><string>Stuhlgang</string></property></widget>
-    <widget class="QPushButton" name="btnMehrStuhlgang"><property name="geometry"><rect><x>140</x><y>1436</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
-    <widget class="QPushButton" name="cardStOk"><property name="geometry"><rect><x>6</x><y>1468</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>👌
-Ok</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-    <widget class="QPushButton" name="cardVerstopfung"><property name="geometry"><rect><x>96</x><y>1468</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🧱
-Verstopfung</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-    <widget class="QPushButton" name="cardDurchfall"><property name="geometry"><rect><x>186</x><y>1468</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>💧
-Durchfall</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-
-    <widget class="QFrame" name="div10"><property name="geometry"><rect><x>0</x><y>1570</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ TESTS ════ -->
-    <widget class="QLabel" name="lblKatTests"><property name="geometry"><rect><x>16</x><y>1580</y><width>80</width><height>26</height></rect></property><property name="text"><string>Tests</string></property></widget>
-    <widget class="QPushButton" name="btnMehrTests"><property name="geometry"><rect><x>100</x><y>1582</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
+    <widget class="QFrame" name="div9">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1424</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatStuhlgang">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>1434</y>
+       <width>120</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Stuhlgang</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cardStOk">
+     <property name="geometry">
+      <rect>
+       <x>6</x>
+       <y>1468</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>👌
+Ok</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cardVerstopfung">
+     <property name="geometry">
+      <rect>
+       <x>96</x>
+       <y>1468</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🧱
+Verstopfung</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cardDurchfall">
+     <property name="geometry">
+      <rect>
+       <x>186</x>
+       <y>1468</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>💧
+Durchfall</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="div10">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1570</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatTests">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>1580</y>
+       <width>80</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Tests</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollTests">
-     <property name="geometry"><rect><x>0</x><y>1614</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="widgetResizable"><bool>false</bool></property>
-     <widget class="QWidget" name="testsContents"><property name="geometry"><rect><x>0</x><y>0</y><width>396</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardPosOvu"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🟢
-Pos. Ovulationstest</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardNegOvu"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔴
-Neg. Ovulationstest</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardPosSchwanger"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🟢
-Pos. Schwangerschaftstest</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardNegSchwanger"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔴
-Neg. Schwangerschaftstest</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1614</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="testsContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>396</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardPosOvu">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🟢
+Pos. Ovulationstest</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardNegOvu">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔴
+Neg. Ovulationstest</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardPosSchwanger">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🟢
+Pos. Schwangerschaftstest</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardNegSchwanger">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔴
+Neg. Schwangerschaftstest</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
-    <widget class="QFrame" name="div11"><property name="geometry"><rect><x>0</x><y>1734</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ ANTIBABYPILLE ════ -->
-    <widget class="QLabel" name="lblKatPille"><property name="geometry"><rect><x>16</x><y>1744</y><width>160</width><height>26</height></rect></property><property name="text"><string>Antibabypille</string></property></widget>
-    <widget class="QPushButton" name="btnMehrPille"><property name="geometry"><rect><x>180</x><y>1746</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
+    <widget class="QFrame" name="div11">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1734</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatPille">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>1744</y>
+       <width>160</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Antibabypille</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollPille">
-     <property name="geometry"><rect><x>0</x><y>1778</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="widgetResizable"><bool>false</bool></property>
-     <widget class="QWidget" name="pilleContents"><property name="geometry"><rect><x>0</x><y>0</y><width>480</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardPilleGenommen"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>✅
-Genommen</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardPilleVergessen"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>❌
-Vergessen</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardPilleSpat"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>⏰
-Spät genommen</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardPilleDoppel"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>💊💊
-Doppelte Dosis</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardPillenfrei"><property name="geometry"><rect><x>366</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔓
-Pillenfreier Tag</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1778</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="pilleContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>480</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardPilleGenommen">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>✅
+Genommen</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardPilleVergessen">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>❌
+Vergessen</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardPilleSpat">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>⏰
+Spät genommen</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardPilleDoppel">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>💊💊
+Doppelte Dosis</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardPillenfrei">
+       <property name="geometry">
+        <rect>
+         <x>366</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔓
+Pillenfreier Tag</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
-    <widget class="QFrame" name="div12"><property name="geometry"><rect><x>0</x><y>1898</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ SPIRALE ════ -->
-    <widget class="QLabel" name="lblKatSpirale"><property name="geometry"><rect><x>16</x><y>1908</y><width>110</width><height>26</height></rect></property><property name="text"><string>Spirale</string></property></widget>
-    <widget class="QPushButton" name="btnMehrSpirale"><property name="geometry"><rect><x>130</x><y>1910</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
+    <widget class="QFrame" name="div12">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1898</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatSpirale">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>1908</y>
+       <width>110</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Spirale</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollSpirale">
-     <property name="geometry"><rect><x>0</x><y>1942</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="widgetResizable"><bool>false</bool></property>
-     <widget class="QWidget" name="spiraleContents"><property name="geometry"><rect><x>0</x><y>0</y><width>396</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardSpirFaden"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔍
-Faden überprüft</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardSpirEingesetzt"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>✅
-Eingesetzt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardSpirEntfernt"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>❌
-Entfernt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardSpirAusgewechselt"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔄
-Ausgewechselt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1942</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="spiraleContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>396</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardSpirFaden">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔍
+Faden überprüft</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardSpirEingesetzt">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>✅
+Eingesetzt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardSpirEntfernt">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>❌
+Entfernt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardSpirAusgewechselt">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔄
+Ausgewechselt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
-    <widget class="QFrame" name="div13"><property name="geometry"><rect><x>0</x><y>2062</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ VERHÜTUNGSSPRITZE ════ -->
-    <widget class="QLabel" name="lblKatSpritze"><property name="geometry"><rect><x>16</x><y>2072</y><width>200</width><height>26</height></rect></property><property name="text"><string>Verhütungsspritze</string></property></widget>
-    <widget class="QPushButton" name="btnMehrSpritze"><property name="geometry"><rect><x>220</x><y>2074</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
-    <widget class="QPushButton" name="cardSpritzVer"><property name="geometry"><rect><x>6</x><y>2106</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>💉
-Verabreicht</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-
-    <widget class="QFrame" name="div14"><property name="geometry"><rect><x>0</x><y>2208</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ HORMONIMPLANTAT ════ -->
-    <widget class="QLabel" name="lblKatImplantat"><property name="geometry"><rect><x>16</x><y>2218</y><width>190</width><height>26</height></rect></property><property name="text"><string>Hormonimplantat</string></property></widget>
-    <widget class="QPushButton" name="btnMehrImplantat"><property name="geometry"><rect><x>210</x><y>2220</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
-    <widget class="QPushButton" name="cardImplEingesetzt"><property name="geometry"><rect><x>6</x><y>2252</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>✅
-Eingesetzt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-    <widget class="QPushButton" name="cardImplEntfernt"><property name="geometry"><rect><x>96</x><y>2252</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>❌
-Entfernt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-    <widget class="QPushButton" name="cardImplAusgewechselt"><property name="geometry"><rect><x>186</x><y>2252</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔄
-Ausgewechselt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-
-    <widget class="QFrame" name="div15"><property name="geometry"><rect><x>0</x><y>2354</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ VERHÜTUNGSPFLASTER ════ -->
-    <widget class="QLabel" name="lblKatPflaster"><property name="geometry"><rect><x>16</x><y>2364</y><width>200</width><height>26</height></rect></property><property name="text"><string>Verhütungspflaster</string></property></widget>
-    <widget class="QPushButton" name="btnMehrPflaster"><property name="geometry"><rect><x>220</x><y>2366</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
+    <widget class="QFrame" name="div13">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>2062</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatSpritze">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>2072</y>
+       <width>200</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Verhütungsspritze</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cardSpritzVer">
+     <property name="geometry">
+      <rect>
+       <x>6</x>
+       <y>2106</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>💉
+Verabreicht</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="div14">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>2208</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatImplantat">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>2218</y>
+       <width>190</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Hormonimplantat</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cardImplEingesetzt">
+     <property name="geometry">
+      <rect>
+       <x>6</x>
+       <y>2252</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>✅
+Eingesetzt</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cardImplEntfernt">
+     <property name="geometry">
+      <rect>
+       <x>96</x>
+       <y>2252</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>❌
+Entfernt</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cardImplAusgewechselt">
+     <property name="geometry">
+      <rect>
+       <x>186</x>
+       <y>2252</y>
+       <width>90</width>
+       <height>98</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🔄
+Ausgewechselt</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="card" stdset="0">
+      <string>true</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="div15">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>2354</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatPflaster">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>2364</y>
+       <width>200</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Verhütungspflaster</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollPflaster">
-     <property name="geometry"><rect><x>0</x><y>2398</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="widgetResizable"><bool>false</bool></property>
-     <widget class="QWidget" name="pflasterContents"><property name="geometry"><rect><x>0</x><y>0</y><width>480</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardPflAufgeklebt"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>✅
-Aufgeklebt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardPflEntfernt"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>❌
-Entfernt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardPflSpatAuf"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>⏰
-Spät aufgeklebt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardPflSpatEnt"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>⏰
-Spät entfernt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardPflAusgewechselt"><property name="geometry"><rect><x>366</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔄
-Ausgewechselt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>2398</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="pflasterContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>480</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardPflAufgeklebt">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>✅
+Aufgeklebt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardPflEntfernt">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>❌
+Entfernt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardPflSpatAuf">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>⏰
+Spät aufgeklebt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardPflSpatEnt">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>⏰
+Spät entfernt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardPflAusgewechselt">
+       <property name="geometry">
+        <rect>
+         <x>366</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔄
+Ausgewechselt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
-    <widget class="QFrame" name="div16"><property name="geometry"><rect><x>0</x><y>2518</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ VERHÜTUNGSRING ════ -->
-    <widget class="QLabel" name="lblKatRing"><property name="geometry"><rect><x>16</x><y>2528</y><width>180</width><height>26</height></rect></property><property name="text"><string>Verhütungsring</string></property></widget>
-    <widget class="QPushButton" name="btnMehrRing"><property name="geometry"><rect><x>200</x><y>2530</y><width>120</width><height>22</height></rect></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>Mehr erfahren ›</string></property></widget>
+    <widget class="QFrame" name="div16">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>2518</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblKatRing">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>2528</y>
+       <width>180</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Verhütungsring</string>
+     </property>
+    </widget>
     <widget class="QScrollArea" name="scrollRing">
-     <property name="geometry"><rect><x>0</x><y>2562</y><width>390</width><height>108</height></rect></property>
-     <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property><property name="widgetResizable"><bool>false</bool></property>
-     <widget class="QWidget" name="ringContents"><property name="geometry"><rect><x>0</x><y>0</y><width>480</width><height>104</height></rect></property>
-      <widget class="QPushButton" name="cardRingEingesetzt"><property name="geometry"><rect><x>6</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>✅
-Eingesetzt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardRingEntfernt"><property name="geometry"><rect><x>96</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>❌
-Entfernt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardRingSpatEin"><property name="geometry"><rect><x>186</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>⏰
-Spät eingesetzt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardRingSpatEnt"><property name="geometry"><rect><x>276</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>⏰
-Spät entfernt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
-      <widget class="QPushButton" name="cardRingAusgewechselt"><property name="geometry"><rect><x>366</x><y>4</y><width>84</width><height>90</height></rect></property><property name="checkable"><bool>true</bool></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property><property name="text"><string>🔄
-Ausgewechselt</string></property><property name="card" stdset="0"><string>true</string></property></widget>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>2562</y>
+       <width>390</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="ringContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>480</width>
+        <height>104</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="cardRingEingesetzt">
+       <property name="geometry">
+        <rect>
+         <x>6</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>✅
+Eingesetzt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardRingEntfernt">
+       <property name="geometry">
+        <rect>
+         <x>96</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>❌
+Entfernt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardRingSpatEin">
+       <property name="geometry">
+        <rect>
+         <x>186</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>⏰
+Spät eingesetzt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardRingSpatEnt">
+       <property name="geometry">
+        <rect>
+         <x>276</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>⏰
+Spät entfernt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cardRingAusgewechselt">
+       <property name="geometry">
+        <rect>
+         <x>366</x>
+         <y>4</y>
+         <width>90</width>
+         <height>98</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>🔄
+Ausgewechselt</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="card" stdset="0">
+        <string>true</string>
+       </property>
+      </widget>
      </widget>
     </widget>
-
    </widget>
   </widget>
-
-  <!-- ════ SPEICHERN – fest am unteren Rand ════ -->
   <widget class="QPushButton" name="btnSpeichern">
-   <property name="geometry"><rect><x>8</x><y>776</y><width>374</width><height>52</height></rect></property>
-   <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-   <property name="styleSheet"><string notr="true">
+   <property name="geometry">
+    <rect>
+     <x>8</x>
+     <y>776</y>
+     <width>374</width>
+     <height>52</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">
 QPushButton#btnSpeichern {
     background: #E91E63;
     color: #FFFFFF;
@@ -659,10 +3060,12 @@ QPushButton#btnSpeichern {
 }
 QPushButton#btnSpeichern:hover { background: #C2185B; }
 QPushButton#btnSpeichern:pressed { background: #880E4F; }
-   </string></property>
-   <property name="text"><string>Speichern</string></property>
+   </string>
+   </property>
+   <property name="text">
+    <string>Speichern</string>
+   </property>
   </widget>
-
  </widget>
  <resources/>
  <connections/>

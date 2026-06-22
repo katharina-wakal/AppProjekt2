@@ -49,49 +49,14 @@ class EintragWindow(QMainWindow):
             button.clicked.connect(lambda checked, index=i: self.on_tag_gewaehlt(index))
 
         self.woche_aktualisieren()
-        # "Mehr erfahren"-Links
-        self.main_window.btnMehrPeriode.clicked.connect(
-            lambda: self.on_mehr_erfahren("Periode"))
-        self.main_window.btnMehrSchmier.clicked.connect(
-            lambda: self.on_mehr_erfahren("Schmierblutung"))
-        self.main_window.btnMehrGefuehle.clicked.connect(
-            lambda: self.on_mehr_erfahren("Gefühle"))
-        self.main_window.btnMehrSchmerzen.clicked.connect(
-            lambda: self.on_mehr_erfahren("Schmerzen"))
-        self.main_window.btnMehrSexleben.clicked.connect(
-            lambda: self.on_mehr_erfahren("Sexleben"))
-        self.main_window.btnMehrAusfluss.clicked.connect(
-            lambda: self.on_mehr_erfahren("Ausfluss"))
-        self.main_window.btnMehrHaut.clicked.connect(
-            lambda: self.on_mehr_erfahren("Haut"))
-        self.main_window.btnMehrVerdauung.clicked.connect(
-            lambda: self.on_mehr_erfahren("Verdauung"))
-        self.main_window.btnMehrStuhlgang.clicked.connect(
-            lambda: self.on_mehr_erfahren("Stuhlgang"))
-        self.main_window.btnMehrTests.clicked.connect(
-            lambda: self.on_mehr_erfahren("Tests"))
-        self.main_window.btnMehrPille.clicked.connect(
-            lambda: self.on_mehr_erfahren("Antibabypille"))
-        self.main_window.btnMehrSpirale.clicked.connect(
-            lambda: self.on_mehr_erfahren("Spirale"))
-        self.main_window.btnMehrSpritze.clicked.connect(
-            lambda: self.on_mehr_erfahren("Verhütungsspritze"))
-        self.main_window.btnMehrImplantat.clicked.connect(
-            lambda: self.on_mehr_erfahren("Hormonimplantat"))
-        self.main_window.btnMehrPflaster.clicked.connect(
-            lambda: self.on_mehr_erfahren("Verhütungspflaster"))
-        self.main_window.btnMehrRing.clicked.connect(
-            lambda: self.on_mehr_erfahren("Verhütungsring"))
 
         # Bereits gespeicherte Daten laden
         self.gespeicherten_eintrag_laden()
 
 
-
     # ── Datum anzeigen ────────────────────────────────────────────────────────
 
     def datum_anzeigen(self):
-        # Datum im Header formatieren: "Heute: 26. Mai 2026"
         monatsnamen = [
             "", "Januar", "Februar", "März", "April", "Mai", "Juni",
             "Juli", "August", "September", "Oktober", "November", "Dezember"
@@ -117,37 +82,14 @@ class EintragWindow(QMainWindow):
     def on_tag_gewaehlt(self, index):
 
         self.eintrag_datum = self.button_daten[index]
-
         self.datum_anzeigen()
-
-        # Wochenstreifen aktualisieren
         self.woche_aktualisieren()
-
-        # Alte Auswahl entfernen
         self.auswahl_zuruecksetzen()
-
-        # Gespeicherte Daten des Tages laden
         self.gespeicherten_eintrag_laden()
 
         print("Tag gewählt: " + str(self.eintrag_datum))
 
     # ── Alte Auswahl zurücksetzen ─────────────────────────────────────────────
-    # Wird verwendet wenn zwischen Tagen gewechselt wird.
-    #
-    # Beispiel:
-    # Tag 25 → Periode „Leicht“
-    # Tag 28 → Pflaster „Aufgeklebt“
-    #
-    # Ohne Zurücksetzen würden beim Wechseln alte ausgewählte Karten
-    # sichtbar bleiben obwohl sie gar nicht zu diesem Tag gehören.
-    #
-    # Deshalb:
-    # 1. Alle Karten deaktivieren
-    # 2. Notizfeld leeren
-    # 3. Danach gespeicherte Daten des neuen Tages laden
-    #
-    # So zeigt die Eintragsseite immer exakt die Daten des aktuell
-    # ausgewählten Tages an.
 
     def auswahl_zuruecksetzen(self):
         alle_karten = [
@@ -235,21 +177,11 @@ class EintragWindow(QMainWindow):
     # ── Slots: Allgemein ──────────────────────────────────────────────────────
 
     def on_personalisieren(self):
-        # TODO: Personalisierungsdialog öffnen (Kategorien ein-/ausblenden)
         print("Personalisieren geöffnet")
         QMessageBox.information(
             self,
             "Personalisieren",
             "Hier kannst du später Kategorien anpassen."
-        )
-
-    def on_mehr_erfahren(self, kategorie):
-        # TODO: Infoseite zur gewählten Kategorie öffnen
-        print("Mehr erfahren: " + kategorie)
-        QMessageBox.information(
-            self,
-            "Mehr erfahren – " + kategorie,
-            "Informationen zu '" + kategorie + "' kommen noch!"
         )
 
     def on_schliessen(self):
@@ -263,7 +195,6 @@ class EintragWindow(QMainWindow):
         self.close()
 
     def on_speichern(self):
-        # ── Alle ausgewählten Karten auslesen ─────────────────────────────────
 
         # Periode
         periode = ""
@@ -460,7 +391,7 @@ class EintragWindow(QMainWindow):
         elif self.main_window.cardRingAusgewechselt.isChecked():
             ring = "Ausgewechselt"
 
-        # ── Alles in der Konsole ausgeben (Debug) ─────────────────────────────
+        # ── Debug-Ausgabe ─────────────────────────────────────────────────────
         print("── Eintrag für " + str(self.eintrag_datum) + " ──")
         print("Periode:          " + periode)
         print("Schmierblutung:   " + schmier)
@@ -529,23 +460,23 @@ class EintragWindow(QMainWindow):
         if eintrag is None:
             return
 
-        periode = eintrag[0]
-        schmier = eintrag[1]
-        gefuehle = eintrag[2]
+        periode   = eintrag[0]
+        schmier   = eintrag[1]
+        gefuehle  = eintrag[2]
         schmerzen = eintrag[3]
-        sexleben = eintrag[4]
-        notiz = eintrag[5]
-        ausfluss = eintrag[6]
-        haut = eintrag[7]
+        sexleben  = eintrag[4]
+        notiz     = eintrag[5]
+        ausfluss  = eintrag[6]
+        haut      = eintrag[7]
         verdauung = eintrag[8]
         stuhlgang = eintrag[9]
-        tests = eintrag[10]
-        pille = eintrag[11]
-        spirale = eintrag[12]
-        spritze = eintrag[13]
+        tests     = eintrag[10]
+        pille     = eintrag[11]
+        spirale   = eintrag[12]
+        spritze   = eintrag[13]
         implantat = eintrag[14]
-        pflaster = eintrag[15]
-        ring = eintrag[16]
+        pflaster  = eintrag[15]
+        ring      = eintrag[16]
 
         # Periode
         if periode == "Leicht":
@@ -749,10 +680,7 @@ class EintragWindow(QMainWindow):
 
     def woche_aktualisieren(self):
 
-        montag = self.woche_start_berechnen(
-            self.eintrag_datum
-        )
-
+        montag = self.woche_start_berechnen(self.eintrag_datum)
         self.button_daten = []
 
         normal_style = """
@@ -781,13 +709,9 @@ class EintragWindow(QMainWindow):
         """
 
         for i, button in enumerate(self.tages_buttons):
-
             button_datum = montag + timedelta(days=i)
-
             self.button_daten.append(button_datum)
-
             button.setText(str(button_datum.day))
-
             if button_datum == self.eintrag_datum:
                 button.setStyleSheet(aktiv_style)
             else:
