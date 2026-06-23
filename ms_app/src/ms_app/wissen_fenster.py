@@ -1,5 +1,7 @@
 import webbrowser
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton
+import pathlib
+from PyQt6 import uic
+from PyQt6.QtWidgets import QMainWindow
 from wissen_api import suche_thema
 
 
@@ -8,30 +10,16 @@ class WissenFenster(QMainWindow):
     def __init__(self, titel, suchbegriff):
         super().__init__()
 
-        self.setWindowTitle(titel)
-        self.resize(500, 400)
+        working_dir = str(pathlib.Path(__file__).parent.resolve())
+        self.main_window = uic.loadUi(
+            working_dir + "/wissen_fenster.ui", self
+        )
 
-        zentral = QWidget()
-        layout = QVBoxLayout()
-
-        ueberschrift = QLabel(titel)
-        ueberschrift.setStyleSheet("font-size: 20px; font-weight: bold;")
-        layout.addWidget(ueberschrift)
-
-        # API aufrufen
         ergebnis = suche_thema(suchbegriff)
 
-        beschreibung = QLabel(ergebnis["beschreibung"])
-        beschreibung.setWordWrap(True)
-        beschreibung.setStyleSheet("font-size: 13px;")
-        layout.addWidget(beschreibung)
+        self.main_window.lblTitel.setText(titel)
+        self.main_window.lblBeschreibung.setText(ergebnis["beschreibung"])
 
-        if ergebnis["url"]:
-            button = QPushButton("Mehr auf Wikipedia lesen")
-            button.clicked.connect(
-                lambda checked, url=ergebnis["url"]: webbrowser.open(url)
-            )
-            layout.addWidget(button)
-
-        zentral.setLayout(layout)
-        self.setCentralWidget(zentral)
+        self.main_window.btnWikipedia.clicked.connect(
+            lambda: webbrowser.open(ergebnis["url"])
+        )

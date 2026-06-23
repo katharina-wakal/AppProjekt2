@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>420</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Wissen</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>16</number>
+    </property>
+    <property name="leftMargin">
+     <number>24</number>
+    </property>
+    <property name="topMargin">
+     <number>24</number>
+    </property>
+    <property name="rightMargin">
+     <number>24</number>
+    </property>
+    <property name="bottomMargin">
+     <number>24</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="lblTitel">
+      <property name="text">
+       <string>Titel</string>
+      </property>
+      <property name="styleSheet">
+       <string>font-size: 20px; font-weight: bold; color: #6C4A7E;</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="lblBeschreibung">
+      <property name="text">
+       <string>Beschreibung wird geladen...</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignTop</set>
+      </property>
+      <property name="styleSheet">
+       <string>font-size: 13px; color: #403744; background-color: white; border: 1px solid #e8cfe0; border-radius: 8px; padding: 12px;</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnWikipedia">
+      <property name="text">
+       <string>Mehr auf Wikipedia lesen</string>
+      </property>
+      <property name="styleSheet">
+       <string>QPushButton { background-color: #b07bc4; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: bold; } QPushButton:hover { background-color: #9a68b0; }</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

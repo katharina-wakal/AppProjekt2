@@ -1,13 +1,16 @@
 import requests
 from urllib.parse import quote
 
+
 def suche_thema(thema):
     url = "https://de.wikipedia.org/api/rest_v1/page/summary/" + quote(thema)
 
-    response = requests.get(
-        url,
-        timeout=10
-    )
+    print("URL:", url)
+
+    response = requests.get(url, timeout=10)
+
+    print("Status:", response.status_code)
+    print("Antwort:", response.text[:300])
 
     if response.status_code == 200:
         daten = response.json()
