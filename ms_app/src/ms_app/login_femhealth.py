@@ -18,7 +18,9 @@ from database import login_pruefen# Datenbankfunktion zur Überprüfung der Logi
 from dashboard import DashboardWindow# Fenster, das nach erfolgreichem Login geöffnet wird.
 from register import RegisterWindow# Registrierungsfenster für neue Benutzer.
 
-
+# ---------------------------------------------------------------------------
+# Klasse für das Login-Fenster
+# ---------------------------------------------------------------------------
 class LoginWindow(QMainWindow):
     """
         Verwaltet das Login-Fenster der FemHealth-App.
@@ -52,45 +54,106 @@ class LoginWindow(QMainWindow):
     # ── Slots ────────────────────────────────────────────────────────────────
 
     def on_login(self):
+        """
+                Liest die eingegebene E-Mail-Adresse und das Passwort aus
+                und überprüft die Zugangsdaten über die Datenbank.
+
+                Ablauf:
+                    1. E-Mail-Adresse und Passwort auslesen.
+                    2. Prüfen, ob beide Felder ausgefüllt sind.
+                    3. Passwort mit SHA-256 hashen.
+                    4. Zugangsdaten über login_pruefen kontrollieren.
+                    5. Bei erfolgreichem Login das Dashboard öffnen.
+                    6. Bei einem Fehler eine Warnmeldung anzeigen.
+                """
+        # Der Text aus dem E-Mail-Eingabefeld wird ausgelesen.
+        # strip() entfernt Leerzeichen am Anfang und Ende.
         email    = self.main_window.emailLineEdit.text().strip()
+
+        # Das eingegebene Passwort wird aus dem Passwortfeld ausgelesen.
         passwort = self.main_window.passwordLineEdit.text()
 
-        # Eingabe prüfen
+        # Es wird geprüft, ob mindestens eines der beiden Felder leer ist.
         if not email or not passwort:
+            # Falls ein Feld leer ist, wird eine Fehlermeldung angezeigt.
             self.zeige_fehler("Bitte E-Mail und Passwort eingeben.")
+            # Die Funktion wird hier beendet,
+            # damit keine Datenbankabfrage durchgeführt wird.
             return
 
+        # Die Funktion wird hier beendet,
+        # damit keine Datenbankabfrage durchgeführt wird.
         passwort_hash = hashlib.sha256(passwort.encode()).hexdigest()
 
+        # Die Datenbankfunktion überprüft,
+        # ob die E-Mail-Adresse und der Passwort-Hash zusammenpassen.
         user = login_pruefen(email, passwort_hash)
 
+        # Wenn kein passender Benutzer gefunden wurde,
+        # liefert login_pruefen den Wert None zurück.
         if user is None:
+            # Eine Fehlermeldung wird angezeigt.
             self.zeige_fehler("E-Mail oder Passwort ist falsch.")
+            # Die Funktion wird beendet.
             return
 
+        # Für Test- und Kontrollzwecke wird der gefundene Benutzer
+        # in der Konsole ausgegeben.
         print("Login erfolgreich:", user)
 
+        # Der erste Wert des zurückgegebenen Tupels
+        # enthält die ID des Benutzers.
         user_id = user[0]
         vorname = user[1]
 
+        # Ein neues Dashboard-Fenster wird erstellt.
+        # Dabei werden Vorname und Benutzer-ID übergeben.
         self.dashboard = DashboardWindow(
             vorname=vorname,
             user_id=user_id
         )
+        # Das Dashboard wird sichtbar gemacht.
         self.dashboard.show()
+        # Das Login-Fenster wird geschlossen,
+        # weil die Anmeldung erfolgreich war.
         self.close()
 
     def on_register(self):
+        """
+                Öffnet das Registrierungsfenster.
+
+                Das Login-Fenster wird währenddessen ausgeblendet.
+                Wenn das Registrierungsfenster das Signal login_requested sendet,
+                wird das Login-Fenster wieder angezeigt.
+
+                Rückgabewert:
+                    Die Funktion gibt keinen Wert zurück.
+                """
+        # Ein neues Registrierungsfenster wird erstellt.
         self.register_window = RegisterWindow()
 
+        # Das Signal login_requested des Registrierungsfensters
+        # wird mit der Funktion login_wieder_anzeigen verbunden.
+        #
+        # Das Signal wird ausgelöst, wenn der Benutzer
+        # von der Registrierung zurück zum Login wechseln möchte.
         self.register_window.login_requested.connect(
-            self.login_wieder_anzeigen
-        )
+            self.login_wieder_anzeigen)
 
+        # Das Registrierungsfenster wird angezeigt.
         self.register_window.show()
+        # Das Login-Fenster wird ausgeblendet,
+        # aber nicht vollständig geschlossen.
         self.hide()
 
     def on_passwort_vergessen(self):
+        """
+                Zeigt einen Hinweis an, wenn der Benutzer
+                auf „Passwort vergessen“ klickt.
+
+                Eine automatische Passwort-Wiederherstellung
+                ist aktuell nicht umgesetzt.
+                """
         QMessageBox.information(
             self,
             "Passwort vergessen",
@@ -99,14 +162,32 @@ class LoginWindow(QMainWindow):
     # ── Hilfsmethode ─────────────────────────────────────────────────────────
 
     def zeige_fehler(self, text):
+        """
+                Zeigt eine Warnmeldung mit einem übergebenen Fehlertext an.
+
+                Parameter:
+                    text (str): Text, der in der Fehlermeldung angezeigt wird.
+                """
         QMessageBox.warning(self, "Fehler", text)
 
     def login_wieder_anzeigen(self):
+        """
+                Zeigt das Login-Fenster wieder an.
+
+                Vorher werden die bisherigen Eingaben aus den Feldern gelöscht.
+                Anschließend wird das Fenster nach vorne geholt und aktiviert.
+                """
+        # Der Inhalt des E-Mail-Feldes wird gelöscht.
         self.main_window.emailLineEdit.clear()
+        # Der Inhalt des Passwortfeldes wird gelöscht.
         self.main_window.passwordLineEdit.clear()
 
+        # Das zuvor ausgeblendete Login-Fenster
+        # wird wieder sichtbar gemacht.
         self.show()
+        # Das Login-Fenster wird vor andere geöffnete Fenster geholt.
         self.raise_()
+        # Das Login-Fenster wird als aktives Fenster festgelegt.
         self.activateWindow()
 
 
