@@ -1,6 +1,6 @@
 import webbrowser
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton
-
+from wissen_api import suche_thema
 
 
 class WissenFenster(QMainWindow):
@@ -18,14 +18,19 @@ class WissenFenster(QMainWindow):
         ueberschrift.setStyleSheet("font-size: 20px; font-weight: bold;")
         layout.addWidget(ueberschrift)
 
-        beschreibung = QLabel("Aktuelle Artikel aus PubMed:")
+        # API aufrufen
+        ergebnis = suche_thema(suchbegriff)
+
+        beschreibung = QLabel(ergebnis["beschreibung"])
+        beschreibung.setWordWrap(True)
+        beschreibung.setStyleSheet("font-size: 13px;")
         layout.addWidget(beschreibung)
 
-        artikel_links = erstelle_artikel_links(suchbegriff)
-
-        for link in artikel_links:
-            button = QPushButton(link)
-            button.clicked.connect(lambda checked, url=link: webbrowser.open(url))
+        if ergebnis["url"]:
+            button = QPushButton("Mehr auf Wikipedia lesen")
+            button.clicked.connect(
+                lambda checked, url=ergebnis["url"]: webbrowser.open(url)
+            )
             layout.addWidget(button)
 
         zentral.setLayout(layout)

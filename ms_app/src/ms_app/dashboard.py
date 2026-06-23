@@ -348,24 +348,15 @@ class DashboardWindow(QMainWindow):
         )
 
     def oeffne_endometriose(self):
-        self.wissen_fenster = WissenFenster(
-            "Endometriose",
-            "endometriosis symptoms diagnosis"
-        )
+        self.wissen_fenster = WissenFenster("Endometriose", "Endometriose")
         self.wissen_fenster.show()
 
     def oeffne_sti(self):
-        self.wissen_fenster = WissenFenster(
-            "STI & Schutz",
-            "sexually transmitted infections prevention"
-        )
+        self.wissen_fenster = WissenFenster("STI & Schutz", "Geschlechtskrankheit")
         self.wissen_fenster.show()
 
     def oeffne_zyklus(self):
-        self.wissen_fenster = WissenFenster(
-            "Zyklus & PMS",
-            "premenstrual syndrome menstrual cycle"
-        )
+        self.wissen_fenster = WissenFenster("Zyklus & PMS", "Menstruationszyklus")
         self.wissen_fenster.show()
 
     def zeige_perioden_popup(self):
@@ -478,6 +469,8 @@ class DashboardWindow(QMainWindow):
             schluessel,
             heute
         )
+
+
 
 
 
