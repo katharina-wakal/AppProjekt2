@@ -1,4 +1,4 @@
-# Analyse-Seite – zeigt Zyklusstatistiken, Prognosen, Trends und Insights
+# Analyse-Seite – zeigt Zyklusstatistiken, Prognosen, Trends & Insights
 
 import sys
 import pathlib
@@ -19,7 +19,7 @@ class AnalyseWindow(QMainWindow):
         super().__init__()
         self.user_id = user_id
 
-        # .ui-Datei laden – genau wie in VL 4 gezeigt
+        # .ui-Datei laden
         working_dir = str(pathlib.Path(__file__).parent.resolve())
         self.main_window = uic.loadUi(working_dir + "/analyse.ui", self)
 

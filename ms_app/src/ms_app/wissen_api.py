@@ -5,9 +5,14 @@ from urllib.parse import quote
 def suche_thema(thema):
     url = "https://de.wikipedia.org/api/rest_v1/page/summary/" + quote(thema)
 
+    # User-Agent Header hinzufügen
+    headers = {
+        "User-Agent": "MeinSchulprojekt/1.0 (meine.email@beispiel.de)"
+    }
+
     print("URL:", url)
 
-    response = requests.get(url, timeout=10)
+    response = requests.get(url, headers=headers, timeout=10)
 
     print("Status:", response.status_code)
     print("Antwort:", response.text[:300])
