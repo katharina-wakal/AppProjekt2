@@ -1,23 +1,47 @@
-# Login Seite wo man sich anmelden muss oder registrieren
+# ---------------------------------------------------------------------------
+# Login-Seite der FemHealth-App
+# ---------------------------------------------------------------------------
+#
+# In dieser Datei wird das Login-Fenster der App verwaltet.
+# Benutzer können sich anmelden, zur Registrierung wechseln
+# oder einen Hinweis bei vergessenem Passwort anzeigen lassen.
+# Nach erfolgreichem Login wird das Dashboard geöffnet.
 
-import sys
-import pathlib
-from PyQt6 import uic
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox)
-import hashlib
-from database import login_pruefen
-from dashboard import DashboardWindow
-from register import RegisterWindow
+import sys# sys wird benötigt, um die Anwendung zu starten und beim Beenden einen passenden Rückgabewert an das Betriebssystem zu übergeben.
+import pathlib# pathlib wird verwendet, um den Pfad zur UI-Datei zuverlässig zu bestimmen.
+import hashlib # hashlib wird genutzt, um das eingegebene Passwort mit SHA-256 zu hashen
+
+from PyQt6 import uic# uic lädt die im Qt Designer erstellte Benutzeroberfläche.
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox)# Benötigte PyQt6-Komponenten für Fenster, Anwendung und Meldungen.
+
+from database import login_pruefen# Datenbankfunktion zur Überprüfung der Login-Daten.
+from dashboard import DashboardWindow# Fenster, das nach erfolgreichem Login geöffnet wird.
+from register import RegisterWindow# Registrierungsfenster für neue Benutzer.
 
 
 class LoginWindow(QMainWindow):
+    """
+        Verwaltet das Login-Fenster der FemHealth-App.
+
+        Die Klasse lädt die Benutzeroberfläche aus der Qt-Designer-Datei,
+        verarbeitet die Anmeldung und ermöglicht den Wechsel zur Registrierung.
+        """
 
     def __init__(self):
+        """
+            Initialisiert das Login-Fenster.
+
+            Dabei wird die UI-Datei geladen und die Buttons werden
+            mit den zugehörigen Funktionen verbunden.
+            """
+        # Den Konstruktor der übergeordneten Klasse QMainWindow ausführen.
         super().__init__()
 
 
         # .ui-Datei laden
+        # Den Ordner bestimmen, in dem sich diese Python-Datei befindet.
         working_dir = str(pathlib.Path(__file__).parent.resolve())
+        # Die im Qt Designer erstellte Login-Oberfläche laden.
         self.main_window = uic.loadUi(working_dir + "/login_femhealth.ui", self)
 
         # Buttons mit Funktionen verbinden

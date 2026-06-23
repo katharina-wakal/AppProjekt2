@@ -131,7 +131,7 @@ class ArztterminWindow(QMainWindow):
         print("Arzttermin wurde in der Datenbank gespeichert.")
 
         QMessageBox.information(self, "Gespeichert", "Termin wurde erfolgreich eingetragen! 🩺")
-        self.close()
+
 
     def on_datum_gewaehlt(self, neues_datum):
         # Wird aufgerufen wenn das Datum im QDateEdit geändert wird
