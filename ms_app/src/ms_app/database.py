@@ -789,9 +789,8 @@ def perioden_dauer_laden(user_id):
 # 5. ARZTTERMINE
 # =============================================================================
 
-def arzttermin_speichern(
-    user_id, doctor_name,doctor_type,location,appointment_date,
-    appointment_time,reminder,notes,preparation,result,follow_up_needed):
+def arzttermin_speichern(user_id,doctor_name,doctor_type,location,appointment_date,
+    appointment_time,notes):
     """
         Speichert einen neuen Arzttermin für einen Benutzer.
 
@@ -802,11 +801,7 @@ def arzttermin_speichern(
             location (str | None): Ort des Termins.
             appointment_date (str): Datum des Termins.
             appointment_time (str): Uhrzeit des Termins.
-            reminder (str | None): Gewählte Erinnerung.
             notes (str | None): Freie Notizen zum Termin.
-            preparation (str | None): Hinweise zur Vorbereitung.
-            result (str | None): Ergebnis oder Nachtrag zum Termin.
-            follow_up_needed (int | bool): Gibt an, ob eine Nachsorge nötig ist.
         """
     connection = create_connection()# Eine Verbindung zur Datenbank wird geöffnet.
     cursor = connection.cursor()# Der Cursor wird für den INSERT-Befehl erzeugt.
@@ -820,16 +815,12 @@ def arzttermin_speichern(
             location,
             appointment_date,
             appointment_time,
-            reminder,
-            notes,
-            preparation,
-            result,
-            follow_up_needed
+            notes
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
         user_id,doctor_name,doctor_type,location,appointment_date,
-        appointment_time,reminder,notes,preparation,result,follow_up_needed))
+        appointment_time,notes))
 
     connection.commit()# Der neue Arzttermin wird dauerhaft gespeichert.
     connection.close()# Die Verbindung wird anschließend geschlossen.

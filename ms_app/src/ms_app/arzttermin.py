@@ -38,7 +38,7 @@ class ArztterminWindow(QMainWindow):
         self.main_window.btnDay5.clicked.connect(lambda: self.on_tag_gewaehlt(5))  # Samstag im Wochenstreifen
         self.main_window.btnDay6.clicked.connect(lambda: self.on_tag_gewaehlt(6))  # Sonntag im Wochenstreifen
 
-    def on_schliessen(self):  # Wird ausgeführt, wenn das Fenster geschlossen werden soll
+    def on_schliessen(self):  # ausgeführt, wenn Fenster geschlossen werden soll
         from dashboard import DashboardWindow  # Importiert Dashboard hier, um Import-Probleme zu vermeiden
 
         self.dashboard = DashboardWindow(  # Erstellt ein neues Dashboard-Fenster
@@ -76,11 +76,7 @@ class ArztterminWindow(QMainWindow):
             ort,  # Ort der Praxis
             datum,  # Datum des Termins
             uhrzeit,  # Uhrzeit des Termins
-            "",  # Erinnerung (nicht mehr verwendet)
-            notiz,  # Kombinierte Notizen zum Termin
-            "",  # Vorbereitung (nicht mehr verwendet)
-            "",  # Befund / Ergebnis (nicht mehr verwendet)
-            0  # Folgetermin (nicht mehr verwendet)
+            notiz  # Kombinierte Notizen zum Termin
         )
 
         print("Arzttermin wurde in der Datenbank gespeichert.")  # Gibt Bestätigung in der Konsole aus
