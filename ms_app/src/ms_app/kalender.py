@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import (
     QGridLayout, QVBoxLayout, QMessageBox
 )
 from PyQt6.QtCore import Qt, QTimer
-from database import perioden_tage_laden, eintrag_fuer_tag_laden
+from database import perioden_tage_laden, eintrag_fuer_tag_laden, arzttermine_laden, arzttermin_fuer_tag_laden
 from datetime import datetime
 
 
@@ -26,6 +26,7 @@ class KalenderWindow(QMainWindow):
         self.main_window = uic.loadUi(working_dir + "/kalender.ui", self)
 
         self.perioden_tage = []
+        self.arzttermin_tage = []  # Liste mit Daten gespeicherter Arzttermine
 
         if self.user_id is not None:
 
@@ -38,6 +39,17 @@ class KalenderWindow(QMainWindow):
                 ).date()
 
                 self.perioden_tage.append(datum)
+
+            # Arzttermine aus der Datenbank laden
+            # Das Datum ist im Format 'dd.MM.yyyy' gespeichert (siehe arzttermin.py)
+            termin_daten = arzttermine_laden(self.user_id)
+
+            for datum_text in termin_daten:
+                try:
+                    datum = datetime.strptime(datum_text, "%d.%m.%Y").date()
+                    self.arzttermin_tage.append(datum)  # Datum zur Liste hinzufügen
+                except ValueError:
+                    pass  # Ungültiges Datumsformat wird übersprungen
 
         self.eisprung_zone = [
             date(2026, 5, 14),
@@ -162,6 +174,10 @@ class KalenderWindow(QMainWindow):
             "font-weight:500; min-height:38px; max-height:38px;"
         )
 
+        # Arzttermin-Tag (lila)
+        if datum in self.arzttermin_tage:
+            return basis + "background:#7B1FA2; color:#fff; border-radius:10px;"
+
         # Perioden-Tag (rot)
         if datum in self.perioden_tage:
             index = self.perioden_tage.index(datum)
@@ -217,46 +233,79 @@ class KalenderWindow(QMainWindow):
 
         if self.user_id is not None:
 
-            eintrag = eintrag_fuer_tag_laden(
-                self.user_id,
-                datum.strftime("%Y-%m-%d")
-            )
+            # Prüfen ob ein Arzttermin für diesen Tag gespeichert ist
+            # Das Datum wird ins Format 'dd.MM.yyyy' umgewandelt, so wie es gespeichert wird
+            datum_arzt = datum.strftime("%d.%m.%Y")
+            termin = arzttermin_fuer_tag_laden(self.user_id, datum_arzt)
 
-            if eintrag is not None:
+            if termin is not None:
 
-                labels = [
-                    ("🩸 Periode", eintrag[0]),
-                    ("🔴 Schmierblutung", eintrag[1]),
-                    ("💭 Gefühle", eintrag[2]),
-                    ("🤕 Schmerzen", eintrag[3]),
-                    ("❤️ Sexleben", eintrag[4]),
-                    ("📝 Notiz", eintrag[5]),
-                    ("💧 Ausfluss", eintrag[6]),
-                    ("✨ Haut", eintrag[7]),
-                    ("🍽 Verdauung", eintrag[8]),
-                    ("🚽 Stuhlgang", eintrag[9]),
-                    ("🧪 Tests", eintrag[10]),
-                    ("💊 Pille", eintrag[11]),
-                    ("🔵 Spirale", eintrag[12]),
-                    ("💉 Spritze", eintrag[13]),
-                    ("🌱 Implantat", eintrag[14]),
-                    ("🩹 Pflaster", eintrag[15]),
-                    ("⭕ Ring", eintrag[16]),
+                # Arzttermin-Felder mit lesbaren Labels zusammenstellen
+                arzt_labels = [
+                    ("🩺 Arzt / Ärztin", termin[0]),
+                    ("🏥 Fachrichtung", termin[1]),
+                    ("📍 Ort", termin[2]),
+                    ("🕐 Uhrzeit", termin[3]),
+                    ("🔔 Erinnerung", termin[4]),
+                    ("📝 Notiz", termin[5]),
+                    ("📋 Vorbereitung", termin[6]),
+                    ("🔬 Befund", termin[7]),
+                    ("🔁 Folgetermin", "Ja" if termin[8] == 1 else None),
                 ]
 
                 text = ""
 
-                for name, wert in labels:
+                for name, wert in arzt_labels:
                     if wert:
                         text += name + ": " + wert + "\n"
 
                 if text:
                     self.main_window.sheetEmpty.setText(text.strip())
                 else:
-                    self.main_window.sheetEmpty.setText("Keine getrackten Erfahrungen")
+                    self.main_window.sheetEmpty.setText("Keine Arzttermin-Details vorhanden")
 
             else:
-                self.main_window.sheetEmpty.setText("Keine getrackten Erfahrungen")
+
+                eintrag = eintrag_fuer_tag_laden(
+                    self.user_id,
+                    datum.strftime("%Y-%m-%d")
+                )
+
+                if eintrag is not None:
+
+                    labels = [
+                        ("🩸 Periode", eintrag[0]),
+                        ("🔴 Schmierblutung", eintrag[1]),
+                        ("💭 Gefühle", eintrag[2]),
+                        ("🤕 Schmerzen", eintrag[3]),
+                        ("❤️ Sexleben", eintrag[4]),
+                        ("📝 Notiz", eintrag[5]),
+                        ("💧 Ausfluss", eintrag[6]),
+                        ("✨ Haut", eintrag[7]),
+                        ("🍽 Verdauung", eintrag[8]),
+                        ("🚽 Stuhlgang", eintrag[9]),
+                        ("🧪 Tests", eintrag[10]),
+                        ("💊 Pille", eintrag[11]),
+                        ("🔵 Spirale", eintrag[12]),
+                        ("💉 Spritze", eintrag[13]),
+                        ("🌱 Implantat", eintrag[14]),
+                        ("🩹 Pflaster", eintrag[15]),
+                        ("⭕ Ring", eintrag[16]),
+                    ]
+
+                    text = ""
+
+                    for name, wert in labels:
+                        if wert:
+                            text += name + ": " + wert + "\n"
+
+                    if text:
+                        self.main_window.sheetEmpty.setText(text.strip())
+                    else:
+                        self.main_window.sheetEmpty.setText("Keine getrackten Erfahrungen")
+
+                else:
+                    self.main_window.sheetEmpty.setText("Keine getrackten Erfahrungen")
 
         else:
             self.main_window.sheetEmpty.setText("Keine getrackten Erfahrungen")

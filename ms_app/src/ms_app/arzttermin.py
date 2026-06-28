@@ -1,209 +1,183 @@
-# Arzttermin-Seite zum Eintragen und Verwalten von Arztterminen
+# Arzttermin-Seite zum Eintragen & Verwalten von Arztterminen
 
-import sys
-import pathlib
-from PyQt6 import uic
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PyQt6.QtCore import QDate, QTime
-from database import arzttermin_speichern
+import sys  # Systemfunktionen (z. B. Kommandozeilenargumente, Beenden)
+import pathlib  # Arbeiten mit Ordner & Dateien
+from PyQt6 import uic  # Lädt .ui-Datei
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox  # Qt-Klassen für App, Fenster, Meldungen
+from PyQt6.QtCore import QDate, QTime  # Qt-Klassen für Datum & Uhrzeit
+from database import arzttermin_speichern  # Speicherfunktion aus Datenbankdatei
 
-
+# Definiert das ArztterminWindow als Unterklasse von QMainWindow
 class ArztterminWindow(QMainWindow):
 
-    def __init__(self, user_id=None):
+    def __init__(self, user_id=None):  # Konstruktor: wird aufgerufen, wenn ArztterminWindow erstellt wird
 
-        super().__init__()
-        self.user_id = user_id
+        super().__init__()  # Ruft den Konstruktor der Elternklasse (QMainWindow) auf – immer nötig bei Vererbung
+        self.user_id = user_id  # Speichert Benutzer-ID im Objekt
 
-        # .ui-Datei laden – genau wie in VL 4 gezeigt
-        working_dir = str(pathlib.Path(__file__).parent.resolve())
-        self.main_window = uic.loadUi(working_dir + "/arzttermin.ui", self)
+        working_dir = str(pathlib.Path(__file__).parent.resolve())  # Ermittelt Ordner dieser Python-Datei
+        self.main_window = uic.loadUi(working_dir + "/arzttermin.ui", self)  # Lädt UI-Datei
 
-        # Datum auf heute setzen beim Öffnen
-        heute = QDate.currentDate()
-        self.main_window.datTermin.setDate(heute)
+        heute = QDate.currentDate()  # Holt das heutige Datum
+        self.main_window.datTermin.setDate(heute)  # Setzt das Datumsfeld auf heutige Datum
 
-        # Uhrzeit auf 08:00 setzen als Standardwert
-        self.main_window.timTermin.setTime(QTime(8, 0))
+        self.main_window.timTermin.setTime(QTime(8, 0))  # Setzt die Uhrzeit standardmäßig auf 08:00 Uhr
 
-        # Wochenstreifen beim Start befüllen
-        self.woche_aktualisieren(heute)
+        self.woche_aktualisieren(heute)  # Füllt den Wochenstreifen mit der aktuellen Woche
 
-        # ── Buttons mit Funktionen verbinden ──────────────────────────────────
+        self.main_window.btnClose.clicked.connect(self.on_schliessen)  # Verbindet Schließen-Button mit Funktion
+        self.main_window.btnSpeichern.clicked.connect(self.on_speichern)  # Verbindet Speichern-Button mit Funktion
 
-        self.main_window.btnClose.clicked.connect(self.on_schliessen)
-        self.main_window.btnSpeichern.clicked.connect(self.on_speichern)
+        self.main_window.datTermin.dateChanged.connect(self.on_datum_gewaehlt)  # Reagiert auf Datumsänderung
 
-        # Datum-Auswahl: Wochenstreifen springt zum gewählten Datum
-        self.main_window.datTermin.dateChanged.connect(self.on_datum_gewaehlt)
+        self.main_window.btnDay1.clicked.connect(lambda: self.on_tag_gewaehlt(0))  # Montag im Wochenstreifen
+        self.main_window.dayToday.clicked.connect(lambda: self.on_tag_gewaehlt(1))  # Dienstag im Wochenstreifen
+        self.main_window.btnDay2.clicked.connect(lambda: self.on_tag_gewaehlt(2))  # Mittwoch im Wochenstreifen
+        self.main_window.btnDay3.clicked.connect(lambda: self.on_tag_gewaehlt(3))  # Donnerstag im Wochenstreifen
+        self.main_window.btnDay4.clicked.connect(lambda: self.on_tag_gewaehlt(4))  # Freitag im Wochenstreifen
+        self.main_window.btnDay5.clicked.connect(lambda: self.on_tag_gewaehlt(5))  # Samstag im Wochenstreifen
+        self.main_window.btnDay6.clicked.connect(lambda: self.on_tag_gewaehlt(6))  # Sonntag im Wochenstreifen
 
-        # Tages-Buttons im Wochenstreifen
-        self.main_window.btnDay1.clicked.connect(lambda: self.on_tag_gewaehlt(0))
-        self.main_window.dayToday.clicked.connect(lambda: self.on_tag_gewaehlt(1))
-        self.main_window.btnDay2.clicked.connect(lambda: self.on_tag_gewaehlt(2))
-        self.main_window.btnDay3.clicked.connect(lambda: self.on_tag_gewaehlt(3))
-        self.main_window.btnDay4.clicked.connect(lambda: self.on_tag_gewaehlt(4))
-        self.main_window.btnDay5.clicked.connect(lambda: self.on_tag_gewaehlt(5))
-        self.main_window.btnDay6.clicked.connect(lambda: self.on_tag_gewaehlt(6))
-
-        # Erinnerungs-Chips: nur einen gleichzeitig auswählen
-        self.erinnerungs_chips = [
-            self.main_window.chipAmTag,
-            self.main_window.chip1Tag,
-            self.main_window.chip3Tage,
-            self.main_window.chip1Woche,
-        ]
-        for chip in self.erinnerungs_chips:
-            chip.clicked.connect(self.on_erinnerung_gewaehlt)
-
-        # Folgetermin-Chips
-        self.main_window.chipFolgeJa.clicked.connect(self.on_folgetermin_ja)
-        self.main_window.chipFolgeNein.clicked.connect(self.on_folgetermin_nein)
-
-    # ── Slots ─────────────────────────────────────────────────────────────────
-
-    def on_schliessen(self):
-        from dashboard import DashboardWindow
-
-        self.dashboard = DashboardWindow(
-            user_id=self.user_id
-        )
-
-        self.dashboard.show()
-        self.close()
-
-    def on_speichern(self):
-        # Alle Eingaben auslesen
-        arzt_name    = self.main_window.txtArztName.text().strip()
-        arzt_typ     = self.main_window.cmbArztTyp.currentText()
-        ort          = self.main_window.txtOrt.text().strip()
-        datum        = self.main_window.datTermin.date().toString("dd.MM.yyyy")
-        uhrzeit      = self.main_window.timTermin.time().toString("HH:mm")
-        notiz        = self.main_window.txtNotiz.toPlainText().strip()
-        vorbereitung = self.main_window.txtVorbereitung.toPlainText().strip()
-        befund       = self.main_window.txtBefund.toPlainText().strip()
-
-        # Pflichtfelder prüfen
-        if not arzt_name:
-            self.zeige_fehler("Bitte den Namen des Arztes / der Ärztin eingeben.")
-            return
-
-        if arzt_typ == "🩺  Bitte wählen …":
-            self.zeige_fehler("Bitte eine Fachrichtung auswählen.")
-            return
-
-        if self.user_id is None:
-            self.zeige_fehler("Kein Benutzer angemeldet.")
-            return
-
-        erinnerung = ""
-
-        if self.main_window.chipAmTag.isChecked():
-            erinnerung = "Am selben Tag"
-        elif self.main_window.chip1Tag.isChecked():
-            erinnerung = "1 Tag vorher"
-        elif self.main_window.chip3Tage.isChecked():
-            erinnerung = "3 Tage vorher"
-        elif self.main_window.chip1Woche.isChecked():
-            erinnerung = "1 Woche vorher"
-
-        folgetermin = 0
-
-        if self.main_window.chipFolgeJa.isChecked():
-            folgetermin = 1
-        elif self.main_window.chipFolgeNein.isChecked():
-            folgetermin = 0
-
-        arzttermin_speichern(
-            self.user_id,
-            arzt_name,
-            arzt_typ,
-            ort,
-            datum,
-            uhrzeit,
-            erinnerung,
-            notiz,
-            vorbereitung,
-            befund,
-            folgetermin
-        )
-
-        print("Arzttermin wurde in der Datenbank gespeichert.")
-
-        QMessageBox.information(self, "Gespeichert", "Termin wurde erfolgreich eingetragen! 🩺")
-
-
-    def on_datum_gewaehlt(self, neues_datum):
-        # Wird aufgerufen wenn das Datum im QDateEdit geändert wird
-        # Wochenstreifen springt automatisch zum neuen Datum
-        self.woche_aktualisieren(neues_datum)
-
-    def on_tag_gewaehlt(self, offset):
-        # Wird aufgerufen wenn ein Tages-Button im Wochenstreifen gedrückt wird
-        # offset = Position des Tages in der Woche (0 = Mo, 1 = Di, …, 6 = So)
-        montag = self.woche_start_berechnen(self.main_window.datTermin.date())
-        gewaehlt = montag.addDays(offset)
-
-        # Datum im DateEdit setzen – löst on_datum_gewaehlt aus
-        self.main_window.datTermin.setDate(gewaehlt)
-
-    def on_erinnerung_gewaehlt(self):
-        # Stellt sicher dass immer nur ein Erinnerungs-Chip ausgewählt ist
-        geklickt = self.sender()
-        for chip in self.erinnerungs_chips:
-            if chip is not geklickt:
-                chip.setChecked(False)
-
-        # TODO: Erinnerung planen
-        print("Erinnerung gesetzt: " + geklickt.text())
-
-    def on_folgetermin_ja(self):
-        # Folgetermin "Ja" → "Nein"-Chip deaktivieren
-        self.main_window.chipFolgeNein.setChecked(False)
-        print("Folgetermin: Ja")
-
-    def on_folgetermin_nein(self):
-        # Folgetermin "Nein" → "Ja"-Chip deaktivieren
-        self.main_window.chipFolgeJa.setChecked(False)
-        print("Folgetermin: Nein")
-
-    # ── Hilfsmethoden ─────────────────────────────────────────────────────────
-
-    def woche_start_berechnen(self, datum):
-        # Gibt den Montag der Woche zurück in der das Datum liegt
-        # dayOfWeek(): Montag = 1, Dienstag = 2, ..., Sonntag = 7
-        tage_seit_montag = datum.dayOfWeek() - 1
-        return datum.addDays(-tage_seit_montag)
-
-    def woche_aktualisieren(self, datum):
-        # Aktualisiert die 7 Tages-Buttons im Wochenstreifen
-        montag = self.woche_start_berechnen(datum)
-
-        # Liste der Tages-Buttons in Reihenfolge Mo–So
-        tages_buttons = [
-            self.main_window.btnDay1,
-            self.main_window.dayToday,
-            self.main_window.btnDay2,
-            self.main_window.btnDay3,
-            self.main_window.btnDay4,
-            self.main_window.btnDay5,
-            self.main_window.btnDay6,
+        self.erinnerungs_chips = [  # Liste mit allen Erinnerungs-Chips
+            self.main_window.chipAmTag,  # Chip für Erinnerung am selben Tag
+            self.main_window.chip1Tag,  # Chip für Erinnerung 1 Tag vorher
+            self.main_window.chip3Tage,  # Chip für Erinnerung 3 Tage vorher
+            self.main_window.chip1Woche,  # Chip für Erinnerung 1 Woche vorher
         ]
 
-        for i in range(7):
-            tag = montag.addDays(i)
-            tages_buttons[i].setText(str(tag.day()))
+        for chip in self.erinnerungs_chips:  # Geht jeden Erinnerungs-Chip einzeln durch
+            chip.clicked.connect(self.on_erinnerung_gewaehlt)  # Verbindet jeden Chip mit derselben Funktion
 
-        print("Woche angezeigt ab: " + montag.toString("dd.MM.yyyy"))
+        self.main_window.chipFolgeJa.clicked.connect(self.on_folgetermin_ja)  # Verbindet Folgetermin-Ja-Chip
+        self.main_window.chipFolgeNein.clicked.connect(self.on_folgetermin_nein)  # Verbindet Folgetermin-Nein-Chip
 
-    def zeige_fehler(self, text):
-        QMessageBox.warning(self, "Fehler", text)
+    def on_schliessen(self):  # Wird ausgeführt, wenn das Fenster geschlossen werden soll
+        from dashboard import DashboardWindow  # Importiert Dashboard hier, um Import-Probleme zu vermeiden
+
+        self.dashboard = DashboardWindow(  # Erstellt ein neues Dashboard-Fenster
+            user_id=self.user_id  # Übergibt die aktuelle Benutzer-ID
+        )
+
+        self.dashboard.show()  # Zeigt das Dashboard an
+        self.close()  # Schließt das aktuelle Arzttermin-Fenster
 
 
-# ── Programm starten ──────────────────────────────────────────────────────────
+    def on_speichern(self):  # Ausgeführt, wenn Speichern-Button gedrückt
+        arzt_name = self.main_window.txtArztName.text().strip()  # Liest den Arztnamen aus & entfernt Leerzeichen
+        arzt_typ = self.main_window.cmbArztTyp.currentText()  # Liest ausgewählte Fachrichtung aus
+        ort = self.main_window.txtOrt.text().strip()  # Liest Ort aus & entfernt Leerzeichen
+        datum = self.main_window.datTermin.date().toString("dd.MM.yyyy")  # Liest Datum als Text aus
+        uhrzeit = self.main_window.timTermin.time().toString("HH:mm")  # Liest Uhrzeit als Text aus
+        notiz = self.main_window.txtNotiz.toPlainText().strip()  # Liest Notiz aus
+        vorbereitung = self.main_window.txtVorbereitung.toPlainText().strip()  # Liest Vorbereitung aus
+        befund = self.main_window.txtBefund.toPlainText().strip()  # Liest dBefund aus
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = ArztterminWindow()
-    window.show()
-    sys.exit(app.exec())
+        if not arzt_name:  # Prüft, ob kein Arztname eingegeben wurde
+            self.zeige_fehler("Bitte den Namen des Arztes / der Ärztin eingeben.")  # Zeigt Fehlermeldung
+            return  # Bricht Funktion ab
+
+        if arzt_typ == "🩺  Bitte wählen …":  # Prüft, ob keine Fachrichtung gewählt wurde
+            self.zeige_fehler("Bitte eine Fachrichtung auswählen.")  # Zeigt Fehlermeldung
+            return  # Bricht Funktion ab
+
+        if self.user_id is None:  # Prüft, ob kein Benutzer angemeldet ist
+            self.zeige_fehler("Kein Benutzer angemeldet.")  # Zeigt Fehlermeldung
+            return  # Bricht Funktion ab
+
+        erinnerung = ""  # Standardwert: keine Erinnerung ausgewählt
+
+        if self.main_window.chipAmTag.isChecked():  # Prüft, ob Erinnerung am selben Tag gewählt wurde
+            erinnerung = "Am selben Tag"  # Speichert die Auswahl als Text
+        elif self.main_window.chip1Tag.isChecked():  # Prüft, ob 1 Tag vorher gewählt wurde
+            erinnerung = "1 Tag vorher"  # Speichert die Auswahl als Text
+        elif self.main_window.chip3Tage.isChecked():  # Prüft, ob 3 Tage vorher gewählt wurde
+            erinnerung = "3 Tage vorher"  # Speichert die Auswahl als Text
+        elif self.main_window.chip1Woche.isChecked():  # Prüft, ob 1 Woche vorher gewählt wurde
+            erinnerung = "1 Woche vorher"  # Speichert die Auswahl als Text
+
+        folgetermin = 0  # Standardwert: kein Folgetermin
+
+        if self.main_window.chipFolgeJa.isChecked():  # Prüft, ob Folgetermin Ja gewählt wurde
+            folgetermin = 1  # Speichert Ja als 1
+        elif self.main_window.chipFolgeNein.isChecked():  # Prüft, ob Folgetermin Nein gewählt wurde
+            folgetermin = 0  # Speichert Nein als 0
+
+        arzttermin_speichern(  # Ruft die Datenbankfunktion zum Speichern auf
+            self.user_id,  # Benutzer-ID
+            arzt_name,  # Name des Arztes / der Ärztin
+            arzt_typ,  # Fachrichtung
+            ort,  # Ort der Praxis
+            datum,  # Datum des Termins
+            uhrzeit,  # Uhrzeit des Termins
+            erinnerung,  # Erinnerungsauswahl
+            notiz,  # Notizen zum Termin
+            vorbereitung,  # Vorbereitung für den Termin
+            befund,  # Befund / Ergebnis
+            folgetermin  # Information, ob ein Folgetermin nötig ist
+        )
+
+        print("Arzttermin wurde in der Datenbank gespeichert.")  # Gibt Bestätigung in der Konsole aus
+
+        QMessageBox.information(  # Zeigt eine Erfolgsmeldung im Fenster
+            self,  # Elternfenster der Meldung
+            "Gespeichert",  # Titel der Meldung
+            "Termin wurde erfolgreich eingetragen! 🩺"  # Text der Meldung
+        )
+
+    def on_datum_gewaehlt(self, neues_datum):  # Wird ausgeführt, wenn ein neues Datum gewählt wird
+        self.woche_aktualisieren(neues_datum)  # Aktualisiert den Wochenstreifen passend zum Datum
+
+    def on_tag_gewaehlt(self, offset):  # Wird ausgeführt, wenn ein Button im Wochenstreifen geklickt wird
+        montag = self.woche_start_berechnen(self.main_window.datTermin.date())  # Berechnet Montag der aktuellen Woche
+        gewaehlt = montag.addDays(offset)  # Berechnet den gewünschten Tag über den Offset
+        self.main_window.datTermin.setDate(gewaehlt)  # Setzt das Datum im Datumsfeld
+
+    def on_erinnerung_gewaehlt(self):  # Wird ausgeführt, wenn ein Erinnerungs-Chip geklickt wird
+        geklickt = self.sender()  # Ermittelt, welcher Chip geklickt wurde
+
+        for chip in self.erinnerungs_chips:  # Geht alle Erinnerungs-Chips durch
+            if chip is not geklickt:  # Prüft, ob es nicht der angeklickte Chip ist
+                chip.setChecked(False)  # Deaktiviert alle anderen Chips
+
+        print("Erinnerung gesetzt: " + geklickt.text())  # Gibt die gewählte Erinnerung in der Konsole aus
+
+    def on_folgetermin_ja(self):  # Wird ausgeführt, wenn Folgetermin Ja geklickt wird
+        self.main_window.chipFolgeNein.setChecked(False)  # Deaktiviert den Nein-Chip
+        print("Folgetermin: Ja")  # Gibt Auswahl in der Konsole aus
+
+    def on_folgetermin_nein(self):  # Wird ausgeführt, wenn Folgetermin Nein geklickt wird
+        self.main_window.chipFolgeJa.setChecked(False)  # Deaktiviert den Ja-Chip
+        print("Folgetermin: Nein")  # Gibt Auswahl in der Konsole aus
+
+    def woche_start_berechnen(self, datum):  # Berechnet den Wochenanfang zu einem Datum
+        tage_seit_montag = datum.dayOfWeek() - 1  # Berechnet Anzahl Tage seit Montag
+        return datum.addDays(-tage_seit_montag)  # Gibt den Montag der Woche zurück
+
+    def woche_aktualisieren(self, datum):  # Aktualisiert die sichtbare Wochenleiste
+        montag = self.woche_start_berechnen(datum)  # Berechnet den Montag der Woche
+
+        tages_buttons = [  # Liste der sieben Tages-Buttons
+            self.main_window.btnDay1,  # Montag
+            self.main_window.dayToday,  # Dienstag
+            self.main_window.btnDay2,  # Mittwoch
+            self.main_window.btnDay3,  # Donnerstag
+            self.main_window.btnDay4,  # Freitag
+            self.main_window.btnDay5,  # Samstag
+            self.main_window.btnDay6,  # Sonntag
+        ]
+
+        for i in range(7):  # Schleife läuft für 7 Tage
+            tag = montag.addDays(i)  # Berechnet den jeweiligen Tag
+            tages_buttons[i].setText(str(tag.day()))  # Setzt die Tageszahl auf den passenden Button
+
+        print("Woche angezeigt ab: " + montag.toString("dd.MM.yyyy"))  # Gibt Wochenstart in der Konsole aus
+
+    def zeige_fehler(self, text):  # Hilfsfunktion für Fehlermeldungen
+        QMessageBox.warning(self, "Fehler", text)  # Zeigt eine Warnmeldung an
+
+
+if __name__ == "__main__":  # Prüft, ob diese Datei direkt gestartet wird
+    app = QApplication(sys.argv)  # Erstellt die Qt-Anwendung
+    window = ArztterminWindow()  # Erstellt das Arzttermin-Fenster
+    window.show()  # Zeigt das Fenster an
+    sys.exit(app.exec())  # Startet die App-Schleife und beendet das Programm sauber

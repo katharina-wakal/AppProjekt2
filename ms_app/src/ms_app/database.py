@@ -453,7 +453,6 @@ def perioden_tage_laden(user_id):
         WHERE user_id = ?
         AND period_strength IS NOT NULL
         AND period_strength != ''
-        ORDER BY entry_date ASC
     """, (user_id,))
 
     # fetchall liefert alle passenden Datensätze als Liste von Tupeln.
@@ -834,6 +833,61 @@ def arzttermin_speichern(
 
     connection.commit()# Der neue Arzttermin wird dauerhaft gespeichert.
     connection.close()# Die Verbindung wird anschließend geschlossen.
+
+def arzttermine_laden(user_id):
+    connection = create_connection()# Eine Verbindung zur Datenbank wird geöffnet.
+    cursor = connection.cursor()# Ein Cursor wird für die SELECT-Abfrage erstellt.
+
+    # Alle Termindaten des Benutzers werden aus der Tabelle geladen.
+    cursor.execute("""
+        SELECT appointment_date
+        FROM doctor_appointments
+        WHERE user_id = ?
+    """, (user_id,))
+
+    # fetchall liefert alle passenden Datensätze als Liste von Tupeln.
+    daten = cursor.fetchall()
+
+    connection.close()# Die Datenbankverbindung wird nach dem Laden geschlossen.
+
+    # In dieser Liste werden die Datumswerte gesammelt.
+    termine = []
+
+    # Jeder Datenbanktreffer besteht aus einem Tupel mit einem Datum.
+    for eintrag in daten:
+        # Der erste Wert des Tupels ist appointment_date und wird angehängt.
+        termine.append(eintrag[0])
+
+    # Die fertige Liste aller Termindaten wird zurückgegeben.
+    return termine
+
+def arzttermin_fuer_tag_laden(user_id, datum):
+    connection = create_connection()# Eine Verbindung zur Datenbank wird geöffnet.
+    cursor = connection.cursor()# Ein Cursor wird für die SELECT-Abfrage erstellt.
+
+    # Alle gespeicherten Felder des Termins für den angegebenen Tag werden geladen.
+    cursor.execute("""
+        SELECT
+            doctor_name,
+            doctor_type,
+            location,
+            appointment_time,
+            reminder,
+            notes,
+            preparation,
+            result,
+            follow_up_needed
+        FROM doctor_appointments
+        WHERE user_id = ?
+        AND appointment_date = ?
+    """, (user_id, datum))
+
+    # fetchone liefert den ersten passenden Termin oder None.
+    termin = cursor.fetchone()
+
+    connection.close()# Die Verbindung wird nach der Abfrage geschlossen.
+
+    return termin# Der Datensatz oder None wird zurückgegeben.
 
 # =============================================================================
 # 6. BENUTZERDATEN UND CREDIT-SYSTEM
