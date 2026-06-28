@@ -15,10 +15,10 @@ import webbrowser
 # Settings-Fenster importieren – Datei muss im selben Ordner liegen
 from settings import SettingsWindow
 from eintrag import EintragWindow
-from database import periodenstarts_laden, user_vorname_laden
+from database import periodenstarts_laden, perioden_dauer_laden,user_vorname_laden
 from calculation import calculate_cycle_prediction
 from cycle_ring_widget import CycleRingWidget
-from datetime import date, datetime
+from datetime import date
 from arzttermin import ArztterminWindow
 from kalender import KalenderWindow
 from analyse import AnalyseWindow
@@ -299,53 +299,160 @@ class DashboardWindow(QMainWindow):
         self.close()
 
     def zyklus_prognose_laden(self):
+        """
+        Lädt die Periodendaten des angemeldeten Nutzers,
+        berechnet daraus die Zyklusprognose und übergibt
+        die Ergebnisse an den Zyklus-Ring.
+        """
+
+        # Ohne angemeldeten Nutzer können keine Daten geladen werden.
         if self.user_id is None:
+            self.cycle_ring.hide()
             return
 
+        # Alle erkannten Periodenstarts des Nutzers laden.
         periodenstarts = periodenstarts_laden(self.user_id)
 
+        # Wenn noch keine Periode eingetragen wurde,
+        # kann keine Zyklusprognose erstellt werden.
         if len(periodenstarts) == 0:
-            self.main_window.lblDaysInfo.setText("Noch keine Periode eingetragen")
-            self.main_window.lblCycleDay.setText("Keine Zyklusdaten")
-            self.main_window.lblCyclePhase.setText("Noch keine Prognose")
+            self.cycle_ring.hide()
+
+            self.main_window.lblDaysInfo.setText(
+                "Noch keine Periode eingetragen"
+            )
+
+            self.main_window.lblCycleDay.setText(
+                "Keine Zyklusdaten"
+            )
+
+            self.main_window.lblCyclePhase.setText(
+                "Noch keine Prognose"
+            )
+
             return
 
+        # Die zentrale Berechnungsfunktion aufrufen.
         prognose = calculate_cycle_prediction(periodenstarts)
 
-        naechste_periode = prognose["predicted_period_start"]
-        eisprung = prognose["predicted_ovulation"]
-        durchschnitt = prognose["average_cycle"]
+        # Berechnete Werte aus dem Ergebnis übernehmen.
+        naechste_periode = prognose[
+            "predicted_period_start"
+        ]
 
-        letzte_periode = prognose["predicted_period_start"]
+        eisprung = prognose[
+            "predicted_ovulation"
+        ]
 
-        heute = date.today()
+        durchschnittliche_zykluslaenge = prognose[
+            "average_cycle"
+        ]
 
-        zyklus_tag = (
-                             (heute - letzte_periode).days
-                             % durchschnitt
-                     ) + 1
+        aktueller_zyklustag = prognose[
+            "current_cycle_day"
+        ]
 
-        eisprung_tag = durchschnitt - 14
+        tage_bis_periode = prognose[
+            "days_until_period"
+        ]
 
+        eisprung_tag = prognose[
+            "ovulation_cycle_day"
+        ]
+
+        # Die gespeicherten Periodendauern aus der Datenbank laden.
+        perioden_dauern = perioden_dauer_laden(
+            self.user_id
+        )
+
+        # Wenn Periodendauern vorhanden sind, wird aus den
+        # letzten sechs Perioden ein Durchschnitt berechnet.
+        if len(perioden_dauern) > 0:
+            letzte_perioden_dauern = perioden_dauern[-6:]
+
+            durchschnittliche_periodendauer = round(
+                sum(letzte_perioden_dauern)
+                / len(letzte_perioden_dauern)
+            )
+
+        else:
+            # Ersatzwert, falls noch keine Periodendauer
+            # berechnet werden konnte.
+            durchschnittliche_periodendauer = 5
+
+        # Sicherheitsprüfung:
+        # Die Periodendauer darf nicht kleiner als ein Tag sein.
+        durchschnittliche_periodendauer = max(
+            1,
+            durchschnittliche_periodendauer
+        )
+
+        # Die Periodendauer darf nicht länger als
+        # der gesamte Zyklus sein.
+        durchschnittliche_periodendauer = min(
+            durchschnittliche_periodendauer,
+            durchschnittliche_zykluslaenge
+        )
+
+        # Beginn und Ende der fruchtbaren Phase berechnen.
+        eisprung_start = max(
+            1,
+            eisprung_tag - 2
+        )
+
+        eisprung_ende = min(
+            durchschnittliche_zykluslaenge,
+            eisprung_tag + 2
+        )
+
+        # Den Ring mit den berechneten Daten aktualisieren.
         self.cycle_ring.zyklus_setzen(
-            heute=zyklus_tag,
-            laenge=durchschnitt,
+            heute=aktueller_zyklustag,
+            laenge=durchschnittliche_zykluslaenge,
             periode_start=1,
-            periode_ende=5,
-            eisprung_start=eisprung_tag - 2,
-            eisprung_ende=eisprung_tag + 2
+            periode_ende=durchschnittliche_periodendauer,
+            eisprung_start=eisprung_start,
+            eisprung_ende=eisprung_ende,
+            tage_bis_periode=tage_bis_periode
         )
 
-        self.main_window.lblDaysInfo.setText(
-            "Nächste Periode: " + naechste_periode.strftime("%d.%m.%Y")
-        )
+        # Den Ring anzeigen.
+        self.cycle_ring.show()
 
+        # Unterschiedliche Texte anzeigen, je nachdem,
+        # ob die Periode noch bevorsteht oder überfällig ist.
+        if tage_bis_periode < 0:
+            self.main_window.lblDaysInfo.setText(
+                "Periode seit "
+                + str(abs(tage_bis_periode))
+                + " Tagen überfällig"
+            )
+
+        elif tage_bis_periode == 0:
+            self.main_window.lblDaysInfo.setText(
+                "Periode voraussichtlich heute"
+            )
+
+        else:
+            self.main_window.lblDaysInfo.setText(
+                "Nächste Periode: "
+                + naechste_periode.strftime("%d.%m.%Y")
+            )
+
+        # Tatsächlichen aktuellen Zyklustag und
+        # durchschnittliche Zykluslänge anzeigen.
         self.main_window.lblCycleDay.setText(
-            str(durchschnitt) + "-Tage-Zyklus"
+            "Zyklustag "
+            + str(aktueller_zyklustag)
+            + " · Ø "
+            + str(durchschnittliche_zykluslaenge)
+            + " Tage"
         )
 
+        # Das berechnete Eisprungdatum anzeigen.
         self.main_window.lblCyclePhase.setText(
-            "Eisprung ca. am " + eisprung.strftime("%d.%m.%Y")
+            "Eisprung ca. am "
+            + eisprung.strftime("%d.%m.%Y")
         )
 
     def oeffne_endometriose(self):

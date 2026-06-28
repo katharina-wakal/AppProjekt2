@@ -453,6 +453,7 @@ def perioden_tage_laden(user_id):
         WHERE user_id = ?
         AND period_strength IS NOT NULL
         AND period_strength != ''
+        ORDER BY entry_date ASC
     """, (user_id,))
 
     # fetchall liefert alle passenden Datensätze als Liste von Tupeln.

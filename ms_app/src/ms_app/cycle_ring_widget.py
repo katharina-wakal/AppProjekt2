@@ -1,95 +1,245 @@
 # cycle_ring_widget.py
-# Zyklus-Ring Widget für FemHealth Dashboard
+# Dieses Modul enthält ein eigenes Widget, das den Zyklus
+# als kreisförmigen Ring im FemHealth-Dashboard darstellt.
 
-import math
-from PyQt6.QtWidgets import QWidget, QLabel
+import math #für mathematische Berechnungen
+from PyQt6.QtWidgets import QWidget# QWidget ist die Basisklasse für unser eigenes Widget.
+# Qt enthält verschiedene Einstellungen und Aufzählungen von PyQt.
+# QRectF beschreibt ein Rechteck mit Fließkommazahlen.
+# QPointF beschreibt einen Punkt mit x- und y-Koordinate.
 from PyQt6.QtCore import Qt, QRectF, QPointF
+# QPainter wird zum Zeichnen des Rings verwendet.
+# QColor legt Farben fest.
+# QPen beschreibt Linien und deren Eigenschaften.
+# QBrush beschreibt die Füllung einer Form.
+# QFont legt die Schriftart und Schriftgröße fest.v
 from PyQt6.QtGui import QPainter, QColor, QPen, QBrush, QFont
 
-
+# Eigene Klasse für den Zyklus-Ring.
+# Sie erbt von QWidget und kann dadurch wie ein normales
+# PyQt-Widget in einem Fenster verwendet werden.
 class CycleRingWidget(QWidget):
 
+    # Konstruktor der Klasse.
+    # parent ist optional das übergeordnete PyQt-Widget.
     def __init__(self, parent=None):
+        # Konstruktor der Elternklasse QWidget aufrufen.
         super().__init__(parent)
 
         # ── Zyklus-Daten ──────────────────────────────────────────────────
-        self.zyklus_laenge  = 28
-        self.heute_tag      = 14
-        self.periode_start  = 1
-        self.periode_ende   = 5
-        self.eisprung_start = 12
-        self.eisprung_ende  = 16
+        self.zyklus_laenge  = 28 # Standardmäßige Länge eines Zyklus in Tagen.
+        self.heute_tag      = 14 # Der aktuelle Tag innerhalb des Zyklus.
+        self.periode_start  = 1 # Erster Tag der Periodenphase.
+        self.periode_ende   = 5 # Letzter Tag der Periodenphase.
+        self.eisprung_start = 12 # Erster Tag der angenommenen fruchtbaren Phase.
+        self.eisprung_ende  = 16 # Letzter Tag der angenommenen fruchtbaren Phase.
 
         # Text in der Mitte (wird beim Klick geändert)
-        self.mitte_zeile1 = "Tag 14"
-        self.mitte_zeile2 = "von 28"
+        self.mitte_zeile1 = "Tag 14" # Erste Textzeile, die in der Mitte des Rings angezeigt wird.
+        self.mitte_zeile2 = "von 28" # Zweite Textzeile, die in der Mitte des Rings angezeigt wird.
 
+        # Standardtext speichern, damit er nach einem Klick
+        # wiederhergestellt werden kann.
+        self.standard_zeile1 = self.mitte_zeile1
+        self.standard_zeile2 = self.mitte_zeile2
+
+        # Voraussichtlicher Eisprungtag innerhalb des Zyklus.
+        self.eisprung_tag = 14
+
+        #Det Hintergrund des Widgets wirdtransparentdargestellt.
+        # Dadurch ist beispielsweise die Hintergrundfarbe des Dashboards sichtbar.
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        # Aktiviert die Erfassung von Mausbewegungen,
+        # auch wenn keine Maustaste gedrückt wird.
         self.setMouseTracking(True)
 
     # ── Daten von außen setzen ────────────────────────────────────────────
 
-    def zyklus_setzen(self, heute, laenge, periode_start, periode_ende,
-                      eisprung_start, eisprung_ende):
-        self.heute_tag      = heute
-        self.zyklus_laenge  = laenge
-        self.periode_start  = periode_start
-        self.periode_ende   = periode_ende
-        self.eisprung_start = eisprung_start
-        self.eisprung_ende  = eisprung_ende
+    # Mit dieser Methode können die angezeigten Zyklusdaten
+    # von einem anderen Modul aus aktualisiert werden.
+    def zyklus_setzen(
+            self,
+            heute,
+            laenge,
+            periode_start,
+            periode_ende,
+            eisprung_start,
+            eisprung_ende,
+            tage_bis_periode
+    ):
+        """
+        Übernimmt die bereits berechneten Zyklusdaten
+        aus dem Dashboard und aktualisiert den Ring.
+        """
 
-        # Standardanzeige: wie viele Tage bis zur nächsten Periode
-        tage_bis_periode = laenge - heute + periode_start
-        if heute >= periode_start and heute <= periode_ende:
-            self.mitte_zeile1 = "Tag " + str(heute - periode_start + 1)
+        # Den tatsächlichen aktuellen Zyklustag speichern.
+        # Dieser kann bei einer überfälligen Periode
+        # größer als die durchschnittliche Zykluslänge sein.
+        self.aktueller_zyklustag = heute
+
+        # Die durchschnittliche Zykluslänge speichern.
+        self.zyklus_laenge = laenge
+
+        # Der Marker muss sich innerhalb des gezeichneten Rings befinden.
+        # Deshalb wird er auf den letzten dargestellten Tag begrenzt,
+        # falls die Periode bereits überfällig ist.
+        self.heute_tag = min(
+            max(heute, 1),
+            laenge
+        )
+
+        # Beginn und Ende der Periodenphase speichern.
+        self.periode_start = periode_start
+        self.periode_ende = periode_ende
+
+        # Beginn und Ende der fruchtbaren Phase speichern.
+        self.eisprung_start = eisprung_start
+        self.eisprung_ende = eisprung_ende
+
+        # Der genaue Eisprungtag liegt in der Mitte
+        # der berechneten fruchtbaren Phase.
+        self.eisprung_tag = (
+                                    eisprung_start + eisprung_ende
+                            ) // 2
+
+        # Bereits berechnete Anzahl der Tage
+        # bis zur nächsten Periode speichern.
+        self.tage_bis_periode = tage_bis_periode
+
+        # Prüfen, ob aktuell eine eingetragene
+        # beziehungsweise erwartete Periodenphase vorliegt.
+        if periode_start <= heute <= periode_ende:
+            tag_in_periode = (
+                    heute - periode_start + 1
+            )
+
+            self.mitte_zeile1 = (
+                    "Tag " + str(tag_in_periode)
+            )
+
             self.mitte_zeile2 = "der Periode"
-        else:
-            self.mitte_zeile1 = str(tage_bis_periode) + " Tage"
+
+        # Ein negativer Wert bedeutet,
+        # dass die vorhergesagte Periode bereits überfällig ist.
+        elif tage_bis_periode < 0:
+            self.mitte_zeile1 = (
+                    str(abs(tage_bis_periode))
+                    + " Tage"
+            )
+
+            self.mitte_zeile2 = "überfällig"
+
+        # Der vorhergesagte Periodenbeginn ist heute.
+        elif tage_bis_periode == 0:
+            self.mitte_zeile1 = "Heute"
+
+            self.mitte_zeile2 = "voraussichtliche Periode"
+
+        # Genau ein Tag verbleibt bis zur nächsten Periode.
+        elif tage_bis_periode == 1:
+            self.mitte_zeile1 = "1 Tag"
+
             self.mitte_zeile2 = "bis zur Periode"
 
-        self.update()
+        # Mehrere Tage verbleiben bis zur nächsten Periode.
+        else:
+            self.mitte_zeile1 = (
+                    str(tage_bis_periode)
+                    + " Tage"
+            )
 
+            self.mitte_zeile2 = "bis zur Periode"
+
+        # Den normalen Text speichern.
+        # Dieser wird wieder angezeigt, wenn der Nutzer
+        # neben den Ring oder in die Ringmitte klickt.
+        self.standard_zeile1 = self.mitte_zeile1
+        self.standard_zeile2 = self.mitte_zeile2
+
+        # Das Widget neu zeichnen.
+        self.update()
     # ── Klick-Erkennung ───────────────────────────────────────────────────
 
     def mousePressEvent(self, event):
-        # Welchen Tag hat der Nutzer angeklickt?
-        geklickter_tag = self.punkt_zu_tag(event.position().x(), event.position().y())
+        """
+        Zeigt Informationen über den angeklickten Bereich des Rings.
 
-        if geklickter_tag is None:
+        Es werden hier keine neuen Zyklusprognosen berechnet.
+        Die Methode verwendet nur die bereits vom Dashboard
+        übergebenen Werte.
+        """
+
+        # Nur Klicks mit der linken Maustaste auswerten.
+        if event.button() != Qt.MouseButton.LeftButton:
             return
 
-        # Prüfen welcher Bereich geklickt wurde
-        if self.periode_start <= geklickter_tag <= self.periode_ende:
-            # Roter Bereich: Periodenphase
-            tag_in_periode = geklickter_tag - self.periode_start + 1
-            self.mitte_zeile1 = "Tag " + str(tag_in_periode)
+        # Die Position des Mausklicks in einen Zyklustag umwandeln.
+        geklickter_tag = self.punkt_zu_tag(
+            event.position().x(),
+            event.position().y()
+        )
+
+        # Wurde nicht auf den Ring geklickt, wird wieder
+        # die normale Prognoseanzeige dargestellt.
+        if geklickter_tag is None:
+            self.mitte_zeile1 = self.standard_zeile1
+            self.mitte_zeile2 = self.standard_zeile2
+
+            self.update()
+            return
+
+        # Prüfen, ob der ausgewählte Tag in der Periodenphase liegt.
+        if (
+                self.periode_start
+                <= geklickter_tag
+                <= self.periode_ende
+        ):
+            # Berechnen, der wievielte Tag der Periode
+            # innerhalb des roten Bereichs ausgewählt wurde.
+            tag_in_periode = (
+                    geklickter_tag
+                    - self.periode_start
+                    + 1
+            )
+
+            self.mitte_zeile1 = (
+                    "Tag " + str(tag_in_periode)
+            )
+
             self.mitte_zeile2 = "der Periode"
 
-        elif self.eisprung_start <= geklickter_tag <= self.eisprung_ende:
-            # Blauer Bereich: Eisprung-/fruchtbare Phase
-            tage_bis = self.eisprung_start - geklickter_tag
-            if tage_bis <= 0:
-                self.mitte_zeile1 = "Eisprung"
-                self.mitte_zeile2 = "Tag " + str(geklickter_tag - self.eisprung_start + 1)
-            else:
-                self.mitte_zeile1 = str(tage_bis) + " Tage bis"
-                self.mitte_zeile2 = "zum Eisprung"
+        # Prüfen, ob genau der prognostizierte
+        # Eisprungtag angeklickt wurde.
+        elif geklickter_tag == self.eisprung_tag:
+            self.mitte_zeile1 = "Eisprung"
+
+            self.mitte_zeile2 = "voraussichtlich"
+
+        # Prüfen, ob der Tag innerhalb
+        # der fruchtbaren Phase liegt.
+        elif (
+                self.eisprung_start
+                <= geklickter_tag
+                <= self.eisprung_ende
+        ):
+            self.mitte_zeile1 = (
+                    "Zyklustag "
+                    + str(geklickter_tag)
+            )
+
+            self.mitte_zeile2 = "fruchtbare Phase"
 
         else:
-            # Grauer Bereich: normaler Zyklustag → Tage bis zur Periode
-            if geklickter_tag <= self.heute_tag:
-                tage_bis = self.zyklus_laenge - self.heute_tag + geklickter_tag
-            else:
-                tage_bis = geklickter_tag - self.heute_tag
+            # Bei allen übrigen Tagen wird lediglich
+            # der ausgewählte Zyklustag angezeigt.
+            self.mitte_zeile1 = (
+                    "Zyklustag "
+                    + str(geklickter_tag)
+            )
 
-            # Tage bis nächste Periode vom geklickten Tag aus
-            tage_bis_periode = self.zyklus_laenge - geklickter_tag + self.periode_start
-            if tage_bis_periode > self.zyklus_laenge:
-                tage_bis_periode = tage_bis_periode - self.zyklus_laenge
+            self.mitte_zeile2 = "ausgewählter Tag"
 
-            self.mitte_zeile1 = str(tage_bis_periode) + " Tage"
-            self.mitte_zeile2 = "bis zur Periode"
-
+        # Das Widget mit dem neuen Text neu zeichnen.
         self.update()
 
     # ── Hilfsmethode: Klickpunkt → Zyklustag ─────────────────────────────
