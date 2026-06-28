@@ -865,18 +865,14 @@ def arzttermin_fuer_tag_laden(user_id, datum):
     connection = create_connection()# Eine Verbindung zur Datenbank wird geöffnet.
     cursor = connection.cursor()# Ein Cursor wird für die SELECT-Abfrage erstellt.
 
-    # Alle gespeicherten Felder des Termins für den angegebenen Tag werden geladen.
+    # Die relevanten Felder des Termins für den angegebenen Tag werden geladen.
     cursor.execute("""
         SELECT
             doctor_name,
             doctor_type,
             location,
             appointment_time,
-            reminder,
-            notes,
-            preparation,
-            result,
-            follow_up_needed
+            notes
         FROM doctor_appointments
         WHERE user_id = ?
         AND appointment_date = ?

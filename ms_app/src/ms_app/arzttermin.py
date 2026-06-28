@@ -38,19 +38,6 @@ class ArztterminWindow(QMainWindow):
         self.main_window.btnDay5.clicked.connect(lambda: self.on_tag_gewaehlt(5))  # Samstag im Wochenstreifen
         self.main_window.btnDay6.clicked.connect(lambda: self.on_tag_gewaehlt(6))  # Sonntag im Wochenstreifen
 
-        self.erinnerungs_chips = [  # Liste mit allen Erinnerungs-Chips
-            self.main_window.chipAmTag,  # Chip für Erinnerung am selben Tag
-            self.main_window.chip1Tag,  # Chip für Erinnerung 1 Tag vorher
-            self.main_window.chip3Tage,  # Chip für Erinnerung 3 Tage vorher
-            self.main_window.chip1Woche,  # Chip für Erinnerung 1 Woche vorher
-        ]
-
-        for chip in self.erinnerungs_chips:  # Geht jeden Erinnerungs-Chip einzeln durch
-            chip.clicked.connect(self.on_erinnerung_gewaehlt)  # Verbindet jeden Chip mit derselben Funktion
-
-        self.main_window.chipFolgeJa.clicked.connect(self.on_folgetermin_ja)  # Verbindet Folgetermin-Ja-Chip
-        self.main_window.chipFolgeNein.clicked.connect(self.on_folgetermin_nein)  # Verbindet Folgetermin-Nein-Chip
-
     def on_schliessen(self):  # Wird ausgeführt, wenn das Fenster geschlossen werden soll
         from dashboard import DashboardWindow  # Importiert Dashboard hier, um Import-Probleme zu vermeiden
 
@@ -68,9 +55,7 @@ class ArztterminWindow(QMainWindow):
         ort = self.main_window.txtOrt.text().strip()  # Liest Ort aus & entfernt Leerzeichen
         datum = self.main_window.datTermin.date().toString("dd.MM.yyyy")  # Liest Datum als Text aus
         uhrzeit = self.main_window.timTermin.time().toString("HH:mm")  # Liest Uhrzeit als Text aus
-        notiz = self.main_window.txtNotiz.toPlainText().strip()  # Liest Notiz aus
-        vorbereitung = self.main_window.txtVorbereitung.toPlainText().strip()  # Liest Vorbereitung aus
-        befund = self.main_window.txtBefund.toPlainText().strip()  # Liest dBefund aus
+        notiz = self.main_window.txtNotiz.toPlainText().strip()  # Liest das kombinierte Notizfeld aus
 
         if not arzt_name:  # Prüft, ob kein Arztname eingegeben wurde
             self.zeige_fehler("Bitte den Namen des Arztes / der Ärztin eingeben.")  # Zeigt Fehlermeldung
@@ -84,24 +69,6 @@ class ArztterminWindow(QMainWindow):
             self.zeige_fehler("Kein Benutzer angemeldet.")  # Zeigt Fehlermeldung
             return  # Bricht Funktion ab
 
-        erinnerung = ""  # Standardwert: keine Erinnerung ausgewählt
-
-        if self.main_window.chipAmTag.isChecked():  # Prüft, ob Erinnerung am selben Tag gewählt wurde
-            erinnerung = "Am selben Tag"  # Speichert die Auswahl als Text
-        elif self.main_window.chip1Tag.isChecked():  # Prüft, ob 1 Tag vorher gewählt wurde
-            erinnerung = "1 Tag vorher"  # Speichert die Auswahl als Text
-        elif self.main_window.chip3Tage.isChecked():  # Prüft, ob 3 Tage vorher gewählt wurde
-            erinnerung = "3 Tage vorher"  # Speichert die Auswahl als Text
-        elif self.main_window.chip1Woche.isChecked():  # Prüft, ob 1 Woche vorher gewählt wurde
-            erinnerung = "1 Woche vorher"  # Speichert die Auswahl als Text
-
-        folgetermin = 0  # Standardwert: kein Folgetermin
-
-        if self.main_window.chipFolgeJa.isChecked():  # Prüft, ob Folgetermin Ja gewählt wurde
-            folgetermin = 1  # Speichert Ja als 1
-        elif self.main_window.chipFolgeNein.isChecked():  # Prüft, ob Folgetermin Nein gewählt wurde
-            folgetermin = 0  # Speichert Nein als 0
-
         arzttermin_speichern(  # Ruft die Datenbankfunktion zum Speichern auf
             self.user_id,  # Benutzer-ID
             arzt_name,  # Name des Arztes / der Ärztin
@@ -109,11 +76,11 @@ class ArztterminWindow(QMainWindow):
             ort,  # Ort der Praxis
             datum,  # Datum des Termins
             uhrzeit,  # Uhrzeit des Termins
-            erinnerung,  # Erinnerungsauswahl
-            notiz,  # Notizen zum Termin
-            vorbereitung,  # Vorbereitung für den Termin
-            befund,  # Befund / Ergebnis
-            folgetermin  # Information, ob ein Folgetermin nötig ist
+            "",  # Erinnerung (nicht mehr verwendet)
+            notiz,  # Kombinierte Notizen zum Termin
+            "",  # Vorbereitung (nicht mehr verwendet)
+            "",  # Befund / Ergebnis (nicht mehr verwendet)
+            0  # Folgetermin (nicht mehr verwendet)
         )
 
         print("Arzttermin wurde in der Datenbank gespeichert.")  # Gibt Bestätigung in der Konsole aus
@@ -131,23 +98,6 @@ class ArztterminWindow(QMainWindow):
         montag = self.woche_start_berechnen(self.main_window.datTermin.date())  # Berechnet Montag der aktuellen Woche
         gewaehlt = montag.addDays(offset)  # Berechnet den gewünschten Tag über den Offset
         self.main_window.datTermin.setDate(gewaehlt)  # Setzt das Datum im Datumsfeld
-
-    def on_erinnerung_gewaehlt(self):  # Wird ausgeführt, wenn ein Erinnerungs-Chip geklickt wird
-        geklickt = self.sender()  # Ermittelt, welcher Chip geklickt wurde
-
-        for chip in self.erinnerungs_chips:  # Geht alle Erinnerungs-Chips durch
-            if chip is not geklickt:  # Prüft, ob es nicht der angeklickte Chip ist
-                chip.setChecked(False)  # Deaktiviert alle anderen Chips
-
-        print("Erinnerung gesetzt: " + geklickt.text())  # Gibt die gewählte Erinnerung in der Konsole aus
-
-    def on_folgetermin_ja(self):  # Wird ausgeführt, wenn Folgetermin Ja geklickt wird
-        self.main_window.chipFolgeNein.setChecked(False)  # Deaktiviert den Nein-Chip
-        print("Folgetermin: Ja")  # Gibt Auswahl in der Konsole aus
-
-    def on_folgetermin_nein(self):  # Wird ausgeführt, wenn Folgetermin Nein geklickt wird
-        self.main_window.chipFolgeJa.setChecked(False)  # Deaktiviert den Ja-Chip
-        print("Folgetermin: Nein")  # Gibt Auswahl in der Konsole aus
 
     def woche_start_berechnen(self, datum):  # Berechnet den Wochenanfang zu einem Datum
         tage_seit_montag = datum.dayOfWeek() - 1  # Berechnet Anzahl Tage seit Montag

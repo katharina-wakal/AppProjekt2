@@ -246,11 +246,7 @@ class KalenderWindow(QMainWindow):
                     ("🏥 Fachrichtung", termin[1]),
                     ("📍 Ort", termin[2]),
                     ("🕐 Uhrzeit", termin[3]),
-                    ("🔔 Erinnerung", termin[4]),
-                    ("📝 Notiz", termin[5]),
-                    ("📋 Vorbereitung", termin[6]),
-                    ("🔬 Befund", termin[7]),
-                    ("🔁 Folgetermin", "Ja" if termin[8] == 1 else None),
+                    ("📝 Notiz", termin[4]),
                 ]
 
                 text = ""

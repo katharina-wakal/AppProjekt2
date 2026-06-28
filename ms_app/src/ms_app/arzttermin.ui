@@ -106,9 +106,7 @@ QScrollBar:horizontal { height: 0px; }
 /* ══ Abschnitt-Labels ══ */
 QLabel#lblSekArztDetail,
 QLabel#lblSekTermin,
-QLabel#lblSekNotiz,
-QLabel#lblSekErinnerung,
-QLabel#lblSekBefund {
+QLabel#lblSekNotiz {
     color: #880E4F;
     font-size: 15px;
     font-weight: bold;
@@ -186,10 +184,8 @@ QTimeEdit#timTermin::down-button {
     width: 22px; border: none; background: transparent;
 }
 
-/* ══ Notiz-Felder ══ */
-QTextEdit#txtNotiz,
-QTextEdit#txtVorbereitung,
-QTextEdit#txtBefund {
+/* ══ Notiz-Feld ══ */
+QTextEdit#txtNotiz {
     background: #FFFFFF;
     border: 1.5px solid #F8BBD9;
     border-radius: 14px;
@@ -197,62 +193,8 @@ QTextEdit#txtBefund {
     font-size: 13px;
     padding: 10px;
 }
-QTextEdit#txtNotiz:focus,
-QTextEdit#txtVorbereitung:focus,
-QTextEdit#txtBefund:focus {
+QTextEdit#txtNotiz:focus {
     border: 2px solid #E91E63;
-}
-
-/* ══ Erinnerungs-Chips ══ */
-QPushButton#chip1Tag,
-QPushButton#chip3Tage,
-QPushButton#chip1Woche,
-QPushButton#chipAmTag {
-    background-color: #FFFFFF;
-    color: #AD1457;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1.5px solid #F48FB1;
-    padding: 4px 10px;
-    min-height: 30px;
-}
-QPushButton#chip1Tag:checked,
-QPushButton#chip3Tage:checked,
-QPushButton#chip1Woche:checked,
-QPushButton#chipAmTag:checked {
-    background-color: #F48FB1;
-    color: #FFFFFF;
-    border-color: #F48FB1;
-}
-QPushButton#chip1Tag:hover,
-QPushButton#chip3Tage:hover,
-QPushButton#chip1Woche:hover,
-QPushButton#chipAmTag:hover {
-    background-color: #FCE4EC;
-}
-
-/* ══ Folgetermin-Chips ══ */
-QPushButton#chipFolgeJa,
-QPushButton#chipFolgeNein {
-    background-color: #FFFFFF;
-    color: #AD1457;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1.5px solid #F48FB1;
-    padding: 4px 10px;
-    min-height: 30px;
-}
-QPushButton#chipFolgeJa:checked,
-QPushButton#chipFolgeNein:checked {
-    background-color: #F48FB1;
-    color: #FFFFFF;
-    border-color: #F48FB1;
-}
-QPushButton#chipFolgeJa:hover,
-QPushButton#chipFolgeNein:hover {
-    background-color: #FCE4EC;
 }
 
 /* ══ Speichern ══ */
@@ -323,7 +265,7 @@ QPushButton#btnSpeichern:pressed { background: #880E4F; }
    <property name="widgetResizable"><bool>false</bool></property>
 
    <widget class="QWidget" name="scrollContents">
-    <property name="geometry"><rect><x>0</x><y>0</y><width>390</width><height>1100</height></rect></property>
+    <property name="geometry"><rect><x>0</x><y>0</y><width>390</width><height>800</height></rect></property>
 
     <!-- ════ ARZT-DETAILS ════ -->
     <widget class="QLabel" name="lblSekArztDetail">
@@ -419,109 +361,25 @@ QPushButton#btnSpeichern:pressed { background: #880E4F; }
 
     <widget class="QFrame" name="div2"><property name="geometry"><rect><x>0</x><y>402</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
 
-    <!-- ════ ERINNERUNG ════ -->
-    <widget class="QLabel" name="lblSekErinnerung">
-     <property name="geometry"><rect><x>16</x><y>414</y><width>200</width><height>26</height></rect></property>
-     <property name="text"><string>Erinnerung</string></property>
-    </widget>
-    <widget class="QLabel" name="lblHinweisErinnerung">
-     <property name="geometry"><rect><x>16</x><y>444</y><width>360</width><height>16</height></rect></property>
-     <property name="styleSheet"><string>color:#9E9E9E;font-size:11px;background:transparent;</string></property>
-     <property name="text"><string>Wann möchtest du erinnert werden?</string></property>
-    </widget>
-
-    <widget class="QPushButton" name="chipAmTag">
-     <property name="geometry"><rect><x>8</x><y>468</y><width>82</width><height>34</height></rect></property>
-     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>Am selben Tag</string></property>
-     <property name="checkable"><bool>true</bool></property>
-    </widget>
-    <widget class="QPushButton" name="chip1Tag">
-     <property name="geometry"><rect><x>98</x><y>468</y><width>82</width><height>34</height></rect></property>
-     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>1 Tag vorher</string></property>
-     <property name="checkable"><bool>true</bool></property>
-    </widget>
-    <widget class="QPushButton" name="chip3Tage">
-     <property name="geometry"><rect><x>188</x><y>468</y><width>82</width><height>34</height></rect></property>
-     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>3 Tage vorher</string></property>
-     <property name="checkable"><bool>true</bool></property>
-    </widget>
-    <widget class="QPushButton" name="chip1Woche">
-     <property name="geometry"><rect><x>278</x><y>468</y><width>104</width><height>34</height></rect></property>
-     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>1 Woche vorher</string></property>
-     <property name="checkable"><bool>true</bool></property>
-    </widget>
-
-    <widget class="QFrame" name="div3"><property name="geometry"><rect><x>0</x><y>516</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
     <!-- ════ NOTIZEN ════ -->
     <widget class="QLabel" name="lblSekNotiz">
-     <property name="geometry"><rect><x>16</x><y>528</y><width>220</width><height>26</height></rect></property>
-     <property name="text"><string>Notizen zum Termin</string></property>
+     <property name="geometry"><rect><x>16</x><y>414</y><width>220</width><height>26</height></rect></property>
+     <property name="text"><string>Notizen</string></property>
     </widget>
 
-    <widget class="QLabel" name="lblHinweisWasGemacht">
-     <property name="geometry"><rect><x>16</x><y>560</y><width>280</width><height>16</height></rect></property>
+    <widget class="QLabel" name="lblHinweisNotiz">
+     <property name="geometry"><rect><x>16</x><y>446</y><width>358</width><height>16</height></rect></property>
      <property name="styleSheet"><string>color:#9E9E9E;font-size:11px;background:transparent;</string></property>
-     <property name="text"><string>Was wird bei dieser Untersuchung gemacht?</string></property>
+     <property name="text"><string>z. B. Vorbereitung, was bei der Untersuchung gemacht wird, Befund &amp; Ergebnis …</string></property>
     </widget>
     <widget class="QTextEdit" name="txtNotiz">
-     <property name="geometry"><rect><x>8</x><y>580</y><width>374</width><height>80</height></rect></property>
-     <property name="placeholderText"><string>z. B. Tastuntersuchung, Ultraschall, Blutabnahme …</string></property>
-    </widget>
-
-    <widget class="QLabel" name="lblHinweisVorbereitung">
-     <property name="geometry"><rect><x>16</x><y>670</y><width>280</width><height>16</height></rect></property>
-     <property name="styleSheet"><string>color:#9E9E9E;font-size:11px;background:transparent;</string></property>
-     <property name="text"><string>Vorbereitung &amp; daran denken 📋</string></property>
-    </widget>
-    <widget class="QTextEdit" name="txtVorbereitung">
-     <property name="geometry"><rect><x>8</x><y>690</y><width>374</width><height>100</height></rect></property>
-     <property name="placeholderText"><string>z. B. nüchtern erscheinen, Versichertenkarte, Vorbefunde, Fragen …</string></property>
-    </widget>
-
-    <widget class="QFrame" name="div4"><property name="geometry"><rect><x>0</x><y>802</y><width>390</width><height>1</height></rect></property><property name="frameShape"><enum>QFrame::HLine</enum></property><property name="styleSheet"><string notr="true">background:#F8BBD9;max-height:1px;border:none;</string></property></widget>
-
-    <!-- ════ BEFUND ════ -->
-    <widget class="QLabel" name="lblSekBefund">
-     <property name="geometry"><rect><x>16</x><y>814</y><width>300</width><height>26</height></rect></property>
-     <property name="text"><string>Befund &amp; Ergebnis (nach dem Termin)</string></property>
-    </widget>
-    <widget class="QLabel" name="lblHinweisBefund">
-     <property name="geometry"><rect><x>16</x><y>844</y><width>360</width><height>16</height></rect></property>
-     <property name="styleSheet"><string>color:#9E9E9E;font-size:11px;background:transparent;</string></property>
-     <property name="text"><string>Trage nach dem Termin hier deine Befunde ein</string></property>
-    </widget>
-    <widget class="QTextEdit" name="txtBefund">
-     <property name="geometry"><rect><x>8</x><y>864</y><width>374</width><height>100</height></rect></property>
-     <property name="placeholderText"><string>z. B. Befund unauffällig, Kontrolle in 6 Monaten …</string></property>
-    </widget>
-
-    <!-- Folgetermin -->
-    <widget class="QLabel" name="lblFolgetermin">
-     <property name="geometry"><rect><x>16</x><y>974</y><width>200</width><height>16</height></rect></property>
-     <property name="styleSheet"><string>color:#9E9E9E;font-size:11px;background:transparent;</string></property>
-     <property name="text"><string>Folgetermin erforderlich?</string></property>
-    </widget>
-    <widget class="QPushButton" name="chipFolgeJa">
-     <property name="geometry"><rect><x>8</x><y>994</y><width>116</width><height>34</height></rect></property>
-     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>✅  Ja, eintragen</string></property>
-     <property name="checkable"><bool>true</bool></property>
-    </widget>
-    <widget class="QPushButton" name="chipFolgeNein">
-     <property name="geometry"><rect><x>132</x><y>994</y><width>90</width><height>34</height></rect></property>
-     <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-     <property name="text"><string>❌  Nein</string></property>
-     <property name="checkable"><bool>true</bool></property>
+     <property name="geometry"><rect><x>8</x><y>468</y><width>374</width><height>260</height></rect></property>
+     <property name="placeholderText"><string>Hier kannst du alles zum Termin festhalten …</string></property>
     </widget>
 
     <!-- Spacer -->
     <widget class="QLabel" name="lblSpacer">
-     <property name="geometry"><rect><x>0</x><y>1044</y><width>390</width><height>50</height></rect></property>
+     <property name="geometry"><rect><x>0</x><y>738</y><width>390</width><height>50</height></rect></property>
      <property name="text"><string></string></property>
     </widget>
 
@@ -544,7 +402,5 @@ QPushButton#btnSpeichern:pressed { background: #880E4F; }
   <slot>onTagGewaehlt(int)</slot>
   <slot>onDatumGewaehlt(QDate)</slot>
   <slot>onArztTypGewaehlt(int)</slot>
-  <slot>onErinnerungGewaehlt(QString)</slot>
-  <slot>onFolgeterminToggled(bool)</slot>
  </slots>
 </ui>

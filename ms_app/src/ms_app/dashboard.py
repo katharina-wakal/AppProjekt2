@@ -10,8 +10,6 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox,
 from PyQt6.QtCore import Qt, QTimer, QSettings
 from PyQt6.QtGui import QPixmap, QShowEvent
 
-import webbrowser
-
 # Settings-Fenster importieren – Datei muss im selben Ordner liegen
 from settings import SettingsWindow
 from eintrag import EintragWindow
