@@ -244,56 +244,98 @@ class CycleRingWidget(QWidget):
 
     # ── Hilfsmethode: Klickpunkt → Zyklustag ─────────────────────────────
 
+    # Diese Methode wandelt die Koordinaten eines Mausklicks
+    # in einen Zyklustag um.
     def punkt_zu_tag(self, klick_x, klick_y):
-        breite  = self.width()
-        hoehe   = self.height()
-        mitte_x = breite / 2
-        mitte_y = hoehe / 2
+        breite  = self.width() # Aktuelle Breite des Widgets abfragen.
+        hoehe   = self.height() # Aktuelle Höhe des Widgets abfragen.
+        mitte_x = breite / 2 # Horizontale Position des Mittelpunkts berechnen.
+        mitte_y = hoehe / 2 # Vertikale Position des Mittelpunkts berechnen.
+        # Radius des Rings berechnen.
+        # Es werden 18 Pixel Abstand zum Rand des Widgets gelassen.
         radius  = min(breite, hoehe) / 2 - 18
 
         # Abstand vom Mittelpunkt
-        dx = klick_x - mitte_x
-        dy = klick_y - mitte_y
+        dx = klick_x - mitte_x # Horizontalen Abstand des Klicks vom Mittelpunkt berechnen.
+        dy = klick_y - mitte_y # Vertikalen Abstand des Klicks vom Mittelpunkt berechnen.
+        # Direkten Abstand des Klickpunkts vom Mittelpunkt berechnen.
+        # Grundlage ist der Satz des Pythagoras.
         abstand = math.sqrt(dx * dx + dy * dy)
 
         # Nur Klicks auf dem Ring auswerten (±20px Toleranz)
-        ring_breite = 16
+        ring_breite = 16 # Breite der gezeichneten Ringlinie in Pixeln.
+        # Zusätzliche Toleranz, damit der Ring leichter
+        # mit der Maus angeklickt werden kann.
         toleranz    = 20
+
+        # Prüfen, ob der Klick zu weit innerhalb des Rings liegt.
         if abstand < radius - ring_breite - toleranz:
-            return None
-        if abstand > radius + ring_breite + toleranz:
+            # Der Klick wird nicht als Klick auf den Ring gewertet.
             return None
 
-        # Winkel berechnen (atan2 gibt Winkel von der x-Achse)
+        # Prüfen, ob der Klick zu weit außerhalb des Rings liegt.
+        if abstand > radius + ring_breite + toleranz:
+            # Der Klick wird nicht als Klick auf den Ring gewertet.
+            return None
+
+        # Den Winkel des Klickpunkts zum Mittelpunkt berechnen.
+        # atan2 berücksichtigt sowohl die x- als auch die y-Koordinate.
+        # Das Ergebnis wird zunächst im Bogenmaß zurückgegeben.
         winkel_rad = math.atan2(dy, dx)
+        # Den Winkel vom Bogenmaß in Grad umwandeln.
         winkel_grad = math.degrees(winkel_rad)
 
-        # Umrechnen: 0° = oben, im Uhrzeigersinn
-        # atan2: 0°=rechts → wir verschieben um +90°
+        # atan2 verwendet die rechte Seite des Kreises als 0°.
+        # Für unseren Zyklus soll jedoch die obere Seite 0° sein.
+        # Deshalb wird der Winkel um 90° verschoben.
+        #
+        # Durch % 360 bleibt das Ergebnis immer zwischen
+        # 0 und 359 Grad.
         winkel_oben = (winkel_grad + 90) % 360
 
-        # Winkel → Zyklustag
+        # Den berechneten Winkel in einen Zyklustag umwandeln.
+        #
+        # Beispiel bei 28 Tagen:
+        # 0° entspricht Tag 1.
+        # 180° entspricht ungefähr Tag 15.
         tag = int(winkel_oben / 360 * self.zyklus_laenge) + 1
+
+        # Sicherheitsprüfung:
+        # Der Zyklustag darf nicht kleiner als 1 sein.
         if tag < 1:
             tag = 1
+
+        # Sicherheitsprüfung:
+        # Der Zyklustag darf nicht größer als
+        # die gesamte Zykluslänge sein.
         if tag > self.zyklus_laenge:
             tag = self.zyklus_laenge
 
+        # Den berechneten Zyklustag zurückgeben.
         return tag
 
     # ── paintEvent ────────────────────────────────────────────────────────
 
+    # Diese Methode wird von PyQt automatisch aufgerufen,
+    # wenn das Widget gezeichnet oder aktualisiert werden muss.
     def paintEvent(self, event):
+
+        # Ein QPainter-Objekt für dieses Widget erstellen.
         painter = QPainter(self)
+
+        # Kantenglättung aktivieren.
+        # Dadurch werden Kreise und Bögen glatter dargestellt.
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-        breite  = self.width()
-        hoehe   = self.height()
-        mitte_x = breite / 2
-        mitte_y = hoehe / 2
-        radius  = min(breite, hoehe) / 2 - 18
-        ring_breite = 16
+        breite  = self.width() # Aktuelle Breite des Widgets abfragen.
+        hoehe   = self.height() # Aktuelle Höhe des Widgets abfragen.
+        mitte_x = breite / 2 # Horizontale Mitte des Widgets berechnen.
+        mitte_y = hoehe / 2  # Vertikale Mitte des Widgets berechnen.
+        radius  = min(breite, hoehe) / 2 - 18 # Radius des Zyklusrings berechnen.
+        ring_breite = 16 # Breite der Ringlinie festlegen.
 
+        # Ein Rechteck erzeugen, in das der Kreis gezeichnet wird.
+        # Da Breite und Höhe gleich groß sind, entsteht ein Kreis.
         ring_rect = QRectF(
             mitte_x - radius,
             mitte_y - radius,
@@ -302,36 +344,57 @@ class CycleRingWidget(QWidget):
         )
 
         # 1. Hintergrundring
+
+        # Einen halbtransparenten weißen Stift für den Hintergrundring
+        # erstellen.
         pen = QPen(QColor(255, 255, 255, 90))
-        pen.setWidth(ring_breite)
-        pen.setCapStyle(Qt.PenCapStyle.FlatCap)
-        painter.setPen(pen)
-        painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.drawEllipse(ring_rect)
+        pen.setWidth(ring_breite) # Breite der Linie festlegen.
+        pen.setCapStyle(Qt.PenCapStyle.FlatCap) # Die Enden der Linie werden gerade dargestellt.
+        painter.setPen(pen)# Den erstellten Stift für den Painter festlegen.
+        painter.setBrush(Qt.BrushStyle.NoBrush) # Keine Füllung verwenden, da nur der Rand gezeichnet wird.
+        painter.drawEllipse(ring_rect) # Den vollständigen Hintergrundkreis zeichnen.
 
         # 2. Roter Bogen: Periode – kräftiges Rot
+
+        # Die Hilfsmethode bogen_zeichnen aufrufen.
         self.bogen_zeichnen(
-            painter, ring_rect, ring_breite,
-            self.periode_start, self.periode_ende,
-            self.zyklus_laenge,
-            QColor(210, 30, 30)     # kräftiges Rot #D21E1E
+            painter,  # Painter zum Zeichnen
+            ring_rect,  # Bereich, in dem gezeichnet wird
+            ring_breite,  # Breite der Linie
+            self.periode_start,  # Erster Periodentag
+            self.periode_ende,  # Letzter Periodentag
+            self.zyklus_laenge,  # Gesamte Zykluslänge
+            QColor(210, 30, 30)  # Kräftiges Rot: #D21E1E
         )
 
         # 3. Blauer Bogen: Eisprung/fruchtbare Phase
+
+        # Einen blauen Bogen für die Eisprung- beziehungsweise
+        # fruchtbare Phase zeichnen.
         self.bogen_zeichnen(
-            painter, ring_rect, ring_breite,
-            self.eisprung_start, self.eisprung_ende,
-            self.zyklus_laenge,
-            QColor(25, 118, 210)    # #1976D2 Blau
+            painter,  # Painter zum Zeichnen
+            ring_rect,  # Bereich des Rings
+            ring_breite,  # Breite der Linie
+            self.eisprung_start,  # Erster Tag der Phase
+            self.eisprung_ende,  # Letzter Tag der Phase
+            self.zyklus_laenge,  # Gesamte Zykluslänge
+            QColor(25, 118, 210)  # Blau: #1976D2
         )
 
         # 4. Heutiger-Tag-Marker: weißlicher transparenter Kreis
+        # Den heutigen Zyklustag in einen Winkel umwandeln.
         winkel_heute = self.tag_zu_winkel(self.heute_tag, self.zyklus_laenge)
+        # Den Punkt auf dem Ring berechnen, der dem heutigen Tag entspricht.
         punkt_heute  = self.punkt_auf_ring(mitte_x, mitte_y, radius, winkel_heute)
+        # Radius des kreisförmigen Markers berechnen.
         marker_r     = ring_breite / 2 + 5
 
+        # Rand des Markers festlegen.
+        # Der Rand ist fast vollständig weiß und 2 Pixel breit.
         painter.setPen(QPen(QColor(255, 255, 255, 230), 2))
+        # Füllfarbe des Markers festlegen.
         painter.setBrush(QBrush(QColor(255, 255, 255, 200)))
+        # Den kreisförmigen Marker zeichnen.
         painter.drawEllipse(
             QRectF(
                 punkt_heute.x() - marker_r,
@@ -340,10 +403,14 @@ class CycleRingWidget(QWidget):
                 marker_r * 2
             )
         )
-        # Tag-Nummer im Marker
+        # Farbe für die Zahl innerhalb des Markers festlegen.
         painter.setPen(QPen(QColor(173, 20, 87)))
+        # Schriftart, Schriftgröße und Fettdruck festlegen.
         font = QFont("Segoe UI", 8, QFont.Weight.Bold)
+        # Die Schrift für den Painter übernehmen.
         painter.setFont(font)
+        # Die Nummer des heutigen Zyklustags
+        # mittig in den Marker schreiben.
         painter.drawText(
             QRectF(
                 punkt_heute.x() - marker_r,
@@ -356,46 +423,91 @@ class CycleRingWidget(QWidget):
         )
 
         # 5. Text in der Mitte (2 Zeilen)
+
+        # Rechteck für die erste Textzeile festlegen.
         mitte_rect = QRectF(mitte_x - 70, mitte_y - 28, 140, 30)
+        # Schrift für die erste Textzeile festlegen.
         font1 = QFont("Segoe UI", 15, QFont.Weight.Bold)
-        painter.setFont(font1)
-        painter.setPen(QPen(QColor(173, 20, 87)))
+        painter.setFont(font1) # Schrift übernehmen.
+        painter.setPen(QPen(QColor(173, 20, 87)))# Textfarbe festlegen
+        # Erste Textzeile zentriert zeichnen.
         painter.drawText(mitte_rect, Qt.AlignmentFlag.AlignCenter, self.mitte_zeile1)
 
+        # Rechteck für die zweite Textzeile festlegen
         mitte_rect2 = QRectF(mitte_x - 70, mitte_y + 4, 140, 24)
-        font2 = QFont("Segoe UI", 10)
-        painter.setFont(font2)
-        painter.setPen(QPen(QColor(136, 14, 79)))
+        font2 = QFont("Segoe UI", 10) # Kleinere Schrift für die zweite Textzeile erstellen.
+        painter.setFont(font2) # Schrift übernehmen.
+        painter.setPen(QPen(QColor(136, 14, 79))) # Etwas dunklere Textfarbe festlegen.
+        # Zweite Textzeile zentriert zeichnen.
         painter.drawText(mitte_rect2, Qt.AlignmentFlag.AlignCenter, self.mitte_zeile2)
 
+        # Zeichenvorgang beenden.
         painter.end()
 
     # ── Hilfsmethoden ────────────────────────────────────────────────────
 
+    # Diese Methode wandelt einen Zyklustag in einen Winkel um.
     def tag_zu_winkel(self, tag, zyklus_laenge):
+        # Berechnen, welcher Anteil des gesamten Zyklus
+        # vor dem angegebenen Tag liegt.
+        #
+        # Bei Tag 1 ist der Anteil 0.
         anteil = (tag - 1) / zyklus_laenge
+
+        # Den Anteil in einen Winkel umrechnen.
+        #
+        # -90° entspricht der oberen Position des Kreises.
+        # Danach wird im Uhrzeigersinn über 360° weitergerechnet.
         return -90 + anteil * 360
 
+    # Diese Methode berechnet die x- und y-Koordinaten
+    # eines Punkts auf dem Kreis.
     def punkt_auf_ring(self, mitte_x, mitte_y, radius, winkel_grad):
+        # Den Winkel von Grad in Bogenmaß umwandeln,
+        # da sin und cos mit Bogenmaß arbeiten.
         winkel_rad = math.radians(winkel_grad)
+        # Die x-Koordinate des Punkts auf dem Kreis berechnen.
         x = mitte_x + radius * math.cos(winkel_rad)
+        # Die y-Koordinate des Punkts auf dem Kreis berechnen.
         y = mitte_y + radius * math.sin(winkel_rad)
+
+        # Den berechneten Punkt als QPointF zurückgeben.
         return QPointF(x, y)
 
+    # Diese Methode zeichnet einen farbigen Abschnitt des Zyklusrings.
     def bogen_zeichnen(self, painter, ring_rect, ring_breite,
                        tag_start, tag_ende, zyklus_laenge, farbe):
+
+        # Berechnen, an welcher relativen Position des Zyklus
+        # der farbige Abschnitt beginnt.
         anteil_start = (tag_start - 1) / zyklus_laenge
+        # Berechnen, an welcher relativen Position des Zyklus
+        # der farbige Abschnitt endet.
         anteil_ende  = tag_ende / zyklus_laenge
 
+        # Den Startpunkt des Bogens in Grad berechnen.
+        #
+        # QPainter verwendet eine andere Winkelorientierung
+        # als die zuvor verwendeten mathematischen Funktionen.
         start_grad = 90 - anteil_start * 360
+
+        # Berechnen, über wie viele Grad sich der Bogen erstreckt.
+        #
+        # Der negative Wert sorgt dafür, dass der Bogen
+        # im Uhrzeigersinn gezeichnet wird.
         spann_grad = -(anteil_ende - anteil_start) * 360
 
-        pen = QPen(farbe)
-        pen.setWidth(ring_breite)
-        pen.setCapStyle(Qt.PenCapStyle.RoundCap)
-        painter.setPen(pen)
-        painter.setBrush(Qt.BrushStyle.NoBrush)
+        pen = QPen(farbe) # Einen Zeichenstift mit der übergebenen Farbe erstellen.
+        pen.setWidth(ring_breite) # Breite des Bogens festlegen.
+        pen.setCapStyle(Qt.PenCapStyle.RoundCap) # Die Enden des Bogens werden abgerundet dargestellt.
+        painter.setPen(pen) # Den Zeichenstift für den Painter übernehmen.
+        painter.setBrush(Qt.BrushStyle.NoBrush) # Keine Füllung verwenden, da nur der Bogen gezeichnet wird.
 
+        # Den Bogen zeichnen.
+        #
+        # QPainter erwartet Winkelwerte nicht direkt in Grad,
+        # sondern in Sechzehntelgraden.
+        # Deshalb werden die Werte jeweils mit 16 multipliziert.
         painter.drawArc(
             ring_rect,
             int(start_grad * 16),
