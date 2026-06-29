@@ -3,12 +3,24 @@
 import sys  # Systemfunktionen (z. B. Kommandozeilenargumente, Beenden)
 import pathlib  # Arbeiten mit Ordner & Dateien
 from PyQt6 import uic  # Lädt .ui-Datei
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox  # Qt-Klassen für App, Fenster, Meldungen
+# QApplication verwaltet die PyQt-Anwendung beim direkten Teststart.
+# QMainWindow ist die Elternklasse des Arztterminfensters.
+from PyQt6.QtWidgets import QApplication, QMainWindow
+
+# Das MessageMixin stellt einheitliche Methoden
+# für Fehler- und Informationsmeldungen bereit.
+from message_mixin import MessageMixin
 from PyQt6.QtCore import QDate, QTime  # Qt-Klassen für Datum & Uhrzeit
 from database import arzttermin_speichern  # Speicherfunktion aus Datenbankdatei
 
-# Definiert das ArztterminWindow als Unterklasse von QMainWindow
-class ArztterminWindow(QMainWindow):
+# ArztterminWindow erbt gleichzeitig von zwei Klassen:
+#
+# QMainWindow stellt die Funktionen eines PyQt-Hauptfensters bereit.
+# MessageMixin ergänzt das Fenster um einheitliche Meldungsmethoden.
+#
+# Da von zwei Elternklassen geerbt wird,
+# handelt es sich um Mehrfachvererbung.
+class ArztterminWindow(QMainWindow, MessageMixin):
 
     def __init__(self, user_id=None):  # Konstruktor: wird aufgerufen, wenn ArztterminWindow erstellt wird
 
@@ -81,10 +93,11 @@ class ArztterminWindow(QMainWindow):
 
         print("Arzttermin wurde in der Datenbank gespeichert.")  # Gibt Bestätigung in der Konsole aus
 
-        QMessageBox.information(  # Zeigt eine Erfolgsmeldung im Fenster
-            self,  # Elternfenster der Meldung
-            "Gespeichert",  # Titel der Meldung
-            "Termin wurde erfolgreich eingetragen! 🩺"  # Text der Meldung
+        # Über die geerbte Methode des MessageMixins
+        # wird der erfolgreiche Speichervorgang bestätigt.
+        self.zeige_information(
+            "Gespeichert",
+            "Termin wurde erfolgreich eingetragen! 🩺"
         )
 
     def on_datum_gewaehlt(self, neues_datum):  # Wird ausgeführt, wenn ein neues Datum gewählt wird
@@ -117,9 +130,6 @@ class ArztterminWindow(QMainWindow):
             tages_buttons[i].setText(str(tag.day()))  # Setzt die Tageszahl auf den passenden Button
 
         print("Woche angezeigt ab: " + montag.toString("dd.MM.yyyy"))  # Gibt Wochenstart in der Konsole aus
-
-    def zeige_fehler(self, text):  # Hilfsfunktion für Fehlermeldungen
-        QMessageBox.warning(self, "Fehler", text)  # Zeigt eine Warnmeldung an
 
 
 if __name__ == "__main__":  # Prüft, ob diese Datei direkt gestartet wird
