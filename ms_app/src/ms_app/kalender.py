@@ -17,13 +17,14 @@ import sys
 # pathlib wird verwendet, um den Pfad zur kalender.ui-Datei zu bestimmen.
 import pathlib
 # date und timedelta werden für die Datums- und Zyklusberechnungen genutzt.
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 # uic lädt die im Qt Designer erstellte Benutzeroberfläche.
 from PyQt6 import uic
-# Benötigte PyQt6-Widgets: Fenster, Labels, Buttons, Layouts und Meldungen.
+# Benötigte PyQt6-Widgets: Fenster, Labels, Buttons, Layouts
+
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QLabel, QPushButton,
-    QGridLayout, QVBoxLayout, QMessageBox
+    QGridLayout, QVBoxLayout
 )
 # Qt liefert u. a. Ausrichtungs-Konstanten, QTimer erlaubt verzögerte Aufrufe.
 from PyQt6.QtCore import Qt, QTimer
@@ -32,14 +33,24 @@ from PyQt6.QtCore import Qt, QTimer
 from database import perioden_tage_laden, eintrag_fuer_tag_laden, arzttermine_laden, arzttermin_fuer_tag_laden
 # datetime wird verwendet, um gespeicherte Datums-Texte in echte Datumsobjekte
 # umzuwandeln.
-from datetime import datetime
+# Das MessageMixin stellt wiederverwendbare Methoden
+# für Fehler- und Informationsmeldungen bereit.
+from message_mixin import MessageMixin
+
 
 
 
 # ---------------------------------------------------------------------------
 # Klasse für das Kalender-Fenster
 # ---------------------------------------------------------------------------
-class KalenderWindow(QMainWindow):
+# KalenderWindow erbt gleichzeitig von zwei Klassen:
+#
+# QMainWindow stellt die Funktionen eines PyQt-Hauptfensters bereit.
+# MessageMixin ergänzt wiederverwendbare Methoden für Meldungsfenster.
+#
+# Da KalenderWindow von zwei Elternklassen erbt,
+# handelt es sich um Mehrfachvererbung.
+class KalenderWindow(QMainWindow, MessageMixin):
     """
         Verwaltet das Kalender-Fenster der FemHealth-App.
 
@@ -500,30 +511,38 @@ class KalenderWindow(QMainWindow):
 
     def on_tracken(self):
         """
-            Wird aufgerufen, wenn der Tracken-Button geklickt wird.
+        Zeigt momentan eine Platzhaltermeldung für das Tracken
+        am ausgewählten Kalendertag an.
 
-            Aktuell wird nur eine Hinweismeldung angezeigt. Später soll hier
-            das Eintrag-Fenster mit dem ausgewählten Datum geöffnet werden.
-            """
-        # TODO: EintragWindow öffnen mit dem ausgewählten Datum
-        print("Tracken für: " + str(self.ausgewaehlter_tag))
-        QMessageBox.information(
-            self,
+        Das direkte Öffnen des Eintragfensters ist an dieser Stelle
+        noch nicht umgesetzt.
+        """
+
+        # Das ausgewählte Datum für Test- und Entwicklungszwecke ausgeben.
+        print(
+            "Tracken für: "
+            + str(self.ausgewaehlter_tag)
+        )
+
+        # Über das MessageMixin eine Informationsmeldung anzeigen.
+        self.zeige_information(
             "Tracken",
-            "Eintrag für " + str(self.ausgewaehlter_tag) + " kommt noch!"
+            "Eintrag für "
+            + str(self.ausgewaehlter_tag)
+            + " kommt noch!"
         )
 
     def on_mehr_erfahren(self):
         """
-            Wird aufgerufen, wenn der "Mehr erfahren"-Button geklickt wird.
+        Zeigt momentan eine Platzhaltermeldung
+        für zusätzliche Informationen zur Zyklusphase an.
+        """
 
-            Aktuell wird nur eine Hinweismeldung angezeigt. Später soll hier
-            eine Infoseite zur aktuellen Zyklusphase geöffnet werden.
-            """
-        # TODO: Infoseite zur aktuellen Phase öffnen
+        # Konsolenausgabe für Test- und Entwicklungszwecke.
         print("Mehr erfahren geöffnet")
-        QMessageBox.information(
-            self,
+
+        # Über das MessageMixin eine Informationsmeldung anzeigen.
+        self.zeige_information(
             "Mehr erfahren",
             "Infos zur Zyklusphase kommen noch!"
         )
@@ -550,20 +569,6 @@ class KalenderWindow(QMainWindow):
         # Dashboard anzeigen und das Kalender-Fenster schließen.
         self.dashboard.show()
         self.close()
-
-    # ── Hilfsmethode ─────────────────────────────────────────────────────────
-
-    def zeige_fehler(self, text):
-        """
-            Zeigt eine Warnmeldung mit einem übergebenen Fehlertext an.
-
-            Parameter:
-                text (str): Der Text, der in der Meldung angezeigt wird.
-            """
-        QMessageBox.warning(self, "Fehler", text)
-
-
-
 
 # ── Programm starten ──────────────────────────────────────────────────────────
 

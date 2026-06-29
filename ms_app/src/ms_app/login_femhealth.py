@@ -12,16 +12,27 @@ import pathlib# pathlib wird verwendet, um den Pfad zur UI-Datei zuverlässig zu
 import hashlib # hashlib wird genutzt, um das eingegebene Passwort mit SHA-256 zu hashen
 
 from PyQt6 import uic# uic lädt die im Qt Designer erstellte Benutzeroberfläche.
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox)# Benötigte PyQt6-Komponenten für Fenster, Anwendung und Meldungen.
+# QApplication verwaltet die PyQt-Anwendung.
+# QMainWindow ist die Grundlage für das Login-Fenster.
+from PyQt6.QtWidgets import QApplication, QMainWindow
 
 from database import login_pruefen# Datenbankfunktion zur Überprüfung der Login-Daten.
 from dashboard import DashboardWindow# Fenster, das nach erfolgreichem Login geöffnet wird.
 from register import RegisterWindow# Registrierungsfenster für neue Benutzer.
-
+# Das MessageMixin stellt einheitliche Methoden
+# für Fehler- und Informationsmeldungen bereit.
+from message_mixin import MessageMixin
 # ---------------------------------------------------------------------------
 # Klasse für das Login-Fenster
 # ---------------------------------------------------------------------------
-class LoginWindow(QMainWindow):
+# LoginWindow erbt gleichzeitig von zwei Klassen:
+#
+# QMainWindow stellt die Funktionen eines PyQt-Fensters bereit.
+# MessageMixin ergänzt einheitliche Methoden für Meldungsfenster.
+#
+# Da die Klasse von zwei Elternklassen erbt,
+# wird Mehrfachvererbung verwendet.
+class LoginWindow(QMainWindow, MessageMixin):
     """
         Verwaltet das Login-Fenster der FemHealth-App.
 
@@ -148,27 +159,19 @@ class LoginWindow(QMainWindow):
 
     def on_passwort_vergessen(self):
         """
-                Zeigt einen Hinweis an, wenn der Benutzer
-                auf „Passwort vergessen“ klickt.
+        Zeigt einen Hinweis an, wenn der Benutzer
+        auf „Passwort vergessen“ klickt.
 
-                Eine automatische Passwort-Wiederherstellung
-                ist aktuell nicht umgesetzt.
-                """
-        QMessageBox.information(
-            self,
-            "Passwort vergessen",
-            "Bitte wende dich an den Support.")
-
-    # ── Hilfsmethode ─────────────────────────────────────────────────────────
-
-    def zeige_fehler(self, text):
+        Eine automatische Passwort-Wiederherstellung
+        ist aktuell nicht umgesetzt.
         """
-                Zeigt eine Warnmeldung mit einem übergebenen Fehlertext an.
 
-                Parameter:
-                    text (str): Text, der in der Fehlermeldung angezeigt wird.
-                """
-        QMessageBox.warning(self, "Fehler", text)
+        # Über die geerbte Methode des MessageMixins
+        # wird eine Informationsmeldung angezeigt.
+        self.zeige_information(
+            "Passwort vergessen",
+            "Bitte wende dich an den Support."
+        )
 
     def login_wieder_anzeigen(self):
         """

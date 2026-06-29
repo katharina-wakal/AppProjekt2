@@ -21,8 +21,13 @@ import pathlib
 from datetime import date, timedelta
 # uic lädt die im Qt Designer erstellte Benutzeroberfläche.
 from PyQt6 import uic
-# Benötigte PyQt6-Komponenten für Fenster, Anwendung und Meldungen.
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
+# QApplication verwaltet die PyQt-Anwendung.
+# QMainWindow ist die Basisklasse des Eintragfensters.
+from PyQt6.QtWidgets import QApplication, QMainWindow
+
+# Das MessageMixin stellt einheitliche Methoden
+# für Fehler- und Informationsmeldungen bereit.
+from message_mixin import MessageMixin
 # Datenbankfunktionen: Eintrag speichern und gespeicherten Eintrag laden.
 from database import eintrag_speichern, eintrag_fuer_bearbeitung_laden
 
@@ -30,7 +35,14 @@ from database import eintrag_speichern, eintrag_fuer_bearbeitung_laden
 # ---------------------------------------------------------------------------
 # Klasse für das Eintrag-Fenster
 # ---------------------------------------------------------------------------
-class EintragWindow(QMainWindow):
+# EintragWindow erbt gleichzeitig von zwei Klassen:
+#
+# QMainWindow stellt die Funktionen eines PyQt-Hauptfensters bereit.
+# MessageMixin ergänzt einheitliche Methoden für Meldungsfenster.
+#
+# Da EintragWindow von zwei Elternklassen erbt,
+# wird Mehrfachvererbung verwendet.
+class EintragWindow(QMainWindow, MessageMixin):
     """
         Verwaltet das Eintrag-Fenster der FemHealth-App.
 
@@ -259,14 +271,16 @@ class EintragWindow(QMainWindow):
 
     def on_personalisieren(self):
         """
-            Wird aufgerufen, wenn der Personalisieren-Button geklickt wird.
+        Zeigt einen Hinweis zum noch nicht vollständig
+        umgesetzten Personalisierungsbereich an.
+        """
 
-            Aktuell wird nur eine Hinweismeldung angezeigt. Später sollen hier
-            die Kategorien angepasst werden können.
-            """
+        # Konsolenausgabe für Test- und Entwicklungszwecke.
         print("Personalisieren geöffnet")
-        QMessageBox.information(
-            self,
+
+        # Über die geerbte Methode des MessageMixins
+        # wird eine Informationsmeldung angezeigt.
+        self.zeige_information(
             "Personalisieren",
             "Hier kannst du später Kategorien anpassen."
         )
@@ -554,20 +568,13 @@ class EintragWindow(QMainWindow):
             ring
         )
 
-        # Erfolgsmeldung anzeigen.
-        QMessageBox.information(self, "Gespeichert", "Dein Eintrag wurde gespeichert! ✅")
+        # Über das MessageMixin wird bestätigt,
+        # dass der Eintrag erfolgreich gespeichert wurde.
+        self.zeige_information(
+            "Gespeichert",
+            "Dein Eintrag wurde gespeichert! ✅"
+        )
 
-
-    # ── Hilfsmethode ─────────────────────────────────────────────────────────
-
-    def zeige_fehler(self, text):
-        """
-            Zeigt eine Warnmeldung mit einem übergebenen Fehlertext an.
-
-            Parameter:
-                text (str): Der Text, der in der Meldung angezeigt wird.
-            """
-        QMessageBox.warning(self, "Fehler", text)
 
     def gespeicherten_eintrag_laden(self):
         """

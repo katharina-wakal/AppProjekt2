@@ -5,7 +5,7 @@ import sys
 import pathlib
 import webbrowser
 from PyQt6 import uic
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox,
+from PyQt6.QtWidgets import (QApplication, QMainWindow,
                              QDialog, QLabel, QVBoxLayout, QPushButton)
 from PyQt6.QtCore import Qt, QTimer, QSettings
 from PyQt6.QtGui import QPixmap, QShowEvent
@@ -20,7 +20,9 @@ from datetime import date
 from arzttermin import ArztterminWindow
 from kalender import KalenderWindow
 from analyse import AnalyseWindow
-
+# Das MessageMixin stellt wiederverwendbare Methoden
+# für Informations- und Fehlermeldungen bereit.
+from message_mixin import MessageMixin
 #push benachrichtigungen
 class NotificationPopup(QDialog):
 
@@ -84,7 +86,15 @@ from wissen_fenster import WissenFenster
 
 from beratung import BeratungDialog
 
-class DashboardWindow(QMainWindow):
+# DashboardWindow erbt gleichzeitig von zwei Klassen:
+#
+# QMainWindow stellt die Funktionen eines PyQt-Hauptfensters bereit.
+# MessageMixin ergänzt wiederverwendbare Methoden
+# für Meldungsfenster.
+#
+# Da DashboardWindow von zwei Elternklassen erbt,
+# wird Mehrfachvererbung verwendet.
+class DashboardWindow(QMainWindow, MessageMixin):
 
     def __init__(self, vorname="", user_id=None):
 
@@ -466,19 +476,33 @@ class DashboardWindow(QMainWindow):
         self.wissen_fenster.show()
 
     def zeige_perioden_popup(self):
-        QMessageBox.information(
-            self,
+        """
+        Zeigt eine Informationsmeldung an, wenn die Periode
+        laut Berechnung voraussichtlich heute beginnt.
+        """
+
+        # Über das MessageMixin wird die berechnete
+        # Periodenbenachrichtigung angezeigt.
+        self.zeige_information(
             "Voraussichtlicher Periodenbeginn",
             "Deine Periode beginnt voraussichtlich heute.\n\n"
-            "Denke daran, deine Blutungsstärke und mögliche Symptome einzutragen."
+            "Denke daran, deine Blutungsstärke und mögliche "
+            "Symptome einzutragen."
         )
 
     def zeige_ovulations_popup(self):
-        QMessageBox.information(
-            self,
+        """
+        Zeigt eine Informationsmeldung an, wenn laut Berechnung
+        heute der voraussichtliche Ovulationstag ist.
+        """
+
+        # Über das MessageMixin wird die berechnete
+        # Ovulationsbenachrichtigung angezeigt.
+        self.zeige_information(
             "Voraussichtliche Ovulation",
             "Heute ist voraussichtlich dein Ovulationstag.\n\n"
-            "Bitte beachte, dass es sich hierbei nur um eine berechnete Prognose handelt."
+            "Bitte beachte, dass es sich hierbei nur um "
+            "eine berechnete Prognose handelt."
         )
 
     def pruefe_zyklus_benachrichtigungen(
@@ -575,7 +599,6 @@ class DashboardWindow(QMainWindow):
             schluessel,
             heute
         )
-
 
 
 

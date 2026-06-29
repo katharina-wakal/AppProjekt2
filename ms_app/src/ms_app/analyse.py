@@ -7,7 +7,6 @@ from PyQt6 import uic                   # Lädt die .ui-Datei (grafisches Layout
 from PyQt6.QtWidgets import (
     QApplication,                        # Startet die Qt-Anwendung
     QMainWindow,                         # Basisklasse für das Hauptfenster
-    QMessageBox,                         # Zeigt Dialogfenster (Meldungen, Fragen)
 )
 
 from database import (
@@ -23,9 +22,18 @@ from calculation import calculate_cycle_prediction  # Berechnet Prognosen (näch
 from kalender import KalenderWindow                 # Fenster für den Kalender
 from eintrag import EintragWindow                   # Fenster zum Eintragen von Tracking-Daten
 from arzttermin import ArztterminWindow             # Fenster für Arzttermine
+# Das MessageMixin stellt wiederverwendbare Methoden
+# für Fehler-, Informations- und Bestätigungsdialoge bereit.
+from message_mixin import MessageMixin
 
-
-class AnalyseWindow(QMainWindow):
+# AnalyseWindow erbt gleichzeitig von zwei Klassen:
+#
+# QMainWindow stellt die Funktionen eines PyQt-Hauptfensters bereit.
+# MessageMixin ergänzt einheitliche Methoden für Meldungsfenster.
+#
+# Da die Klasse von zwei Elternklassen erbt,
+# handelt es sich um Mehrfachvererbung.
+class AnalyseWindow(QMainWindow, MessageMixin):
     # Diese Klasse stellt das Analyse-Fenster der App dar
 
     def __init__(self, daten=None, user_id=None):
@@ -386,71 +394,114 @@ class AnalyseWindow(QMainWindow):
         self.close()  # Dieses Fenster schließen
 
     def on_freischalten(self):
+        """
+        Prüft, ob die erweiterten Analysen freigeschaltet werden können.
+
+        Für die Freischaltung werden 60 Credit Points benötigt.
+        Die Punkte werden nur abgezogen, wenn die nutzende Person
+        die Freischaltung ausdrücklich bestätigt.
+        """
+
+        # Ohne Benutzer-ID können weder der Punktestand
+        # noch der Freischaltungsstatus geladen werden.
         if self.user_id is None:
-            # Kein Nutzer eingeloggt → Fehler anzeigen
-            QMessageBox.warning(self, "Fehler", "Es ist kein Benutzer angemeldet.")
-            return
-
-        bereits_freigeschaltet = analysen_freigeschaltet_laden(self.user_id)
-
-        if bereits_freigeschaltet:
-            # Nutzer hat bereits freigeschaltet → Info-Dialog
-            QMessageBox.information(
-                self,
-                "🔓 Bereits freigeschaltet",
-                "Die erweiterten Analysen sind für deinen Account bereits freigeschaltet."
+            # Über das MessageMixin wird eine Fehlermeldung angezeigt.
+            self.zeige_fehler(
+                "Es ist kein Benutzer angemeldet."
             )
             return
 
-        credit_points = credit_points_laden(self.user_id)  # Aktuellen Punktestand laden
+        # Prüfen, ob die erweiterten Analysen für diesen Nutzer
+        # bereits dauerhaft freigeschaltet wurden.
+        bereits_freigeschaltet = analysen_freigeschaltet_laden(
+            self.user_id
+        )
 
+        # Wenn die Analysen bereits freigeschaltet sind,
+        # muss kein weiterer Punktabzug erfolgen.
+        if bereits_freigeschaltet:
+            # Eine Informationsmeldung über das MessageMixin anzeigen.
+            self.zeige_information(
+                "🔓 Bereits freigeschaltet",
+                "Die erweiterten Analysen sind für deinen Account "
+                "bereits freigeschaltet."
+            )
+            return
+
+        # Den aktuellen Punktestand aus der Datenbank laden.
+        credit_points = credit_points_laden(
+            self.user_id
+        )
+
+        # Prüfen, ob weniger als 60 Punkte vorhanden sind.
         if credit_points < 60:
-            # Nicht genug Punkte → Info mit fehlendem Betrag
+            # Berechnen, wie viele Punkte noch fehlen.
             fehlende_punkte = 60 - credit_points
-            QMessageBox.information(
-                self,
+
+            # Den aktuellen Punktestand und die noch fehlenden
+            # Punkte in einer Informationsmeldung anzeigen.
+            self.zeige_information(
                 "🔒 Analysen freischalten",
                 "Dein aktueller Punktestand: "
                 + str(credit_points)
-                + " / 60 Punkte\n\nDir fehlen noch "
+                + " / 60 Punkte\n\n"
+                + "Dir fehlen noch "
                 + str(fehlende_punkte)
                 + " Punkte, um die erweiterten Analysen freizuschalten."
             )
             return
 
-        # Genug Punkte vorhanden → Nutzer fragen ob er freischalten möchte
-        antwort = QMessageBox.question(
-            self,
+        # Wenn genügend Punkte vorhanden sind,
+        # wird eine abschließende Bestätigung abgefragt.
+        bestaetigt = self.frage_bestaetigung(
             "🔓 Analysen freischalten",
             "Du hast "
             + str(credit_points)
-            + " Punkte gesammelt.\n\nMöchtest du 60 Punkte einlösen und die "
-            + "erweiterten Analysen dauerhaft freischalten?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            + " Punkte gesammelt.\n\n"
+            + "Möchtest du 60 Punkte einlösen und die "
+            + "erweiterten Analysen dauerhaft freischalten?"
         )
 
-        if antwort != QMessageBox.StandardButton.Yes:
-            return  # Nutzer hat abgebrochen
+        # Die Methode beenden, wenn die nutzende Person
+        # die Freischaltung nicht bestätigt.
+        if not bestaetigt:
+            return
 
-        # Freischaltung in der Datenbank durchführen (zieht 60 Punkte ab)
-        erfolgreich = erweiterte_analysen_freischalten(self.user_id)
+        # Die Freischaltung über die Datenbankfunktion durchführen.
+        #
+        # Dabei werden 60 Credit Points abgezogen.
+        erfolgreich = erweiterte_analysen_freischalten(
+            self.user_id
+        )
 
+        # Prüfen, ob die Freischaltung erfolgreich war.
         if erfolgreich:
-            neuer_punktestand = credit_points_laden(self.user_id)  # Neuen Stand laden
-            QMessageBox.information(
-                self,
+            # Den aktualisierten Punktestand aus der Datenbank laden.
+            neuer_punktestand = credit_points_laden(
+                self.user_id
+            )
+
+            # Die erfolgreiche Freischaltung bestätigen.
+            self.zeige_information(
                 "🎉 Freigeschaltet",
-                "Die erweiterten Analysen wurden erfolgreich freigeschaltet!\n\n"
+                "Die erweiterten Analysen wurden erfolgreich "
+                "freigeschaltet!\n\n"
                 + "Dein neuer Punktestand: "
                 + str(neuer_punktestand)
                 + " Punkte"
             )
-            self.anzeige_befuellen()  # Ansicht neu laden, damit Änderungen sichtbar werden
+
+            # Die Analyseansicht neu befüllen,
+            # damit die freigeschalteten Bereiche sichtbar werden.
+            self.anzeige_befuellen()
+
         else:
-            QMessageBox.warning(
-                self,
-                "Freischaltung fehlgeschlagen",
-                "Die erweiterten Analysen konnten nicht freigeschaltet werden."
+            # Eine Fehlermeldung mit einem besonderen Titel anzeigen,
+            # wenn die Datenbankänderung nicht erfolgreich war.
+            self.zeige_fehler(
+                "Die erweiterten Analysen konnten nicht "
+                "freigeschaltet werden.",
+                titel="Freischaltung fehlgeschlagen"
             )
 
     def on_mehr_periode(self):

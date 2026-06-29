@@ -24,23 +24,33 @@ from PyQt6 import uic# uic wird benötigt, um die im Qt Designer erstellte UI-Da
 
 # QApplication verwaltet die gesamte PyQt-Anwendung.
 # # QMainWindow ist die Basisklasse des Registrierungsfensters.
-# # QMessageBox wird für Informations- und Fehlermeldungen verwendet.
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow
 
 # pyqtSignal wird benötigt, um ein eigenes Signal zu erstellen.
 # Dieses Signal informiert das Login-Fenster darüber,
 # dass es wieder angezeigt werden soll.
 from PyQt6.QtCore import pyqtSignal
 
-# user_anlegen ist eine Funktion aus database.py.
-# Sie speichert einen neuen Benutzer in der Datenbank.
+# user_anlegen speichert einen neuen Benutzer
+# in der Datenbank.
 from database import user_anlegen
+
+# Das MessageMixin stellt wiederverwendbare Methoden
+# für Fehler- und Informationsmeldungen bereit.
+from message_mixin import MessageMixin
 
 # ---------------------------------------------------------------------------
 # Klasse für das Registrierungsfenster
 # ---------------------------------------------------------------------------
 
-class RegisterWindow(QMainWindow):
+# RegisterWindow erbt gleichzeitig von zwei Klassen:
+#
+# QMainWindow stellt die Funktionen eines PyQt-Hauptfensters bereit.
+# MessageMixin ergänzt einheitliche Methoden für Meldungsfenster.
+#
+# Da RegisterWindow von zwei Elternklassen erbt,
+# wird Mehrfachvererbung verwendet.
+class RegisterWindow(QMainWindow, MessageMixin):
     """
         Verwaltet das Registrierungsfenster der FemHealth-App.
 
@@ -204,9 +214,12 @@ class RegisterWindow(QMainWindow):
         # Eine Kontrollmeldung wird in der Konsole ausgegeben.
         print("Registrierung erfolgreich gespeichert")
 
-        # Der Benutzerin wird eine Erfolgsmeldung angezeigt.
-        QMessageBox.information(self, "Erfolg", "Konto wurde erfolgreich erstellt!")
-
+        # Über die geerbte Methode des MessageMixins
+        # wird die erfolgreiche Registrierung bestätigt.
+        self.zeige_information(
+            "Erfolg",
+            "Konto wurde erfolgreich erstellt!"
+        )
         # Nach dem Bestätigen der Meldung wird wieder
         # zum Login-Fenster gewechselt.
         self.on_zurueck_zum_login()
@@ -354,18 +367,6 @@ class RegisterWindow(QMainWindow):
         # Die Funktion gibt nur dann True zurück,
         # wenn beide Bedingungen erfüllt sind.
         return hat_zahl and hat_gross
-
-    def zeige_fehler(self, text):
-        """
-                Zeigt eine Warnmeldung mit einem übergebenen Fehlertext an.
-
-                Parameter:
-                    text (str): Der Text, der in der Meldung angezeigt wird.
-                """
-
-        # Eine Warnmeldung mit dem Titel „Fehler“
-        # und dem übergebenen Text wird angezeigt
-        QMessageBox.warning(self, "Fehler", text)
 
 
 # ── Programm starten ──────────────────────────────────────────────────────────
