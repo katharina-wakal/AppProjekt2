@@ -155,53 +155,9 @@ def create_tables():
     # Die Verbindung wird geschlossen, weil sie nicht mehr benötigt wird.
     connection.close()
 
-def credit_spalten_ergaenzen():
-    """
-        Ergänzt ältere users-Tabellen um die Spalten für das Punktesystem.
-
-        Diese Funktion ist eine kleine Datenbankmigration. Sie ist notwendig, wenn
-        die Datenbank bereits existierte, bevor 'credit_points' und
-        'advanced_analysis_unlocked' in 'create_tables' ergänzt wurden.
-        """
-    # Eine neue Datenbankverbindung wird geöffnet.
-    connection = create_connection()
-
-    # Ein Cursor wird zum Ausführen der SQL-Befehle erzeugt.
-    cursor = connection.cursor()
-
-    # PRAGMA table_info(users) liefert Informationen über alle vorhandenen
-    # Spalten der Tabelle users.
-    cursor.execute("PRAGMA table_info(users)")
-
-    # Aus jedem zurückgegebenen Spalten-Datensatz wird der Spaltenname an
-    # Position 1 ausgelesen und in einer Liste gesammelt.
-    vorhandene_spalten = [
-        spalte[1]
-        for spalte in cursor.fetchall()
-    ]
-    # Nur wenn credit_points noch nicht existiert, wird die Spalte ergänzt.
-    if "credit_points" not in vorhandene_spalten:
-        cursor.execute("""
-            ALTER TABLE users
-            ADD COLUMN credit_points INTEGER NOT NULL DEFAULT 0
-        """)
-
-    # Auch die Freischaltungs-Spalte wird nur bei Bedarf hinzugefügt.
-    if "advanced_analysis_unlocked" not in vorhandene_spalten:
-        cursor.execute("""
-            ALTER TABLE users
-            ADD COLUMN advanced_analysis_unlocked INTEGER NOT NULL DEFAULT 0
-        """)
-    # Die Änderungen an der Tabellenstruktur werden gespeichert.
-    connection.commit()
-    # Anschließend wird die Verbindung geschlossen.
-    connection.close()
-
-# Beim Import dieser Datei werden zunächst alle benötigten Tabellen angelegt.
+# Beim Import dieser Datei werden alle benötigten Tabellen angelegt.
+# CREATE TABLE IF NOT EXISTS sorgt dafür, dass bestehende Daten nicht überschrieben werden.
 create_tables()
-# Danach werden ältere Datenbanken bei Bedarf um die Credit-Spalten ergänzt.
-credit_spalten_ergaenzen()
-# Diese Konsolenausgabe bestätigt, dass die Initialisierung ausgeführt wurde.
 print("Datenbank wurde erfolgreich erstellt.")
 
 # =============================================================================
@@ -522,55 +478,6 @@ def eintrag_fuer_tag_laden(user_id, datum):
     connection.close()# Die Verbindung wird nach der Abfrage geschlossen.
 
     return eintrag# Der Datensatz oder None wird an die aufrufende Datei zurückgegeben.
-
-def eintrag_fuer_bearbeitung_laden(user_id, datum):
-    """
-        Lädt einen Tracking-Eintrag, damit er im Eingabefenster bearbeitet wird.
-
-        Inhaltlich führt diese Funktion aktuell dieselbe Abfrage wie
-        'eintrag_fuer_tag_laden' aus. Der eigene Name macht jedoch deutlich, dass
-        der Datensatz in diesem Fall für die Bearbeitungsansicht benötigt wird.
-
-        Args:
-            user_id (int): ID des angemeldeten Benutzers.
-            datum (str): Zu bearbeitendes Datum im Format 'YYYY-MM-DD'
-
-        Returns:
-            tuple | None: Die gespeicherten Tracking-Werte oder 'None'
-        """
-    connection = create_connection()# Eine Verbindung zur Datenbank wird hergestellt.
-    cursor = connection.cursor()# Der Cursor führt die folgende SQL-Abfrage aus.
-
-    # Es werden dieselben 17 Tracking-Felder wie in der Tagesansicht geladen.
-    cursor.execute("""
-        SELECT
-            period_strength,
-            spotting,
-            feelings,
-            pain,
-            sex_life,
-            note,
-            discharge,
-            skin,
-            digestion,
-            stool,
-            tests,
-            pill,
-            spiral,
-            injection,
-            implant,
-            patch,
-            ring
-        FROM daily_entries
-        WHERE user_id = ?
-        AND entry_date = ?
-    """, (user_id, datum))
-
-    # fetchone liefert den passenden Tagesdatensatz oder None.
-    eintrag = cursor.fetchone()
-
-    connection.close()# Nach der Abfrage wird die Verbindung geschlossen.
-    return eintrag# Der geladene Datensatz wird zurückgegeben.
 
 def tracking_daten_laden(user_id):
     """

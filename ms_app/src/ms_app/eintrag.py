@@ -29,7 +29,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow
 # für Fehler- und Informationsmeldungen bereit.
 from message_mixin import MessageMixin
 # Datenbankfunktionen: Eintrag speichern und gespeicherten Eintrag laden.
-from database import eintrag_speichern, eintrag_fuer_bearbeitung_laden
+from database import eintrag_speichern, eintrag_fuer_tag_laden
 
 
 # ---------------------------------------------------------------------------
@@ -592,7 +592,7 @@ class EintragWindow(QMainWindow, MessageMixin):
         datum = self.eintrag_datum.strftime("%Y-%m-%d")
 
         # Gespeicherten Eintrag aus der Datenbank laden.
-        eintrag = eintrag_fuer_bearbeitung_laden(
+        eintrag = eintrag_fuer_tag_laden(
             self.user_id,
             datum
         )

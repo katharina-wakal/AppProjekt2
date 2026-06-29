@@ -30,7 +30,11 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QTimer
 # Datenbankfunktionen zum Laden von Perioden-Tagen, Tageseinträgen
 # und Arztterminen.
-from database import perioden_tage_laden, eintrag_fuer_tag_laden, arzttermine_laden, arzttermin_fuer_tag_laden
+from database import (
+    perioden_tage_laden, eintrag_fuer_tag_laden,
+    arzttermine_laden, arzttermin_fuer_tag_laden,
+    periodenstarts_laden, perioden_dauer_laden
+)
 # datetime wird verwendet, um gespeicherte Datums-Texte in echte Datumsobjekte
 # umzuwandeln.
 # Das MessageMixin stellt wiederverwendbare Methoden
@@ -103,6 +107,10 @@ class KalenderWindow(QMainWindow, MessageMixin):
 
                 self.perioden_tage.append(datum)
 
+            # Vorhergesagte Folgetage ergänzen, falls eine laufende Periode
+            # noch nicht vollständig eingetragen wurde (z. B. nur Tag 1 von 5).
+            self._perioden_vorhersage_ergaenzen()
+
             # Arzttermine aus der Datenbank laden
             # Das Datum ist im Format 'dd.MM.yyyy' gespeichert (siehe arzttermin.py)
             termin_daten = arzttermine_laden(self.user_id)
@@ -140,6 +148,51 @@ class KalenderWindow(QMainWindow, MessageMixin):
         self.kalender_aufbauen()
         # Den Detail-Bereich mit den Daten von heute füllen.
         self.detail_sheet_befuellen(date.today())
+
+    # ── Perioden-Vorhersage ───────────────────────────────────────────────────
+
+    def _perioden_vorhersage_ergaenzen(self):
+        """
+            Ergänzt vorhergesagte Periodentage, falls eine laufende Periode
+            noch nicht vollständig eingetragen wurde.
+
+            Für jeden bekannten Periodenstart werden die Folgetage bis zur
+            durchschnittlichen Periodendauer zur Markierungsliste hinzugefügt,
+            sofern sie dort noch nicht enthalten sind. Dadurch werden auch
+            Tage rot angezeigt, die der Nutzer noch nicht manuell eingetragen hat.
+            """
+        # Alle erkannten Periodenstarts laden.
+        periodenstarts = periodenstarts_laden(self.user_id)
+
+        # Ohne Periodenstarts gibt es nichts zu ergänzen.
+        if len(periodenstarts) == 0:
+            return
+
+        # Gespeicherte Periodendauern laden, um einen Durchschnitt zu berechnen.
+        perioden_dauern = perioden_dauer_laden(self.user_id)
+
+        # Durchschnittliche Periodendauer berechnen.
+        # Wenn noch keine abgeschlossene Periode vorliegt, wird 5 Tage angenommen.
+        if len(perioden_dauern) > 0:
+            avg_dauer = round(sum(perioden_dauern) / len(perioden_dauern))
+        else:
+            avg_dauer = 5
+
+        # Für jeden Periodenstart die erwarteten Folgetage ergänzen.
+        for start_text in periodenstarts:
+            start = datetime.strptime(start_text, "%Y-%m-%d").date()
+
+            for i in range(avg_dauer):
+                tag = start + timedelta(days=i)
+
+                # Nur hinzufügen, wenn der Tag noch nicht in der Liste ist.
+                if tag not in self.perioden_tage:
+                    self.perioden_tage.append(tag)
+
+        # Liste chronologisch sortieren, damit die Reihenfolge stimmt.
+        self.perioden_tage.sort()
+
+        print("Perioden-Vorhersage: " + str(len(self.perioden_tage)) + " Tage markiert")
 
     # ── Kalender aufbauen ─────────────────────────────────────────────────────
 
