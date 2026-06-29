@@ -7,42 +7,19 @@ license = "MIT"
 author = "HS Aalen"
 author_email = "simonereth321@gmail.com"
 
-[tool.briefcase.app.ms-app]
+
+[tool.briefcase.app.femhealth]
 formal_name = "FemHealth"
 description = "FemHealth – Zyklus- und Gesundheits-App"
 long_description = "Eine App zur Verfolgung des weiblichen Zyklus und der Gesundheit."
+
 sources = ["ms_app/src/ms_app"]
-test_sources = ["ms_app/tests"]
+
 icon = "ms_app/src/ms_app/resources/ms_app"
 
-# ── Desktop (PyQt6) ────────────────────────────────────────────────────────
-[tool.briefcase.app.ms-app.macOS]
 requires = [
     "PyQt6>=6.4",
-    "platformdirs>=3.0",
-]
-
-[tool.briefcase.app.ms-app.windows]
-requires = [
-    "PyQt6>=6.4",
-    "platformdirs>=3.0",
-]
-
-[tool.briefcase.app.ms-app.linux]
-requires = [
-    "PyQt6>=6.4",
-    "platformdirs>=3.0",
-]
-
-# ── Mobile (Toga) ──────────────────────────────────────────────────────────
-[tool.briefcase.app.ms-app.iOS]
-requires = [
-    "toga-iOS>=0.4",
-    "platformdirs>=3.0",
-]
-
-[tool.briefcase.app.ms-app.android]
-requires = [
-    "toga-android>=0.4",
+    "matplotlib",
+    "requests",
     "platformdirs>=3.0",
 ]

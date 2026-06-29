@@ -11,16 +11,32 @@ ist für die aktuelle Projektgröße nicht zwingend notwendig, weil jede Funktio
 nur kurz eine Verbindung öffnet, ihre Abfrage ausführt und die Verbindung danach
 wieder schließt.
 """
+import shutil
 import sqlite3
+from datetime import datetime
 from pathlib import Path
 
-from datetime import datetime
+from platformdirs import user_data_path
 
-# Ordner, in dem sich diese database.py-Datei befindet
-BASE_DIR = Path(__file__).resolve().parent
 
-# Vollständiger Pfad zur Datenbankdatei
-DB_PATH = BASE_DIR / "femhealth.db"
+# Datenbankdatei, die zusammen mit dem Programm ausgeliefert wird
+BUNDLED_DB_PATH = Path(__file__).resolve().parent / "femhealth.db"
+
+# Beschreibbarer Benutzerordner der FemHealth-App
+APP_DATA_DIR = user_data_path(
+    appname="FemHealth",
+    appauthor="HS Aalen",
+    ensure_exists=True
+)
+
+# Datenbank, mit der die App tatsächlich arbeitet
+DB_PATH = APP_DATA_DIR / "femhealth.db"
+
+
+# Beim ersten Start wird die mitgelieferte Datenbank in den
+# beschreibbaren Benutzerordner kopiert.
+if not DB_PATH.exists() and BUNDLED_DB_PATH.exists():
+    shutil.copy2(BUNDLED_DB_PATH, DB_PATH)
 
 # =============================================================================
 # 1. DATENBANKVERBINDUNG UND TABELLENSTRUKTUR
