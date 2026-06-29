@@ -47,7 +47,7 @@ from PyQt6.QtCore import pyqtSignal, Qt, QTimer
 # QPushButton stellt einen anklickbaren Button bereit.
 # QWidget wird bei der Größenberechnung des Scrollbereichs benötigt.
 # QFileDialog öffnet einen Dialog zur Auswahl eines Speicherorts.
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QInputDialog, QLineEdit,
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QInputDialog, QLineEdit,
                              QDialog, QFormLayout, QVBoxLayout, QPushButton, QWidget, QFileDialog)
 # Die benötigten Datenbankfunktionen werden
 # aus dem Modul database importiert.
@@ -61,11 +61,23 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QInputDialo
 #alle_nutzerdaten_laden Lädt alle gespeicherten Daten eines Nutzers, beispielsweise für einen Datenexport.
 from database import (user_email_laden,email_existiert,email_aendern, passwort_pruefen, passwort_aendern,
                       account_loeschen, tracking_daten_laden, alle_nutzerdaten_laden)
+# Das selbst erstellte MessageMixin wird importiert.
+#
+# Es stellt wiederverwendbare Methoden für Meldungsfenster bereit.
+from message_mixin import MessageMixin
 
-# Eigene Klasse für das Einstellungsfenster.
-# Die Klasse erbt von QMainWindow und besitzt dadurch
-# alle Eigenschaften und Methoden eines PyQt-Hauptfensters.
-class SettingsWindow(QMainWindow):
+
+# SettingsWindow erbt gleichzeitig von zwei Klassen:
+#
+# 1. QMainWindow
+#    Dadurch ist SettingsWindow ein vollständiges PyQt-Hauptfenster.
+#
+# 2. MessageMixin
+#    Dadurch erhält SettingsWindow zusätzliche Methoden für Meldungsfenster.
+#
+# Da die Klasse von mehreren Elternklassen erbt,
+# handelt es sich um Mehrfachvererbung.
+class SettingsWindow(QMainWindow, MessageMixin):
     # Eigenes Signal, das beim Abmelden oder nach dem Löschen
     # eines Accounts ausgesendet wird.
     #
@@ -350,40 +362,43 @@ class SettingsWindow(QMainWindow):
 
             # Prüfen, ob mindestens eines der Felder leer ist.
             if not alt or not neu or not neu2:
-                QMessageBox.warning(
-                    dialog,
-                    "Fehler",
-                    "Bitte alle Passwortfelder ausfüllen."
+                self.zeige_fehler(
+                    "Bitte alle Passwortfelder ausfüllen.",
+                    elternfenster=dialog
                 )
                 return
 
             # Prüfen, ob beide Eingaben des neuen Passworts
             # exakt übereinstimmen.
             if neu != neu2:
-                QMessageBox.warning(
-                    dialog,
-                    "Fehler",
-                    "Die neuen Passwörter stimmen nicht überein."
+                # Eine Fehlermeldung wird angezeigt,
+                # wenn die beiden neuen Passwörter unterschiedlich sind.
+                self.zeige_fehler(
+                    "Die neuen Passwörter stimmen nicht überein.",
+                    elternfenster=dialog
                 )
                 return
 
             # Prüfen, ob das neue Passwort
             # die festgelegte Mindestlänge erfüllt.
             if len(neu) < 6:
-                QMessageBox.warning(
-                    dialog,
-                    "Fehler",
-                    "Das neue Passwort muss mindestens 6 Zeichen haben."
+                # Eine Fehlermeldung wird angezeigt,
+                # wenn das neue Passwort die Mindestlänge nicht erfüllt.
+                self.zeige_fehler(
+                    "Das neue Passwort muss mindestens 6 Zeichen haben.",
+                    elternfenster=dialog
                 )
                 return
 
-            # Verhindern, dass das bisherige Passwort
-            # erneut als neues Passwort gespeichert wird.
+            # Prüfen, ob das neue Passwort dem bisherigen Passwort entspricht.
             if alt == neu:
-                QMessageBox.warning(
-                    dialog,
-                    "Fehler",
-                    "Das neue Passwort muss sich vom bisherigen Passwort unterscheiden."
+                # Über das MessageMixin eine Fehlermeldung anzeigen.
+                #
+                # Der Passwortdialog wird als Elternfenster übergeben,
+                # damit die Meldung vor diesem Dialog erscheint.
+                self.zeige_fehler(
+                    "Das neue Passwort muss sich vom bisherigen Passwort unterscheiden.",
+                    elternfenster=dialog
                 )
                 return
 
@@ -399,10 +414,11 @@ class SettingsWindow(QMainWindow):
                     self.user_id,
                     alter_passwort_hash
             ):
-                QMessageBox.warning(
-                    dialog,
-                    "Fehler",
-                    "Das bisherige Passwort ist nicht korrekt."
+                # Eine Fehlermeldung wird angezeigt,
+                # wenn das bisherige Passwort nicht mit dem gespeicherten Passwort übereinstimmt.
+                self.zeige_fehler(
+                    "Das bisherige Passwort ist nicht korrekt.",
+                    elternfenster=dialog
                 )
                 return
 
@@ -419,18 +435,20 @@ class SettingsWindow(QMainWindow):
 
             # Prüfen, ob die Datenbankänderung fehlgeschlagen ist.
             if not erfolgreich:
-                QMessageBox.warning(
-                    dialog,
-                    "Fehler",
-                    "Das Passwort konnte nicht geändert werden."
+                # Eine Fehlermeldung wird angezeigt,
+                # wenn die Datenbankänderung nicht erfolgreich war.
+                self.zeige_fehler(
+                    "Das Passwort konnte nicht geändert werden.",
+                    elternfenster=dialog
                 )
                 return
 
             # Den Nutzer über die erfolgreiche Änderung informieren.
-            QMessageBox.information(
-                dialog,
+            # Über das MessageMixin wird die erfolgreiche Änderung bestätigt.
+            self.zeige_information(
                 "Passwort geändert",
-                "Dein Passwort wurde erfolgreich geändert."
+                "Dein Passwort wurde erfolgreich geändert.",
+                elternfenster=dialog
             )
 
             dialog.accept() # Den Dialog erfolgreich beenden und schließen.
@@ -504,11 +522,11 @@ class SettingsWindow(QMainWindow):
             )
             return
 
-        # Prüfen, ob die neue E-Mail-Adresse
-        # mit der bisher gespeicherten Adresse übereinstimmt.
+        # Prüfen, ob die neue E-Mail-Adresse bereits
+        # im Account gespeichert ist.
         if neue_email == aktuelle_email.lower():
-            QMessageBox.information(
-                self,
+            # Über das MessageMixin eine Informationsmeldung anzeigen.
+            self.zeige_information(
                 "Keine Änderung",
                 "Diese E-Mail-Adresse ist bereits in deinem Account gespeichert."
             )
@@ -545,20 +563,17 @@ class SettingsWindow(QMainWindow):
             )
             return
 
-        # Eine abschließende Bestätigungsfrage anzeigen.
-        antwort = QMessageBox.question(
-            self,
+        # Über das MessageMixin eine abschließende
+        # Bestätigung für die Änderung abfragen.
+        bestaetigt = self.frage_bestaetigung(
             "E-Mail ändern",
             "Möchtest du deine E-Mail-Adresse wirklich ändern?\n\n"
             f"Alt: {aktuelle_email}\n"
-            f"Neu: {neue_email}",
-            QMessageBox.StandardButton.Yes
-            | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
+            f"Neu: {neue_email}"
         )
 
-        # Nur fortfahren, wenn ausdrücklich „Ja“ ausgewählt wurde.
-        if antwort != QMessageBox.StandardButton.Yes:
+        # Die Methode beenden, wenn die Änderung nicht bestätigt wurde.
+        if not bestaetigt:
             return
 
         # Die neue E-Mail-Adresse in der Datenbank speichern.
@@ -569,8 +584,8 @@ class SettingsWindow(QMainWindow):
 
         # Bei erfolgreicher Änderung eine Bestätigung anzeigen.
         if erfolgreich:
-            QMessageBox.information(
-                self,
+            # Die erfolgreiche Änderung der E-Mail-Adresse bestätigen.
+            self.zeige_information(
                 "E-Mail geändert",
                 "Deine E-Mail-Adresse wurde erfolgreich geändert.\n\n"
                 "Bitte bestätige anschließend deine neue E-Mail-Adresse."
@@ -591,8 +606,11 @@ class SettingsWindow(QMainWindow):
         # Informationsmeldung anzeigen.
         #
         # Diese Meldung bestätigt aktuell keinen echten E-Mail-Versand.
-        QMessageBox.information(
-            self,
+        # Eine Informationsmeldung zur E-Mail-Bestätigung anzeigen.
+        #
+        # Ein tatsächlicher E-Mail-Versand ist momentan
+        # noch nicht umgesetzt.
+        self.zeige_information(
             "E-Mail bestätigen",
             "Eine Bestätigungs-E-Mail wurde an deine Adresse gesendet."
         )
@@ -602,19 +620,16 @@ class SettingsWindow(QMainWindow):
                 Fragt nach einer Bestätigung und meldet den Nutzer ab.
                 """
         # Sicherheitsfrage anzeigen, bevor die Sitzung beendet wird.
-        antwort = QMessageBox.question(
-            self,
+        # Vor dem Abmelden eine Bestätigung abfragen.
+        bestaetigt = self.frage_bestaetigung(
             "Abmelden",
-            "Möchtest du dich wirklich abmelden?",
-            QMessageBox.StandardButton.Yes
-            | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
+            "Möchtest du dich wirklich abmelden?"
         )
-        # Bei „Nein“ oder Schließen des Dialogs
-        # keine Abmeldung durchführen.
-        if antwort != QMessageBox.StandardButton.Yes:
-            return
 
+        # Die Methode beenden, wenn die Abmeldung
+        # nicht bestätigt wurde.
+        if not bestaetigt:
+            return
         # Konsolenausgabe für Test- und Entwicklungszwecke.
         print("Nutzer abgemeldet")
 
@@ -625,10 +640,6 @@ class SettingsWindow(QMainWindow):
         self.logout_requested.emit()
 
         # Das Einstellungsfenster schließen.
-        self.close()
-
-        # Dieser zweite Aufruf von self.close() ist im aktuellen Code
-        # redundant, weil das Fenster bereits geschlossen wurde.
         self.close()
 
     def on_account_loeschen(self):
@@ -643,9 +654,9 @@ class SettingsWindow(QMainWindow):
             )
             return
 
-        # Erste ausführliche Warnung anzeigen.
-        antwort = QMessageBox.warning(
-            self,
+        # Eine besonders hervorgehobene Warnfrage anzeigen,
+        # da die Löschung nicht rückgängig gemacht werden kann.
+        bestaetigt = self.frage_warnung(
             "Account dauerhaft löschen",
             "Achtung!\n\n"
             "Dein Account und alle damit verbundenen Daten werden "
@@ -655,15 +666,12 @@ class SettingsWindow(QMainWindow):
             "• alle Tracking-Einträge\n"
             "• Arzttermine\n"
             "• App-Einstellungen\n\n"
-            "Möchtest du wirklich fortfahren?",
-            QMessageBox.StandardButton.Yes
-            | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
+            "Möchtest du wirklich fortfahren?"
         )
 
-        # Die Methode beenden, wenn der Nutzer
-        # die erste Warnung nicht bestätigt.
-        if antwort != QMessageBox.StandardButton.Yes:
+        # Die Methode beenden, wenn die erste Warnung
+        # nicht bestätigt wurde.
+        if not bestaetigt:
             return
 
         # Das aktuelle Passwort zur Identitätsbestätigung abfragen.
@@ -700,21 +708,17 @@ class SettingsWindow(QMainWindow):
             )
             return
 
-        # Nach erfolgreicher Passwortprüfung
-        # eine letzte Sicherheitsabfrage anzeigen.
-        letzte_bestaetigung = QMessageBox.question(
-            self,
+        # Nach der Passwortprüfung eine letzte
+        # Bestätigung für die endgültige Löschung abfragen.
+        letzte_bestaetigung = self.frage_bestaetigung(
             "Endgültig löschen",
             "Dies ist die letzte Bestätigung.\n\n"
             "Der Account kann nach dem Löschen nicht wiederhergestellt werden.\n\n"
-            "Account jetzt endgültig löschen?",
-            QMessageBox.StandardButton.Yes
-            | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
+            "Account jetzt endgültig löschen?"
         )
 
-        # Nur bei einer eindeutigen Bestätigung fortfahren.
-        if letzte_bestaetigung != QMessageBox.StandardButton.Yes:
+        # Ohne ausdrückliche Zustimmung nichts löschen.
+        if not letzte_bestaetigung:
             return
 
         # Den Account und die zugehörigen Daten
@@ -732,8 +736,8 @@ class SettingsWindow(QMainWindow):
             return
 
         # Erfolgreiche Löschung bestätigen.
-        QMessageBox.information(
-            self,
+        # Die erfolgreiche Löschung des Accounts bestätigen.
+        self.zeige_information(
             "Account gelöscht",
             "Dein Account und alle zugehörigen Daten wurden gelöscht."
         )
@@ -852,9 +856,8 @@ class SettingsWindow(QMainWindow):
                     indent=4
                 )
 
-            # Erfolgreiches Speichern bestätigen.
-            QMessageBox.information(
-                self,
+            # Das erfolgreiche Speichern der Datenkopie bestätigen.
+            self.zeige_information(
                 "Download erfolgreich",
                 "Deine vollständige Datenkopie wurde erfolgreich gespeichert."
             )
@@ -886,8 +889,9 @@ class SettingsWindow(QMainWindow):
 
         # Prüfen, ob überhaupt Daten zum Export vorhanden sind.
         if len(daten) == 0:
-            QMessageBox.information(
-                self,
+            # Darauf hinweisen, dass aktuell keine Daten
+            # für einen Export vorhanden sind.
+            self.zeige_information(
                 "Keine Trackingdaten",
                 "Es sind noch keine Trackingdaten zum Exportieren vorhanden."
             )
@@ -973,8 +977,8 @@ class SettingsWindow(QMainWindow):
                     writer.writerow(bereinigte_zeile)
 
             # Erfolgreichen Export bestätigen.
-            QMessageBox.information(
-                self,
+            # Den erfolgreichen Export der Trackingdaten bestätigen.
+            self.zeige_information(
                 "Export erfolgreich",
                 "Deine Trackingdaten wurden erfolgreich exportiert."
             )
@@ -990,30 +994,31 @@ class SettingsWindow(QMainWindow):
 
     def on_daten_loeschen(self):
         """
-                Fragt nach einer Bestätigung zum Löschen der Trackingdaten.
+        Fragt nach einer Bestätigung zum Löschen der Trackingdaten.
 
-                Wichtig:
-                Die tatsächliche Datenbanklöschung ist im aktuellen Code
-                noch nicht umgesetzt.
-                """
-        # Sicherheitsfrage anzeigen.
-        antwort = QMessageBox.question(
-            self,
+        Die tatsächliche Datenbanklöschung ist momentan
+        noch nicht umgesetzt.
+        """
+
+        # Vor der Löschung eine Bestätigung abfragen.
+        bestaetigt = self.frage_bestaetigung(
             "Tracking-Daten löschen",
             "Alle Tracking-Einträge werden unwiderruflich gelöscht.\n"
-            "Fortfahren?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            "Fortfahren?"
         )
-        # Nur bei einer Bestätigung fortfahren.
-        if antwort == QMessageBox.StandardButton.Yes:
-            # TODO: Daten aus Datenbank löschen
-            # Konsolenausgabe für Testzwecke.
-            print("Tracking-Daten gelöscht")
-            # Die folgende Erfolgsmeldung wird bereits angezeigt,
-            # obwohl die Daten im aktuellen Stand noch nicht gelöscht werden.
-            QMessageBox.information(
-                self, "Gelöscht", "Alle Tracking-Daten wurden gelöscht."
-            )
+
+        # Die Methode beenden, wenn die Löschung
+        # nicht bestätigt wurde.
+        if not bestaetigt:
+            return
+
+        # Die tatsächliche Löschfunktion muss noch
+        # mit der Datenbank verbunden werden.
+        self.zeige_information(
+            "Noch nicht verfügbar",
+            "Das Löschen der Tracking-Daten ist noch nicht vollständig umgesetzt."
+        )
+
 
     def on_feedback(self):
         """
@@ -1037,25 +1042,12 @@ class SettingsWindow(QMainWindow):
                         Name des Einstellungsbereichs,
                         der in der Meldung angezeigt wird.
                 """
-        # Informationsdialog mit dem übergebenen Namen anzeigen.
-        QMessageBox.information(
-            self,
+        # Über das MessageMixin eine allgemeine
+        # Platzhaltermeldung anzeigen.
+        self.zeige_information(
             name,
             name + " – hier erscheint der zugehörige Dialog.\n(TODO)"
         )
-
-    # ── Hilfsmethode ───────────────────────────────────────────────────────
-
-    def zeige_fehler(self, text):
-        """
-                Zeigt eine einheitliche Fehlermeldung an.
-
-                Args:
-                    text:
-                        Text, der im Warnfenster angezeigt werden soll.
-                """
-        # Warnfenster mit dem einheitlichen Titel „Fehler“ öffnen.
-        QMessageBox.warning(self, "Fehler", text)
 
     def scrollbereich_anpassen(self):
         """
