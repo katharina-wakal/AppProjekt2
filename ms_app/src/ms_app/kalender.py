@@ -185,6 +185,10 @@ class KalenderWindow(QMainWindow, MessageMixin):
             for i in range(avg_dauer):
                 tag = start + timedelta(days=i)
 
+                # Keine zukünftigen Tage vorhersagen.
+                if tag > date.today():
+                    break
+
                 # Nur hinzufügen, wenn der Tag noch nicht in der Liste ist.
                 if tag not in self.perioden_tage:
                     self.perioden_tage.append(tag)
