@@ -175,10 +175,8 @@ class RegisterWindow(QMainWindow):
         # hexdigest() wandelt den Hash in eine lesbare Zeichenkette um.
         password_hash = hashlib.sha256(pw1.encode()).hexdigest()
 
-        # Das Passwort wird zunächst in Bytes umgewandelt.
-        # Anschließend wird mit SHA-256 ein Hash erzeugt.
-        #
-        # hexdigest() wandelt den Hash in eine lesbare Zeichenkette um.
+        # Der Newsletter ist standardmäßig nicht abonniert.
+        # 0 bedeutet "nein", 1 würde "ja" bedeuten.
         newsletter = 0
 
         # Das Geburtsdatum wird derzeit noch nicht aus einem Eingabefeld
@@ -334,11 +332,11 @@ class RegisterWindow(QMainWindow):
         if len(pw) < 6:
             return False
 
-        #Zu Beginn wird angenomme, dass keine Zahl vorhanden ist
+        #Zu Beginn wird angenommen, dass keine Zahl vorhanden ist
         hat_zahl = False
         # Alle Zeichen des Passworts werden durchlaufen.
         for zeichen in pw:
-            # Alle Zeichen des Passworts werden durchlaufen.
+            # isdigit() prüft, ob das aktuelle Zeichen eine Zahl ist.
             if zeichen.isdigit():
                 # Sobald eine Zahl gefunden wurde,
                 # wird die Variable auf True gesetzt.

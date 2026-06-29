@@ -1,17 +1,62 @@
-# Eintrag-Seite – Symptome, Gefühle & Verhütung für einen Tag eintragen
+# ---------------------------------------------------------------------------
+# Eintrag-Seite der FemHealth-App
+# Symptome, Gefühle & Verhütung für einen Tag eintragen
+# ---------------------------------------------------------------------------
+#
+# In dieser Datei wird das Eintrag-Fenster verwaltet. Die Benutzerin kann
+# hier für einen bestimmten Tag verschiedene Beobachtungen festhalten:
+# Periodenstärke, Schmierblutung, Gefühle, Schmerzen, Sexleben, Ausfluss,
+# Haut, Verdauung, Stuhlgang, Tests und Verhütungsmethoden sowie eine Notiz.
+#
+# Über einen Wochenstreifen kann zwischen den Tagen gewechselt werden.
+# Bereits gespeicherte Einträge werden beim Öffnen automatisch geladen,
+# neue Eingaben werden über database.py in der Datenbank gespeichert.
 
+# sys wird benötigt, um die PyQt-Anwendung zu starten (beim direkten
+# Ausführen dieser Datei) und beim Beenden einen Rückgabewert zu übergeben.
 import sys
+# pathlib wird verwendet, um den Pfad zur eintrag.ui-Datei zu bestimmen.
 import pathlib
+# date und timedelta werden für die Datums- und Wochenberechnungen genutzt.
 from datetime import date, timedelta
+# uic lädt die im Qt Designer erstellte Benutzeroberfläche.
 from PyQt6 import uic
+# Benötigte PyQt6-Komponenten für Fenster, Anwendung und Meldungen.
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
+# Datenbankfunktionen: Eintrag speichern und gespeicherten Eintrag laden.
 from database import eintrag_speichern, eintrag_fuer_bearbeitung_laden
 
+
+# ---------------------------------------------------------------------------
+# Klasse für das Eintrag-Fenster
+# ---------------------------------------------------------------------------
 class EintragWindow(QMainWindow):
+    """
+        Verwaltet das Eintrag-Fenster der FemHealth-App.
+
+        Die Klasse lädt die Benutzeroberfläche, stellt einen Wochenstreifen
+        zum Wechseln des Tages bereit, lädt bereits gespeicherte Einträge
+        und speichert neue Eingaben in der Datenbank.
+        """
 
     def __init__(self, eintrag_datum=None, user_id=None):
+        """
+            Initialisiert das Eintrag-Fenster.
 
+            Dabei wird die UI-Datei geladen, das anzuzeigende Datum festgelegt,
+            die Buttons werden verbunden, der Wochenstreifen wird aufgebaut und
+            ein eventuell bereits vorhandener Eintrag wird geladen.
+
+            Parameter:
+                eintrag_datum (date): Der Tag, für den ein Eintrag erfasst
+                    wird. Wird kein Datum übergeben (None), wird der heutige
+                    Tag verwendet.
+                user_id: Die ID des angemeldeten Benutzers. Ohne Benutzer
+                    (None) kann kein Eintrag gespeichert werden.
+            """
+        # Der Konstruktor der übergeordneten Klasse QMainWindow wird ausgeführt.
         super().__init__()
+        # Die übergebene Benutzer-ID speichern.
         self.user_id = user_id
 
         # .ui-Datei laden – genau wie in VL 4 gezeigt
@@ -19,6 +64,7 @@ class EintragWindow(QMainWindow):
         self.main_window = uic.loadUi(working_dir + "/eintrag.ui", self)
 
         # Datum setzen (Standard: heute)
+        # Wenn kein Datum übergeben wurde, wird der heutige Tag verwendet.
         if eintrag_datum is None:
             self.eintrag_datum = date.today()
         else:
@@ -35,6 +81,7 @@ class EintragWindow(QMainWindow):
         self.main_window.btnPersonalisieren.clicked.connect(self.on_personalisieren)
 
         # Wochenstreifen – Tage dynamisch vorbereiten
+        # Die sieben Buttons des Wochenstreifens in Reihenfolge Mo–So.
         self.tages_buttons = [
             self.main_window.btnDay25,
             self.main_window.dayToday,
@@ -45,9 +92,12 @@ class EintragWindow(QMainWindow):
             self.main_window.btnDay31,
         ]
 
+        # Jeden Wochentag-Button mit seinem Index (0–6) verbinden.
+        # index=i speichert den Wert pro Button fest (sonst hätten alle 6).
         for i, button in enumerate(self.tages_buttons):
             button.clicked.connect(lambda checked, index=i: self.on_tag_gewaehlt(index))
 
+        # Wochenstreifen mit den Tagen der aktuellen Woche befüllen.
         self.woche_aktualisieren()
 
         # Bereits gespeicherte Daten laden
@@ -57,16 +107,25 @@ class EintragWindow(QMainWindow):
     # ── Datum anzeigen ────────────────────────────────────────────────────────
 
     def datum_anzeigen(self):
+        """
+            Aktualisiert die Datumsanzeige im Kopfbereich des Fensters.
+
+            Beim heutigen Tag wird zusätzlich der Hinweis "Heute" vorangestellt.
+            Außerdem wird die Tageszahl im Badge oben rechts gesetzt.
+            """
+        # Index 0 bleibt leer, damit der Monat direkt als Index passt.
         monatsnamen = [
             "", "Januar", "Februar", "März", "April", "Mai", "Juni",
             "Juli", "August", "September", "Oktober", "November", "Dezember"
         ]
+        # Datum als lesbaren Text zusammensetzen, z. B. "26. Mai 2026".
         datum_text = (
             str(self.eintrag_datum.day) + ". "
             + monatsnamen[self.eintrag_datum.month] + " "
             + str(self.eintrag_datum.year)
         )
 
+        # Beim heutigen Tag "Heute:" voranstellen, sonst nur das Datum zeigen.
         if self.eintrag_datum == date.today():
             self.main_window.lblHeaderDate.setText("Heute: " + datum_text)
         else:
@@ -80,11 +139,24 @@ class EintragWindow(QMainWindow):
     # ── Slots: Wochenstreifen ─────────────────────────────────────────────────
 
     def on_tag_gewaehlt(self, index):
+        """
+            Wird aufgerufen, wenn ein Tag im Wochenstreifen angeklickt wird.
 
+            Das ausgewählte Datum wird übernommen, die Anzeige und der
+            Wochenstreifen werden aktualisiert, die bisherige Auswahl wird
+            zurückgesetzt und ein eventuell gespeicherter Eintrag des neuen
+            Tages wird geladen.
+
+            Parameter:
+                index (int): Position des Tages im Wochenstreifen (0 = Montag).
+            """
+        # Aus der Liste der Wochentage das gewählte Datum übernehmen.
         self.eintrag_datum = self.button_daten[index]
+        # Anzeige, Wochenstreifen und Auswahl aktualisieren bzw. zurücksetzen.
         self.datum_anzeigen()
         self.woche_aktualisieren()
         self.auswahl_zuruecksetzen()
+        # Gespeicherten Eintrag des neuen Tages laden (falls vorhanden).
         self.gespeicherten_eintrag_laden()
 
         print("Tag gewählt: " + str(self.eintrag_datum))
@@ -92,6 +164,13 @@ class EintragWindow(QMainWindow):
     # ── Alte Auswahl zurücksetzen ─────────────────────────────────────────────
 
     def auswahl_zuruecksetzen(self):
+        """
+            Setzt alle Auswahl-Karten und das Notizfeld zurück.
+
+            Dadurch startet jeder Tag ohne Vorauswahl, bevor die gespeicherten
+            Daten des Tages geladen werden.
+            """
+        # Liste aller Auswahl-Karten (Buttons) auf der Seite.
         alle_karten = [
             self.main_window.cardLeicht,
             self.main_window.cardMittel,
@@ -168,15 +247,23 @@ class EintragWindow(QMainWindow):
             self.main_window.cardRingAusgewechselt,
         ]
 
+        # Jede Karte wird abgewählt (Häkchen entfernen).
         for karte in alle_karten:
             karte.setChecked(False)
 
+        # Auch das Notizfeld wird geleert.
         self.main_window.txtNotiz.clear()
 
 
     # ── Slots: Allgemein ──────────────────────────────────────────────────────
 
     def on_personalisieren(self):
+        """
+            Wird aufgerufen, wenn der Personalisieren-Button geklickt wird.
+
+            Aktuell wird nur eine Hinweismeldung angezeigt. Später sollen hier
+            die Kategorien angepasst werden können.
+            """
         print("Personalisieren geöffnet")
         QMessageBox.information(
             self,
@@ -185,18 +272,43 @@ class EintragWindow(QMainWindow):
         )
 
     def on_schliessen(self):
+        """
+            Wird aufgerufen, wenn der Schließen-Button geklickt wird.
+
+            Öffnet wieder das Dashboard (mit derselben Benutzer-ID) und
+            schließt das Eintrag-Fenster.
+            """
+        # Import erst hier, um einen gegenseitigen Import-Kreis zu vermeiden.
         from dashboard import DashboardWindow
 
+        # Neues Dashboard-Fenster mit der aktuellen Benutzer-ID erstellen.
         self.dashboard = DashboardWindow(
             user_id=self.user_id
         )
 
+        # Dashboard anzeigen und das Eintrag-Fenster schließen.
         self.dashboard.show()
         self.close()
 
     def on_speichern(self):
+        """
+            Liest alle ausgewählten Karten und die Notiz aus und speichert den
+            Eintrag in der Datenbank.
 
-        # Periode
+            Für jede Kategorie wird geprüft, welche Karte(n) ausgewählt sind,
+            und der entsprechende Wert wird übernommen. Kategorien mit nur
+            einer möglichen Auswahl ergeben einen Text, Kategorien mit
+            Mehrfachauswahl ergeben eine Liste. Zum Schluss wird der Eintrag
+            über eintrag_speichern() gesichert.
+            """
+
+        # Hinweis zum Muster der folgenden Abschnitte:
+        # Pro Kategorie wird geprüft, welche Karte ausgewählt (isChecked) ist,
+        # und der zugehörige Wert in einer Variablen abgelegt. Bei Kategorien
+        # mit Mehrfachauswahl werden die Werte stattdessen an eine Liste
+        # angehängt.
+
+        # Periode (nur eine Auswahl möglich)
         periode = ""
         if self.main_window.cardLeicht.isChecked():
             periode = "Leicht"
@@ -207,7 +319,7 @@ class EintragWindow(QMainWindow):
         elif self.main_window.cardSehrStark.isChecked():
             periode = "Sehr stark"
 
-        # Schmierblutung
+        # Schmierblutung (nur eine Auswahl möglich)
         schmier = ""
         if self.main_window.cardRot.isChecked():
             schmier = "Rot"
@@ -246,7 +358,7 @@ class EintragWindow(QMainWindow):
         if self.main_window.cardRuecken.isChecked():
             schmerzen.append("Rückenschmerzen")
 
-        # Sexleben
+        # Sexleben (Mehrfachauswahl möglich)
         sexleben = []
         if self.main_window.cardGeschuetzt.isChecked():
             sexleben.append("Geschützt")
@@ -263,10 +375,10 @@ class EintragWindow(QMainWindow):
         if self.main_window.cardSchmerzSex.isChecked():
             sexleben.append("Schmerzhafter Sex")
 
-        # Tägliche Notiz
+        # Tägliche Notiz (Freitext aus dem Textfeld)
         notiz = self.main_window.txtNotiz.toPlainText().strip()
 
-        # Ausfluss
+        # Ausfluss (Mehrfachauswahl möglich)
         ausfluss = []
         if self.main_window.cardKeinAusfluss.isChecked():
             ausfluss.append("Keinen")
@@ -279,7 +391,7 @@ class EintragWindow(QMainWindow):
         if self.main_window.cardUntypisch.isChecked():
             ausfluss.append("Untypisch")
 
-        # Haut
+        # Haut (Mehrfachauswahl möglich)
         haut = []
         if self.main_window.cardHautOk.isChecked():
             haut.append("Ok")
@@ -294,7 +406,7 @@ class EintragWindow(QMainWindow):
         if self.main_window.cardJuckend.isChecked():
             haut.append("Juckend")
 
-        # Verdauung
+        # Verdauung (Mehrfachauswahl möglich)
         verdauung = []
         if self.main_window.cardVerdOk.isChecked():
             verdauung.append("Ok")
@@ -309,7 +421,7 @@ class EintragWindow(QMainWindow):
         if self.main_window.cardErbrechen.isChecked():
             verdauung.append("Erbrechen")
 
-        # Stuhlgang
+        # Stuhlgang (nur eine Auswahl möglich)
         stuhlgang = ""
         if self.main_window.cardStOk.isChecked():
             stuhlgang = "Ok"
@@ -318,7 +430,7 @@ class EintragWindow(QMainWindow):
         elif self.main_window.cardDurchfall.isChecked():
             stuhlgang = "Durchfall"
 
-        # Tests
+        # Tests (Mehrfachauswahl möglich)
         tests = []
         if self.main_window.cardPosOvu.isChecked():
             tests.append("Pos. Ovulationstest")
@@ -329,7 +441,7 @@ class EintragWindow(QMainWindow):
         if self.main_window.cardNegSchwanger.isChecked():
             tests.append("Neg. Schwangerschaftstest")
 
-        # Antibabypille
+        # Antibabypille (nur eine Auswahl möglich)
         pille = ""
         if self.main_window.cardPilleGenommen.isChecked():
             pille = "Genommen"
@@ -342,7 +454,7 @@ class EintragWindow(QMainWindow):
         elif self.main_window.cardPillenfrei.isChecked():
             pille = "Pillenfreier Tag"
 
-        # Spirale
+        # Spirale (nur eine Auswahl möglich)
         spirale = ""
         if self.main_window.cardSpirFaden.isChecked():
             spirale = "Faden überprüft"
@@ -353,10 +465,10 @@ class EintragWindow(QMainWindow):
         elif self.main_window.cardSpirAusgewechselt.isChecked():
             spirale = "Ausgewechselt"
 
-        # Verhütungsspritze
+        # Verhütungsspritze (Kurzschreibweise: nur verabreicht oder leer)
         spritze = "Verabreicht" if self.main_window.cardSpritzVer.isChecked() else ""
 
-        # Hormonimplantat
+        # Hormonimplantat (nur eine Auswahl möglich)
         implantat = ""
         if self.main_window.cardImplEingesetzt.isChecked():
             implantat = "Eingesetzt"
@@ -365,7 +477,7 @@ class EintragWindow(QMainWindow):
         elif self.main_window.cardImplAusgewechselt.isChecked():
             implantat = "Ausgewechselt"
 
-        # Verhütungspflaster
+        # Verhütungspflaster (nur eine Auswahl möglich)
         pflaster = ""
         if self.main_window.cardPflAufgeklebt.isChecked():
             pflaster = "Aufgeklebt"
@@ -378,7 +490,7 @@ class EintragWindow(QMainWindow):
         elif self.main_window.cardPflAusgewechselt.isChecked():
             pflaster = "Ausgewechselt"
 
-        # Verhütungsring
+        # Verhütungsring (nur eine Auswahl möglich)
         ring = ""
         if self.main_window.cardRingEingesetzt.isChecked():
             ring = "Eingesetzt"
@@ -392,6 +504,7 @@ class EintragWindow(QMainWindow):
             ring = "Ausgewechselt"
 
         # ── Debug-Ausgabe ─────────────────────────────────────────────────────
+        # Kontroll-Ausgabe der gesammelten Werte in der Konsole.
         print("── Eintrag für " + str(self.eintrag_datum) + " ──")
         print("Periode:          " + periode)
         print("Schmierblutung:   " + schmier)
@@ -411,10 +524,14 @@ class EintragWindow(QMainWindow):
         print("Pflaster:         " + pflaster)
         print("Ring:             " + ring)
 
+        # Ohne angemeldeten Benutzer kann nichts gespeichert werden.
         if self.user_id is None:
             self.zeige_fehler("Kein Benutzer angemeldet.")
             return
 
+        # Eintrag in der Datenbank speichern.
+        # Die Listen werden mit ", ".join(...) zu einem Text zusammengefügt,
+        # damit sie als einzelner Wert gespeichert werden können.
         eintrag_speichern(
             self.user_id,
             str(self.eintrag_datum),
@@ -437,29 +554,48 @@ class EintragWindow(QMainWindow):
             ring
         )
 
+        # Erfolgsmeldung anzeigen.
         QMessageBox.information(self, "Gespeichert", "Dein Eintrag wurde gespeichert! ✅")
 
 
     # ── Hilfsmethode ─────────────────────────────────────────────────────────
 
     def zeige_fehler(self, text):
+        """
+            Zeigt eine Warnmeldung mit einem übergebenen Fehlertext an.
+
+            Parameter:
+                text (str): Der Text, der in der Meldung angezeigt wird.
+            """
         QMessageBox.warning(self, "Fehler", text)
 
     def gespeicherten_eintrag_laden(self):
+        """
+            Lädt einen bereits gespeicherten Eintrag des aktuellen Tages und
+            setzt die passenden Karten wieder auf "ausgewählt".
 
+            So sieht die Benutzerin beim erneuten Öffnen eines Tages ihre
+            zuvor erfassten Daten. Ist kein Eintrag vorhanden, passiert nichts.
+            """
+        # Ohne Benutzer gibt es keine gespeicherten Daten.
         if self.user_id is None:
             return
 
+        # Datum ins Speicherformat 'YYYY-MM-DD' umwandeln.
         datum = self.eintrag_datum.strftime("%Y-%m-%d")
 
+        # Gespeicherten Eintrag aus der Datenbank laden.
         eintrag = eintrag_fuer_bearbeitung_laden(
             self.user_id,
             datum
         )
 
+        # Wenn es für diesen Tag keinen Eintrag gibt, ist nichts zu tun.
         if eintrag is None:
             return
 
+        # Die einzelnen Felder des Eintrags benennen.
+        # Die Reihenfolge entspricht der Speicherreihenfolge in on_speichern().
         periode   = eintrag[0]
         schmier   = eintrag[1]
         gefuehle  = eintrag[2]
@@ -478,7 +614,13 @@ class EintragWindow(QMainWindow):
         pflaster  = eintrag[15]
         ring      = eintrag[16]
 
-        # Periode
+        # Hinweis zum Muster der folgenden Abschnitte:
+        # Für jede Kategorie wird der gespeicherte Text geprüft und die
+        # passende(n) Karte(n) wieder ausgewählt. Bei Mehrfachauswahl wird
+        # mit "in" geprüft, ob der jeweilige Begriff im gespeicherten Text
+        # enthalten ist.
+
+        # Periode (Einzelauswahl)
         if periode == "Leicht":
             self.main_window.cardLeicht.setChecked(True)
         elif periode == "Mittel":
@@ -488,7 +630,7 @@ class EintragWindow(QMainWindow):
         elif periode == "Sehr stark":
             self.main_window.cardSehrStark.setChecked(True)
 
-        # Gefühle
+        # Gefühle (Mehrfachauswahl)
         if gefuehle:
             if "Stimmungsschwankungen" in gefuehle:
                 self.main_window.cardStimmung.setChecked(True)
@@ -507,7 +649,7 @@ class EintragWindow(QMainWindow):
             if "Gleichmütig" in gefuehle:
                 self.main_window.cardGleichweit.setChecked(True)
 
-        # Schmerzen
+        # Schmerzen (Mehrfachauswahl)
         if schmerzen:
             if "Schmerzfrei" in schmerzen:
                 self.main_window.cardSchmerzfrei.setChecked(True)
@@ -520,7 +662,7 @@ class EintragWindow(QMainWindow):
             if "Rückenschmerzen" in schmerzen:
                 self.main_window.cardRuecken.setChecked(True)
 
-        # Sexleben
+        # Sexleben (Mehrfachauswahl)
         if sexleben:
             if "Geschützt" in sexleben:
                 self.main_window.cardGeschuetzt.setChecked(True)
@@ -537,18 +679,18 @@ class EintragWindow(QMainWindow):
             if "Schmerzhafter Sex" in sexleben:
                 self.main_window.cardSchmerzSex.setChecked(True)
 
-        # Schmierblutung
+        # Schmierblutung (Einzelauswahl, hier per "in" geprüft)
         if schmier:
             if "Rot" in schmier:
                 self.main_window.cardRot.setChecked(True)
             if "Braun" in schmier:
                 self.main_window.cardBraun.setChecked(True)
 
-        # Notiz
+        # Notiz (Freitext zurück ins Textfeld schreiben)
         if notiz:
             self.main_window.txtNotiz.setPlainText(notiz)
 
-        # Ausfluss
+        # Ausfluss (Mehrfachauswahl)
         if ausfluss:
             if "Keinen" in ausfluss:
                 self.main_window.cardKeinAusfluss.setChecked(True)
@@ -561,7 +703,7 @@ class EintragWindow(QMainWindow):
             if "Untypisch" in ausfluss:
                 self.main_window.cardUntypisch.setChecked(True)
 
-        # Haut
+        # Haut (Mehrfachauswahl)
         if haut:
             if "Ok" in haut:
                 self.main_window.cardHautOk.setChecked(True)
@@ -576,7 +718,7 @@ class EintragWindow(QMainWindow):
             if "Juckend" in haut:
                 self.main_window.cardJuckend.setChecked(True)
 
-        # Verdauung
+        # Verdauung (Mehrfachauswahl)
         if verdauung:
             if "Ok" in verdauung:
                 self.main_window.cardVerdOk.setChecked(True)
@@ -591,7 +733,7 @@ class EintragWindow(QMainWindow):
             if "Erbrechen" in verdauung:
                 self.main_window.cardErbrechen.setChecked(True)
 
-        # Stuhlgang
+        # Stuhlgang (Einzelauswahl)
         if stuhlgang:
             if "Ok" in stuhlgang:
                 self.main_window.cardStOk.setChecked(True)
@@ -600,7 +742,7 @@ class EintragWindow(QMainWindow):
             elif "Durchfall" in stuhlgang:
                 self.main_window.cardDurchfall.setChecked(True)
 
-        # Tests
+        # Tests (Mehrfachauswahl)
         if tests:
             if "Pos. Ovulationstest" in tests:
                 self.main_window.cardPosOvu.setChecked(True)
@@ -611,7 +753,7 @@ class EintragWindow(QMainWindow):
             if "Neg. Schwangerschaftstest" in tests:
                 self.main_window.cardNegSchwanger.setChecked(True)
 
-        # Pille
+        # Pille (Einzelauswahl)
         if pille:
             if "Genommen" in pille:
                 self.main_window.cardPilleGenommen.setChecked(True)
@@ -624,7 +766,7 @@ class EintragWindow(QMainWindow):
             elif "Pillenfreier Tag" in pille:
                 self.main_window.cardPillenfrei.setChecked(True)
 
-        # Spirale
+        # Spirale (Einzelauswahl)
         if spirale:
             if "Faden überprüft" in spirale:
                 self.main_window.cardSpirFaden.setChecked(True)
@@ -635,12 +777,12 @@ class EintragWindow(QMainWindow):
             elif "Ausgewechselt" in spirale:
                 self.main_window.cardSpirAusgewechselt.setChecked(True)
 
-        # Spritze
+        # Spritze (Einzelauswahl)
         if spritze:
             if "Verabreicht" in spritze:
                 self.main_window.cardSpritzVer.setChecked(True)
 
-        # Implantat
+        # Implantat (Einzelauswahl)
         if implantat:
             if "Eingesetzt" in implantat:
                 self.main_window.cardImplEingesetzt.setChecked(True)
@@ -649,7 +791,7 @@ class EintragWindow(QMainWindow):
             elif "Ausgewechselt" in implantat:
                 self.main_window.cardImplAusgewechselt.setChecked(True)
 
-        # Pflaster
+        # Pflaster (Einzelauswahl)
         if pflaster:
             if "Aufgeklebt" in pflaster:
                 self.main_window.cardPflAufgeklebt.setChecked(True)
@@ -662,7 +804,7 @@ class EintragWindow(QMainWindow):
             elif "Ausgewechselt" in pflaster:
                 self.main_window.cardPflAusgewechselt.setChecked(True)
 
-        # Ring
+        # Ring (Einzelauswahl)
         if ring:
             if "Eingesetzt" in ring:
                 self.main_window.cardRingEingesetzt.setChecked(True)
@@ -676,13 +818,33 @@ class EintragWindow(QMainWindow):
                 self.main_window.cardRingAusgewechselt.setChecked(True)
 
     def woche_start_berechnen(self, datum):
+        """
+            Berechnet den Montag der Woche, in der das übergebene Datum liegt.
+
+            Parameter:
+                datum (date): Ein beliebiger Tag.
+
+            Rückgabewert:
+                date: Der Montag derselben Woche.
+            """
+        # weekday() liefert 0 für Montag … 6 für Sonntag. Diese Anzahl Tage
+        # wird abgezogen, um beim Montag zu landen.
         return datum - timedelta(days=datum.weekday())
 
     def woche_aktualisieren(self):
+        """
+            Aktualisiert die sieben Buttons des Wochenstreifens.
 
+            Für jeden Tag der aktuellen Woche werden die Tageszahl gesetzt und
+            das zugehörige Datum gespeichert. Der ausgewählte Tag wird optisch
+            hervorgehoben.
+            """
+        # Den Montag der Woche bestimmen, in der das Eintragsdatum liegt.
         montag = self.woche_start_berechnen(self.eintrag_datum)
+        # Liste, in der die Datumswerte der sieben Buttons gespeichert werden.
         self.button_daten = []
 
+        # Stil für nicht ausgewählte Tage.
         normal_style = """
             QPushButton {
                 background: transparent;
@@ -697,6 +859,7 @@ class EintragWindow(QMainWindow):
             }
         """
 
+        # Stil für den aktuell ausgewählten Tag (rosa Rahmen, hervorgehoben).
         aktiv_style = """
             QPushButton {
                 background: transparent;
@@ -708,10 +871,15 @@ class EintragWindow(QMainWindow):
             }
         """
 
+        # Für jeden der sieben Buttons das passende Datum berechnen.
         for i, button in enumerate(self.tages_buttons):
+            # Tag i Tage nach Montag.
             button_datum = montag + timedelta(days=i)
+            # Datum merken (wird in on_tag_gewaehlt verwendet).
             self.button_daten.append(button_datum)
+            # Tageszahl auf dem Button anzeigen.
             button.setText(str(button_datum.day))
+            # Den ausgewählten Tag hervorheben, alle anderen normal darstellen.
             if button_datum == self.eintrag_datum:
                 button.setStyleSheet(aktiv_style)
             else:
@@ -719,6 +887,8 @@ class EintragWindow(QMainWindow):
 
 # ── Programm starten ──────────────────────────────────────────────────────────
 
+# Dieser Block wird nur ausgeführt, wenn die Datei direkt gestartet wird
+# (zum Testen). Beim Import aus einer anderen Datei läuft er nicht.
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = EintragWindow()
