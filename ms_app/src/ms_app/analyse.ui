@@ -492,15 +492,14 @@ QPushButton#navTrackenMain:pressed { background: #880E4F; }
    <widget class="QLabel" name="lblStatSubInfo">
     <property name="geometry">
      <rect>
-      <x>260</x>
-      <y>32</y>
-      <width>100</width>
-      <height>40</height>
+      <x>149</x>
+      <y>31</y>
+      <width>211</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="text">
-     <string>Basierend auf
-6 Zyklen</string>
+     <string>Basierend auf Zyklen</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -526,7 +525,7 @@ QPushButton#navTrackenMain:pressed { background: #880E4F; }
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>-637</y>
+      <y>0</y>
       <width>390</width>
       <height>1500</height>
      </rect>
