@@ -112,25 +112,57 @@ class ArztterminWindow(QMainWindow, MessageMixin):
         tage_seit_montag = datum.dayOfWeek() - 1  # Berechnet Anzahl Tage seit Montag
         return datum.addDays(-tage_seit_montag)  # Gibt den Montag der Woche zurück
 
-    def woche_aktualisieren(self, datum):  # Aktualisiert die sichtbare Wochenleiste
-        montag = self.woche_start_berechnen(datum)  # Berechnet den Montag der Woche
+    def woche_aktualisieren(self, datum):  # Aktualisiert die sichtbare Wochenleiste passend zum gewählten Datum
 
-        tages_buttons = [  # Liste der sieben Tages-Buttons
-            self.main_window.btnDay1,  # Montag
-            self.main_window.dayToday,  # Dienstag
-            self.main_window.btnDay2,  # Mittwoch
-            self.main_window.btnDay3,  # Donnerstag
-            self.main_window.btnDay4,  # Freitag
-            self.main_window.btnDay5,  # Samstag
-            self.main_window.btnDay6,  # Sonntag
+        montag = self.woche_start_berechnen(datum)  # Berechnet den Montag der Woche, in der das gewählte Datum liegt
+
+        tages_buttons = [  # Liste mit allen sieben Buttons des Wochenstreifens
+            self.main_window.btnDay1,  # Button für Montag
+            self.main_window.dayToday,  # Button für Dienstag
+            self.main_window.btnDay2,  # Button für Mittwoch
+            self.main_window.btnDay3,  # Button für Donnerstag
+            self.main_window.btnDay4,  # Button für Freitag
+            self.main_window.btnDay5,  # Button für Samstag
+            self.main_window.btnDay6,  # Button für Sonntag
         ]
 
-        for i in range(7):  # Schleife läuft für 7 Tage
-            tag = montag.addDays(i)  # Berechnet den jeweiligen Tag
-            tages_buttons[i].setText(str(tag.day()))  # Setzt die Tageszahl auf den passenden Button
+        style_normal = """  
+            QPushButton {
+                background-color: transparent;  /* Der Button hat keinen sichtbaren Hintergrund */
+                border: none;                   /* Der Button bekommt keinen Rahmen */
+                color: #cf9aac;                 /* Die Tageszahl wird in hellem Rosa angezeigt */
+                font-weight: bold;              /* Die Tageszahl wird fett dargestellt */
+            }
+        """
 
-        print("Woche angezeigt ab: " + montag.toString("dd.MM.yyyy"))  # Gibt Wochenstart in der Konsole aus
+        style_ausgewaehlt = """
+            QPushButton {
+                background-color: white;        /* Der ausgewählte Tag bekommt einen weißen Hintergrund */
+                border: 3px solid #ff0066;      /* Der ausgewählte Tag bekommt einen pinken Rahmen */
+                border-radius: 18px;            /* Der Rahmen wird abgerundet */
+                color: #ff0066;                 /* Die Tageszahl wird kräftig pink dargestellt */
+                font-weight: bold;              /* Die Tageszahl wird fett dargestellt */
+            }
+        """
 
+        for i in range(7):  # Schleife läuft einmal für jeden Wochentag
+
+            tag = montag.addDays(i)  # Berechnet den jeweiligen Tag der Woche anhand des Montags
+
+            tages_buttons[i].setText(str(tag.day()))  # Schreibt die Tageszahl auf den passenden Button
+
+            if tag == datum:  # Prüft, ob dieser Button zum aktuell gewählten Datum gehört
+
+                # Wenn der Tag dem gewählten Datum entspricht,
+                # wird dieser Button optisch hervorgehoben.
+                tages_buttons[i].setStyleSheet(style_ausgewaehlt)
+
+            else:
+                # Alle anderen Tage werden wieder normal dargestellt,
+                # damit nicht versehentlich ein alter Tag markiert bleibt.
+                tages_buttons[i].setStyleSheet(style_normal)
+
+        print("Woche angezeigt ab: " + montag.toString("dd.MM.yyyy"))  # Gibt den Wochenstart in der Konsole aus
 
 if __name__ == "__main__":  # Prüft, ob diese Datei direkt gestartet wird
     app = QApplication(sys.argv)  # Erstellt die Qt-Anwendung
