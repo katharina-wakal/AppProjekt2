@@ -1,0 +1,1816 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AnalyseWindow</class>
+ <widget class="QWidget" name="AnalyseWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>390</width>
+    <height>844</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Analyse – FemHealth</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+/* ══ Global ══ */
+QWidget {
+    font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
+}
+QWidget#AnalyseWindow {
+    background-color: #FDF6F0;
+}
+QWidget#scrollContents {
+    background-color: #FDF6F0;
+}
+
+/* ══ Header ══ */
+QLabel#lblAppTitle {
+    color: #E91E63;
+    font-size: 22px;
+    font-weight: bold;
+    background: transparent;
+}
+QLabel#lblPageTitle {
+    color: #9E9E9E;
+    font-size: 13px;
+    background: transparent;
+}
+QPushButton#btnBack {
+    background-color: #BDBDBD;
+    color: #FFFFFF;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+}
+QPushButton#btnBack:hover { background-color: #9E9E9E; }
+QPushButton#btnBack:pressed { background-color: #757575; }
+
+/* ══ Statistik-Hauptkarte (Gradient) ══ */
+QFrame#frameStatistik {
+    background: qlineargradient(
+        x1:0, y1:0, x2:1, y2:1,
+        stop:0 #FCE4EC,
+        stop:0.5 #F8BBD9,
+        stop:1 #F48FB1
+    );
+    border-radius: 24px;
+    border: none;
+}
+QLabel#lblStatTitle {
+    color: #880E4F;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: transparent;
+}
+QLabel#lblStatSubInfo {
+    color: #880E4F;
+    font-size: 12px;
+    background: transparent;
+}
+QLabel#lblStatTrend {
+    color: #880E4F;
+    font-size: 11px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 20px;
+    padding: 6px 14px;
+}
+QLabel#lblStatScore {
+    color: #AD1457;
+    font-size: 24px;
+    font-weight: bold;
+    background: transparent;
+}
+QLabel#lblStatScoreSub {
+    color: #880E4F;
+    font-size: 12px;
+    background: transparent;
+}
+
+/* ══ Abschnitt-Titel ══ */
+QLabel#lblSekStatistiken,
+QLabel#lblSekPrognose,
+QLabel#lblSekTrend,
+QLabel#lblSekSymptome,
+QLabel#lblSekInsights,
+QLabel#lblSekVergleich {
+    color: #880E4F;
+    font-size: 15px;
+    font-weight: bold;
+    background: transparent;
+}
+QLabel#lblSekSub {
+    color: #9E9E9E;
+    font-size: 12px;
+    background: transparent;
+}
+
+/* ══ Info-Karten (weiß mit rosa Rand) ══ */
+QFrame#cardZyklusDauer,
+QFrame#cardSchwankung,
+QFrame#cardPeriodeDauer,
+QFrame#cardScore,
+QFrame#cardPrognose,
+QFrame#cardEissprung,
+QFrame#cardPMS,
+QFrame#cardInsight1,
+QFrame#cardInsight2,
+QFrame#cardTrend,
+QFrame#cardSymptom1,
+QFrame#cardSymptom2,
+QFrame#cardSymptom3,
+QFrame#cardVergleich {
+    background-color: #FFFFFF;
+    border-radius: 18px;
+    border: 1px solid #F8BBD9;
+}
+
+/* ══ Karten-Texte ══ */
+QLabel#lblKartenTitel {
+    color: #757575;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: transparent;
+}
+QLabel#lblZyklusDauerTitle,
+QLabel#lblSchwankungTitle,
+QLabel#lblPeriodeDauerTitle,
+QLabel#lblScoreTitle,
+QLabel#lblPrognoseTitle,
+QLabel#lblEissprungTitle,
+QLabel#lblPMSTitle,
+QLabel#lblInsight1Title,
+QLabel#lblInsight2Title,
+QLabel#lblTrendTitle,
+QLabel#lblSymptom1Title,
+QLabel#lblSymptom2Title,
+QLabel#lblSymptom3Title {
+    color: #9E9E9E;
+    font-size: 11px;
+    background: transparent;
+}
+QLabel#lblZyklusDauerWert,
+QLabel#lblSchwankungWert,
+QLabel#lblPeriodeDauerWert {
+    color: #AD1457;
+    font-size: 22px;
+    font-weight: bold;
+    background: transparent;
+}
+QLabel#lblScoreWert {
+    color: #E91E63;
+    font-size: 26px;
+    font-weight: bold;
+    background: transparent;
+}
+QLabel#lblPrognoseWert,
+QLabel#lblEissprungWert {
+    color: #AD1457;
+    font-size: 14px;
+    font-weight: bold;
+    background: transparent;
+}
+QLabel#lblPrognoseGenau,
+QLabel#lblEissprungInfo,
+QLabel#lblPMSWert,
+QLabel#lblInsight1Text,
+QLabel#lblInsight2Text,
+QLabel#lblTrendText,
+QLabel#lblSymptom1Text,
+QLabel#lblSymptom2Text,
+QLabel#lblSymptom3Text,
+QLabel#lblKorrelation {
+    color: #757575;
+    font-size: 12px;
+    background: transparent;
+}
+
+/* ══ Status-Badges ══ */
+QLabel#badgeTypisch {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 8px;
+}
+QLabel#badgeUntypisch {
+    background-color: #FFF3E0;
+    color: #E65100;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 8px;
+}
+QLabel#badgeStabil {
+    background-color: #FCE4EC;
+    color: #AD1457;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 8px;
+}
+
+/* ══ Ring-Platzhalter ══ */
+QLabel#ringZyklusDauer {
+    border: 4px solid #64B5F6;
+    border-radius: 26px;
+    background: transparent;
+    color: #64B5F6;
+    font-size: 14px;
+    font-weight: bold;
+}
+QLabel#ringSchwankung {
+    border: 4px solid #FF9800;
+    border-radius: 26px;
+    background: transparent;
+    color: #FF9800;
+    font-size: 14px;
+    font-weight: bold;
+}
+QLabel#ringPeriode {
+    border: 4px solid #E91E63;
+    border-radius: 20px;
+    background: transparent;
+    color: #E91E63;
+    font-size: 12px;
+}
+
+/* ══ Trend-Grafik-Platzhalter ══ */
+QLabel#lblTrendChart {
+    background: #FDF6F0;
+    border-radius: 10px;
+    color: #BDBDBD;
+    font-size: 11px;
+    padding: 8px;
+}
+QLabel#lblVergleichBar {
+    background: #FDF6F0;
+    border-radius: 10px;
+    color: #BDBDBD;
+    font-size: 11px;
+    padding: 8px;
+}
+
+/* ══ Mehr-erfahren-Links ══ */
+QPushButton#btnMehrPeriode,
+QPushButton#btnMehrTrend,
+QPushButton#btnMehrInsights {
+    background: transparent;
+    border: none;
+    color: #F48FB1;
+    font-size: 12px;
+    text-align: left;
+}
+QPushButton#btnMehrPeriode:hover,
+QPushButton#btnMehrTrend:hover,
+QPushButton#btnMehrInsights:hover {
+    color: #AD1457;
+}
+
+/* ══ Pfeil-Icons ══ */
+QLabel#lblPfeil1,
+QLabel#lblPfeil2,
+QLabel#lblPfeil3,
+QLabel#lblPfeil4 {
+    color: #F48FB1;
+    font-size: 18px;
+    background: transparent;
+}
+
+/* ══ Freischalten-Button ══ */
+QPushButton#btnFreischalten {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #E91E63, stop:1 #F48FB1);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: bold;
+    min-height: 52px;
+}
+QPushButton#btnFreischalten:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #C2185B, stop:1 #E91E63);
+}
+QPushButton#btnFreischalten:pressed { background: #880E4F; }
+
+/* ══ Scroll ══ */
+QScrollArea {
+    background: transparent;
+    border: none;
+}
+QScrollBar:vertical {
+    width: 4px; background: #F8BBD9; border-radius: 2px;
+}
+QScrollBar::handle:vertical {
+    background: #F48FB1; border-radius: 2px; min-height: 20px;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+QScrollBar:horizontal { height: 0px; }
+
+/* ══ Bottom Navigation ══ */
+QFrame#frameNavBar {
+    background-color: #FFFFFF;
+    border-top: 1px solid #F0E0E8;
+}
+QPushButton#navHome,
+QPushButton#navKalender,
+QPushButton#navTracken,
+QPushButton#navArzt {
+    color: #BDBDBD;
+    background: transparent;
+    border: none;
+    font-size: 11px;
+}
+QPushButton#navHome:hover,
+QPushButton#navKalender:hover,
+QPushButton#navTracken:hover,
+QPushButton#navArzt:hover {
+    color: #AD1457;
+}
+QPushButton#navAnalyse {
+    color: #E91E63;
+    background: #FCE4EC;
+    border-radius: 12px;
+    border: none;
+    font-size: 11px;
+}
+QPushButton#navTrackenMain {
+    background: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+        stop:0 #E91E63, stop:1 #C2185B);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: bold;
+    min-width: 66px;
+    max-width: 66px;
+    min-height: 52px;
+    max-height: 52px;
+}
+QPushButton#navTrackenMain:hover { background: #C2185B; }
+QPushButton#navTrackenMain:pressed { background: #880E4F; }
+   </string>
+  </property>
+  <widget class="QPushButton" name="btnBack">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>52</y>
+     <width>41</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="toolTip">
+    <string>Zurück zum Dashboard</string>
+   </property>
+   <property name="text">
+    <string>←</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblLogo">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>60</y>
+     <width>28</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string>font-size:22px; background:transparent;</string>
+   </property>
+   <property name="text">
+    <string>🌺</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblAppTitle">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>50</y>
+     <width>148</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>FemHealth</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblPageTitle">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>100</y>
+     <width>370</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Deine persönliche Zyklusanalyse 📊</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="frameStatistik">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>128</y>
+     <width>370</width>
+     <height>120</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <widget class="QLabel" name="lblStatTitle">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>12</y>
+      <width>200</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ZYKLUS-SCORE</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblStatScore">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>32</y>
+      <width>120</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>72 / 100</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblStatScoreSub">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>70</y>
+      <width>180</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Leicht unregelmäßig</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblStatTrend">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>90</y>
+      <width>280</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>💡 Dein Zyklus wird stabiler – weiter so!</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblStatSubInfo">
+    <property name="geometry">
+     <rect>
+      <x>149</x>
+      <y>31</y>
+      <width>211</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Basierend auf Zyklen</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QScrollArea" name="scrollArea">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>258</y>
+     <width>390</width>
+     <height>510</height>
+    </rect>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="widgetResizable">
+    <bool>false</bool>
+   </property>
+   <widget class="QWidget" name="scrollContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>390</width>
+      <height>1500</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="lblSekStatistiken">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>10</y>
+       <width>200</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Zyklusstatistiken</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblStatistikSub">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>36</y>
+       <width>360</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string>color:#9E9E9E;font-size:12px;background:transparent;</string>
+     </property>
+     <property name="text">
+      <string>Durchschnittswerte deiner letzten 6 Zyklen</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="cardZyklusDauer">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>178</width>
+       <height>90</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="ringZyklusDauer">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>12</y>
+        <width>52</width>
+        <height>52</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>↻</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblZyklusDauerTitle">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>12</y>
+        <width>100</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Zyklusdauer</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblZyklusDauerWert">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>30</y>
+        <width>100</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>28 Tage</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="badgeTypisch">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>62</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>✓ typisch</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="cardSchwankung">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>60</y>
+       <width>178</width>
+       <height>90</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="ringSchwankung">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>12</y>
+        <width>52</width>
+        <height>52</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>≈</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSchwankungTitle">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>12</y>
+        <width>100</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Schwankung</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSchwankungWert">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>30</y>
+        <width>100</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>±3 Tage</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="badgeUntypisch">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>62</y>
+        <width>80</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>⚠ Untypisch</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="cardPeriodeDauer">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>160</y>
+       <width>178</width>
+       <height>90</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="ringPeriode">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>16</y>
+        <width>44</width>
+        <height>44</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>🩸</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblPeriodeDauerTitle">
+      <property name="geometry">
+       <rect>
+        <x>62</x>
+        <y>12</y>
+        <width>110</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Ø Periodendauer</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblPeriodeDauerWert">
+      <property name="geometry">
+       <rect>
+        <x>62</x>
+        <y>30</y>
+        <width>100</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>4 Tage</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnMehrPeriode">
+      <property name="geometry">
+       <rect>
+        <x>62</x>
+        <y>62</y>
+        <width>106</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="text">
+       <string>Mehr erfahren ›</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="cardScore">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>160</y>
+       <width>178</width>
+       <height>90</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblScoreTitle">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>12</y>
+        <width>150</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Zyklus-Score</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblScoreWert">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>30</y>
+        <width>120</width>
+        <height>34</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>72 / 100</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="badgeStabil">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>66</y>
+        <width>100</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>leicht unreg.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="div1">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>262</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblSekPrognose">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>274</y>
+       <width>200</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Zyklus-Prognosen</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="cardPrognose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>306</y>
+       <width>370</width>
+       <height>78</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblPrognoseIcon">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>14</y>
+        <width>36</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>background:#FCE4EC;border-radius:10px;font-size:18px;</string>
+      </property>
+      <property name="text">
+       <string>🩸</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblPrognoseTitle">
+      <property name="geometry">
+       <rect>
+        <x>58</x>
+        <y>10</y>
+        <width>260</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Nächste Periode</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblPrognoseWert">
+      <property name="geometry">
+       <rect>
+        <x>58</x>
+        <y>28</y>
+        <width>280</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Voraussichtlich in 5 Tagen · 31. Mai</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblPrognoseGenau">
+      <property name="geometry">
+       <rect>
+        <x>58</x>
+        <y>50</y>
+        <width>200</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Genauigkeit: 82 %</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblPfeil3">
+      <property name="geometry">
+       <rect>
+        <x>344</x>
+        <y>28</y>
+        <width>20</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>›</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="cardEissprung">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>394</y>
+       <width>370</width>
+       <height>78</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblEissprungIcon">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>14</y>
+        <width>36</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>background:#E3F2FD;border-radius:10px;font-size:18px;</string>
+      </property>
+      <property name="text">
+       <string>🌡️</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblEissprungTitle">
+      <property name="geometry">
+       <rect>
+        <x>58</x>
+        <y>10</y>
+        <width>280</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Fruchtbare Phase &amp; Eissprung</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblEissprungWert">
+      <property name="geometry">
+       <rect>
+        <x>58</x>
+        <y>28</y>
+        <width>280</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Voraussichtlich 10.–15. Juni</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblEissprungInfo">
+      <property name="geometry">
+       <rect>
+        <x>58</x>
+        <y>50</y>
+        <width>260</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Eissprung: ca. 12. Juni</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblPfeil4">
+      <property name="geometry">
+       <rect>
+        <x>344</x>
+        <y>28</y>
+        <width>20</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>›</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="cardPMS">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>482</y>
+       <width>370</width>
+       <height>68</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblPMSIcon">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>14</y>
+        <width>36</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>background:#F3E5F5;border-radius:10px;font-size:18px;</string>
+      </property>
+      <property name="text">
+       <string>🌙</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblPMSTitle">
+      <property name="geometry">
+       <rect>
+        <x>58</x>
+        <y>10</y>
+        <width>200</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PMS-Fenster</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblPMSWert">
+      <property name="geometry">
+       <rect>
+        <x>58</x>
+        <y>28</y>
+        <width>300</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Typische Symptome beginnen bei dir 3 Tage vor der Periode</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="div2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>562</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblSekTrend">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>574</y>
+       <width>180</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Trends &amp; Verlauf</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnMehrTrend">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>578</y>
+       <width>110</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>Mehr erfahren ›</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="cardTrend">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>606</y>
+       <width>370</width>
+       <height>120</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblTrendTitle">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>10</y>
+        <width>300</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Zykluslänge – letzte 6 Monate</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblTrendText">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>28</y>
+        <width>340</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Dein Zyklus wird stabiler  📈</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblTrendChart">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>50</y>
+        <width>346</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>[ TrendChartWidget einbinden – Zykluslänge als Linie, Ausreißer farblich markiert ]</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="div3">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>738</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblSekSymptome">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>750</y>
+       <width>200</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Symptom-Analyse</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="cardSymptom1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>782</y>
+       <width>114</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblSymptom1Icon">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>8</y>
+        <width>28</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>font-size:20px;background:transparent;</string>
+      </property>
+      <property name="text">
+       <string>🌀</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSymptom1Title">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>38</y>
+        <width>98</width>
+        <height>14</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Krämpfe</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSymptom1Text">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>54</y>
+        <width>98</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>color:#AD1457;font-size:12px;font-weight:bold;background:transparent;</string>
+      </property>
+      <property name="text">
+       <string>4 von 6 Zyklen</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="cardSymptom2">
+     <property name="geometry">
+      <rect>
+       <x>134</x>
+       <y>782</y>
+       <width>114</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblSymptom2Icon">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>8</y>
+        <width>28</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>font-size:20px;background:transparent;</string>
+      </property>
+      <property name="text">
+       <string>🤕</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSymptom2Title">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>38</y>
+        <width>98</width>
+        <height>14</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Kopfschmerzen</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSymptom2Text">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>54</y>
+        <width>98</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>color:#AD1457;font-size:12px;font-weight:bold;background:transparent;</string>
+      </property>
+      <property name="text">
+       <string>3 von 6 Zyklen</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="cardSymptom3">
+     <property name="geometry">
+      <rect>
+       <x>258</x>
+       <y>782</y>
+       <width>122</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblSymptom3Icon">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>8</y>
+        <width>28</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>font-size:20px;background:transparent;</string>
+      </property>
+      <property name="text">
+       <string>😴</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSymptom3Title">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>38</y>
+        <width>106</width>
+        <height>14</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Müdigkeit</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSymptom3Text">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>54</y>
+        <width>106</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>color:#AD1457;font-size:12px;font-weight:bold;background:transparent;</string>
+      </property>
+      <property name="text">
+       <string>5 von 6 Zyklen</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="lblKorrelation">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>872</y>
+       <width>358</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>💡 Starke Krämpfe treten häufig bei längeren Zyklen auf.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QFrame" name="div4">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>912</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblSekInsights">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>924</y>
+       <width>200</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Insights 🌸</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnMehrInsights">
+     <property name="geometry">
+      <rect>
+       <x>176</x>
+       <y>928</y>
+       <width>110</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>Mehr erfahren ›</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="cardInsight1">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>956</y>
+       <width>370</width>
+       <height>68</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblInsight1Icon">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>14</y>
+        <width>32</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>font-size:18px;background:#FCE4EC;border-radius:8px;</string>
+      </property>
+      <property name="text">
+       <string>🔮</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblInsight1Title">
+      <property name="geometry">
+       <rect>
+        <x>54</x>
+        <y>10</y>
+        <width>300</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Zyklus-Insight</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblInsight1Text">
+      <property name="geometry">
+       <rect>
+        <x>54</x>
+        <y>28</y>
+        <width>306</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Deine Periodendauer ist seit 3 Monaten konstant bei 4 Tagen.</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="cardInsight2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>1034</y>
+       <width>370</width>
+       <height>68</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblInsight2Icon">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>14</y>
+        <width>32</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string>font-size:18px;background:#FFF3E0;border-radius:8px;</string>
+      </property>
+      <property name="text">
+       <string>⚠️</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblInsight2Title">
+      <property name="geometry">
+       <rect>
+        <x>54</x>
+        <y>10</y>
+        <width>300</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Hinweis – keine Diagnose</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblInsight2Text">
+      <property name="geometry">
+       <rect>
+        <x>54</x>
+        <y>28</y>
+        <width>306</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Deine Schwankungen wirken aktuell leicht erhöht – beobachte dies weiter.</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QFrame" name="div5">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1114</y>
+       <width>390</width>
+       <height>1</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:#F8BBD9;max-height:1px;border:none;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblSekVergleich">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>1126</y>
+       <width>280</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Vergleich zum Durchschnitt</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblVergleichSub">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>1152</y>
+       <width>360</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string>color:#9E9E9E;font-size:12px;background:transparent;</string>
+     </property>
+     <property name="text">
+      <string>Typischer Bereich: 21–35 Tage · Dein Ø: 28 Tage</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="cardVergleich">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>1176</y>
+       <width>370</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <widget class="QLabel" name="lblVergleichBar">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>8</y>
+        <width>350</width>
+        <height>44</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>[ VergleichBarWidget: dein Ø vs. Normalbereich 21–35 Tage ]</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="lblFreischaltenInfo">
+     <property name="geometry">
+      <rect>
+       <x>16</x>
+       <y>1252</y>
+       <width>358</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string>color:#9E9E9E;font-size:12px;background:transparent;</string>
+     </property>
+     <property name="text">
+      <string>Schalte durch tägliches Eintragen weitere Analysen frei!</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnFreischalten">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>1296</y>
+       <width>370</width>
+       <height>52</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>🔒 Weitere Analysen freischalten</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblSpacer">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>1360</y>
+       <width>390</width>
+       <height>60</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QFrame" name="frameNavBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>768</y>
+     <width>390</width>
+     <height>76</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <widget class="QPushButton" name="navHome">
+    <property name="geometry">
+     <rect>
+      <x>2</x>
+      <y>10</y>
+      <width>66</width>
+      <height>52</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>🏠
+Start</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="navKalender">
+    <property name="geometry">
+     <rect>
+      <x>72</x>
+      <y>10</y>
+      <width>66</width>
+      <height>52</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>📅
+Kalender</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="navTrackenMain">
+    <property name="geometry">
+     <rect>
+      <x>163</x>
+      <y>10</y>
+      <width>66</width>
+      <height>52</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>📝
+Eintrag</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="navArzt">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>10</y>
+      <width>66</width>
+      <height>52</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>🩺
+Arzt</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="navAnalyse">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>10</y>
+      <width>66</width>
+      <height>52</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="text">
+     <string>📊
+Analyse</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+ <slots>
+  <slot>onBackClicked()</slot>
+  <slot>onFreischaltenClicked()</slot>
+  <slot>onMehrPeriodeClicked()</slot>
+  <slot>onMehrTrendClicked()</slot>
+  <slot>onMehrInsightsClicked()</slot>
+  <slot>onNavHomeClicked()</slot>
+  <slot>onNavKalenderClicked()</slot>
+  <slot>onNavTrackenClicked()</slot>
+  <slot>onNavArztClicked()</slot>
+ </slots>
+</ui>

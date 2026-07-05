@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RegisterWindow</class>
+ <widget class="QMainWindow" name="RegisterWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>820</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>820</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Registrieren – FemHealth</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+QMainWindow {
+    background-color: #FDF6F0;
+}
+   </string>
+  </property>
+
+  <widget class="QWidget" name="centralwidget">
+
+   <!-- Outer scroll area so the form is fully scrollable on small screens -->
+   <layout class="QVBoxLayout" name="outerLayout">
+    <property name="spacing"><number>0</number></property>
+    <property name="leftMargin"><number>0</number></property>
+    <property name="topMargin"><number>0</number></property>
+    <property name="rightMargin"><number>0</number></property>
+    <property name="bottomMargin"><number>0</number></property>
+
+    <!-- ════ HEADER ════ -->
+    <item>
+     <widget class="QFrame" name="headerFrame">
+      <property name="minimumSize">
+       <size><width>0</width><height>170</height></size>
+      </property>
+      <property name="maximumSize">
+       <size><width>16777215</width><height>170</height></size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">
+QFrame#headerFrame {
+    background-color: qlineargradient(
+        spread:pad, x1:0, y1:0, x2:1, y2:1,
+        stop:0   #FCE4EC,
+        stop:0.5 #F8BBD9,
+        stop:1   #F48FB1
+    );
+    border-bottom-left-radius: 32px;
+    border-bottom-right-radius: 32px;
+}
+       </string>
+      </property>
+      <layout class="QVBoxLayout" name="headerLayout">
+       <property name="spacing"><number>6</number></property>
+       <property name="leftMargin"><number>20</number></property>
+       <property name="topMargin"><number>28</number></property>
+       <property name="rightMargin"><number>20</number></property>
+       <property name="bottomMargin"><number>22</number></property>
+
+       <item>
+        <spacer name="hdrTop">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>20</width><height>8</height></size></property>
+        </spacer>
+       </item>
+
+       <!-- Logo icon (replace with QSvgWidget in code) -->
+       <item>
+        <widget class="QLabel" name="logoIconLabel">
+         <property name="text"><string>🌺</string></property>
+         <property name="alignment"><set>Qt::AlignCenter</set></property>
+         <property name="styleSheet">
+          <string notr="true">QLabel { font-size:28px; background:transparent; }</string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <widget class="QLabel" name="logoLabel">
+         <property name="text"><string>FemHealth</string></property>
+         <property name="alignment"><set>Qt::AlignCenter</set></property>
+         <property name="styleSheet">
+          <string notr="true">
+QLabel {
+    color: #FFFFFF;
+    font-size: 26px;
+    font-weight: bold;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: transparent;
+}
+          </string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
+        <widget class="QLabel" name="subtitleLabel">
+         <property name="text"><string>Erstelle dein Konto – kostenlos &amp; sicher</string></property>
+         <property name="alignment"><set>Qt::AlignCenter</set></property>
+         <property name="styleSheet">
+          <string notr="true">
+QLabel {
+    color: rgba(255,255,255,220);
+    font-size: 13px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: transparent;
+}
+          </string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+
+    <!-- ════ SCROLL AREA (form content) ════ -->
+    <item>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="widgetResizable"><bool>true</bool></property>
+      <property name="styleSheet">
+       <string notr="true">
+QScrollArea {
+    background: transparent;
+    border: none;
+}
+QScrollArea > QWidget > QWidget {
+    background: transparent;
+}
+QScrollBar:vertical {
+    width: 4px;
+    background: #F8BBD9;
+    border-radius: 2px;
+}
+QScrollBar::handle:vertical {
+    background: #F48FB1;
+    border-radius: 2px;
+}
+       </string>
+      </property>
+
+      <widget class="QWidget" name="scrollContents">
+       <layout class="QVBoxLayout" name="contentLayout">
+        <property name="spacing"><number>0</number></property>
+        <property name="leftMargin"><number>36</number></property>
+        <property name="topMargin"><number>24</number></property>
+        <property name="rightMargin"><number>36</number></property>
+        <property name="bottomMargin"><number>28</number></property>
+
+        <!-- Page heading -->
+        <item>
+         <widget class="QLabel" name="pageTitleLabel">
+          <property name="text"><string>Konto erstellen</string></property>
+          <property name="styleSheet">
+           <string notr="true">
+QLabel {
+    color: #AD1457;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: transparent;
+    margin-bottom: 2px;
+}
+           </string>
+          </property>
+         </widget>
+        </item>
+
+        <item>
+         <widget class="QLabel" name="pageSubLabel">
+          <property name="text"><string>Alle Felder sind Pflichtfelder, sofern nicht anders angegeben</string></property>
+          <property name="styleSheet">
+           <string notr="true">
+QLabel {
+    color: #9E9E9E;
+    font-size: 12px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: transparent;
+    margin-bottom: 14px;
+}
+           </string>
+          </property>
+         </widget>
+        </item>
+
+        <!-- ── Vorname / Nachname ── -->
+        <item>
+         <layout class="QHBoxLayout" name="nameLayout">
+          <property name="spacing"><number>10</number></property>
+
+          <item>
+           <layout class="QVBoxLayout" name="fnLayout">
+            <property name="spacing"><number>4</number></property>
+            <item>
+             <widget class="QLabel" name="lblVorname">
+              <property name="text"><string>VORNAME</string></property>
+              <property name="styleSheet"><string notr="true">QLabel{color:#880E4F;font-size:10px;font-weight:bold;letter-spacing:1px;background:transparent;}</string></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="vornameLineEdit">
+              <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
+              <property name="placeholderText"><string>Emma</string></property>
+              <property name="styleSheet">
+               <string notr="true">
+QLineEdit{background:#FFF5F8;border:2px solid #F8BBD9;border-radius:11px;padding-left:14px;padding-right:14px;color:#4A0010;font-size:13px;font-family:"Segoe UI",Arial,sans-serif;}
+QLineEdit:focus{border:2px solid #E91E63;background:#FFFFFF;}
+QLineEdit:hover{border:2px solid #F48FB1;}
+               </string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+
+          <item>
+           <layout class="QVBoxLayout" name="lnLayout">
+            <property name="spacing"><number>4</number></property>
+            <item>
+             <widget class="QLabel" name="lblNachname">
+              <property name="text"><string>NACHNAME</string></property>
+              <property name="styleSheet"><string notr="true">QLabel{color:#880E4F;font-size:10px;font-weight:bold;letter-spacing:1px;background:transparent;}</string></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="nachnameLineEdit">
+              <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
+              <property name="placeholderText"><string>Müller</string></property>
+              <property name="styleSheet">
+               <string notr="true">
+QLineEdit{background:#FFF5F8;border:2px solid #F8BBD9;border-radius:11px;padding-left:14px;padding-right:14px;color:#4A0010;font-size:13px;font-family:"Segoe UI",Arial,sans-serif;}
+QLineEdit:focus{border:2px solid #E91E63;background:#FFFFFF;}
+QLineEdit:hover{border:2px solid #F48FB1;}
+               </string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+
+         </layout>
+        </item>
+
+        <item><spacer name="sp1"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeType"><enum>QSizePolicy::Fixed</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>10</height></size></property></spacer></item>
+
+        <!-- ── Geburtsdatum ── -->
+        <item>
+         <widget class="QLabel" name="lblGeburtsdatum">
+          <property name="text"><string>GEBURTSDATUM</string></property>
+          <property name="styleSheet"><string notr="true">QLabel{color:#880E4F;font-size:10px;font-weight:bold;letter-spacing:1px;background:transparent;margin-bottom:4px;}</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDateEdit" name="geburtsdatumEdit">
+          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
+          <property name="calendarPopup"><bool>true</bool></property>
+          <property name="displayFormat"><string>dd.MM.yyyy</string></property>
+          <property name="styleSheet">
+           <string notr="true">
+QDateEdit{background:#FFF5F8;border:2px solid #F8BBD9;border-radius:11px;padding-left:14px;padding-right:14px;color:#4A0010;font-size:13px;font-family:"Segoe UI",Arial,sans-serif;}
+QDateEdit:focus{border:2px solid #E91E63;background:#FFFFFF;}
+QDateEdit::drop-down{border:none;width:28px;}
+QDateEdit::down-arrow{image:none;width:0;}
+           </string>
+          </property>
+         </widget>
+        </item>
+
+        <item><spacer name="sp2"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeType"><enum>QSizePolicy::Fixed</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>10</height></size></property></spacer></item>
+
+        <!-- ── E-Mail ── -->
+        <item>
+         <widget class="QLabel" name="lblEmail1">
+          <property name="text"><string>E-MAIL</string></property>
+          <property name="styleSheet"><string notr="true">QLabel{color:#880E4F;font-size:10px;font-weight:bold;letter-spacing:1px;background:transparent;margin-bottom:4px;}</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="email1LineEdit">
+          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
+          <property name="placeholderText"><string>deine@email.de</string></property>
+          <property name="styleSheet">
+           <string notr="true">
+QLineEdit{background:#FFF5F8;border:2px solid #F8BBD9;border-radius:11px;padding-left:14px;padding-right:14px;color:#4A0010;font-size:13px;font-family:"Segoe UI",Arial,sans-serif;}
+QLineEdit:focus{border:2px solid #E91E63;background:#FFFFFF;}
+QLineEdit:hover{border:2px solid #F48FB1;}
+           </string>
+          </property>
+         </widget>
+        </item>
+
+        <item><spacer name="sp3"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeType"><enum>QSizePolicy::Fixed</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>10</height></size></property></spacer></item>
+
+        <!-- ── E-Mail bestätigen ── -->
+        <item>
+         <widget class="QLabel" name="lblEmail2">
+          <property name="text"><string>E-MAIL BESTÄTIGEN</string></property>
+          <property name="styleSheet"><string notr="true">QLabel{color:#880E4F;font-size:10px;font-weight:bold;letter-spacing:1px;background:transparent;margin-bottom:4px;}</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="email2LineEdit">
+          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
+          <property name="placeholderText"><string>deine@email.de</string></property>
+          <property name="styleSheet">
+           <string notr="true">
+QLineEdit{background:#FFF5F8;border:2px solid #F8BBD9;border-radius:11px;padding-left:14px;padding-right:14px;color:#4A0010;font-size:13px;font-family:"Segoe UI",Arial,sans-serif;}
+QLineEdit:focus{border:2px solid #E91E63;background:#FFFFFF;}
+QLineEdit:hover{border:2px solid #F48FB1;}
+           </string>
+          </property>
+         </widget>
+        </item>
+        <!-- Validation hint label – show/hide in code -->
+        <item>
+         <widget class="QLabel" name="lblEmailHint">
+          <property name="text"><string></string></property>
+          <property name="styleSheet"><string notr="true">QLabel{color:#E91E63;font-size:11px;background:transparent;margin-top:2px;}</string></property>
+          <property name="toolTip"><string>Wird per Code befüllt: "E-Mail-Adressen stimmen nicht überein"</string></property>
+         </widget>
+        </item>
+
+        <item><spacer name="sp4"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeType"><enum>QSizePolicy::Fixed</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>10</height></size></property></spacer></item>
+
+        <!-- ── Passwort ── -->
+        <item>
+         <widget class="QLabel" name="lblPw1">
+          <property name="text"><string>PASSWORT</string></property>
+          <property name="styleSheet"><string notr="true">QLabel{color:#880E4F;font-size:10px;font-weight:bold;letter-spacing:1px;background:transparent;margin-bottom:4px;}</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="pw1LineEdit">
+          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
+          <property name="echoMode"><enum>QLineEdit::Password</enum></property>
+          <property name="placeholderText"><string>Passwort eingeben</string></property>
+          <property name="styleSheet">
+           <string notr="true">
+QLineEdit{background:#FFF5F8;border:2px solid #F8BBD9;border-radius:11px;padding-left:14px;padding-right:14px;color:#4A0010;font-size:13px;font-family:"Segoe UI",Arial,sans-serif;}
+QLineEdit:focus{border:2px solid #E91E63;background:#FFFFFF;}
+QLineEdit:hover{border:2px solid #F48FB1;}
+           </string>
+          </property>
+         </widget>
+        </item>
+
+        <!-- Password rules box -->
+        <item>
+         <widget class="QFrame" name="pwRulesFrame">
+          <property name="styleSheet">
+           <string notr="true">
+QFrame#pwRulesFrame {
+    background-color: rgba(255,255,255,0.60);
+    border-radius: 10px;
+    border: 1.5px solid #F8BBD9;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding: 6px 0;
+}
+           </string>
+          </property>
+          <layout class="QVBoxLayout" name="rulesLayout">
+           <property name="spacing"><number>5</number></property>
+           <property name="leftMargin"><number>12</number></property>
+           <property name="topMargin"><number>8</number></property>
+           <property name="rightMargin"><number>12</number></property>
+           <property name="bottomMargin"><number>8</number></property>
+
+           <item>
+            <widget class="QLabel" name="lblRule1">
+             <property name="text"><string>● Mindestens 6 Zeichen</string></property>
+             <property name="styleSheet"><string notr="true">QLabel{color:#BDBDBD;font-size:11px;background:transparent;}</string></property>
+             <property name="toolTip"><string>Farbe per Code ändern: #BDBDBD (nicht erfüllt) → #4CAF50 (erfüllt)</string></property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblRule2">
+             <property name="text"><string>● Mindestens eine Zahl</string></property>
+             <property name="styleSheet"><string notr="true">QLabel{color:#BDBDBD;font-size:11px;background:transparent;}</string></property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblRule3">
+             <property name="text"><string>● Mindestens ein Großbuchstabe</string></property>
+             <property name="styleSheet"><string notr="true">QLabel{color:#BDBDBD;font-size:11px;background:transparent;}</string></property>
+            </widget>
+           </item>
+
+          </layout>
+         </widget>
+        </item>
+
+        <!-- ── Passwort bestätigen ── -->
+        <item>
+         <widget class="QLabel" name="lblPw2">
+          <property name="text"><string>PASSWORT BESTÄTIGEN</string></property>
+          <property name="styleSheet"><string notr="true">QLabel{color:#880E4F;font-size:10px;font-weight:bold;letter-spacing:1px;background:transparent;margin-bottom:4px;}</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="pw2LineEdit">
+          <property name="minimumSize"><size><width>0</width><height>44</height></size></property>
+          <property name="echoMode"><enum>QLineEdit::Password</enum></property>
+          <property name="placeholderText"><string>Passwort wiederholen</string></property>
+          <property name="styleSheet">
+           <string notr="true">
+QLineEdit{background:#FFF5F8;border:2px solid #F8BBD9;border-radius:11px;padding-left:14px;padding-right:14px;color:#4A0010;font-size:13px;font-family:"Segoe UI",Arial,sans-serif;}
+QLineEdit:focus{border:2px solid #E91E63;background:#FFFFFF;}
+QLineEdit:hover{border:2px solid #F48FB1;}
+           </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblPwHint">
+          <property name="text"><string></string></property>
+          <property name="styleSheet"><string notr="true">QLabel{color:#E91E63;font-size:11px;background:transparent;margin-top:2px;}</string></property>
+          <property name="toolTip"><string>Wird per Code befüllt: "Passwörter stimmen nicht überein"</string></property>
+         </widget>
+        </item>
+
+        <item><spacer name="sp5"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeType"><enum>QSizePolicy::Fixed</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>12</height></size></property></spacer></item>
+
+        <!-- ── Datenschutz Checkbox (Pflicht) ── -->
+        <item>
+         <widget class="QFrame" name="frameDatenschutz">
+          <property name="styleSheet">
+           <string notr="true">
+QFrame#frameDatenschutz {
+    background-color: rgba(255,255,255,0.55);
+    border-radius: 11px;
+    border: 1.5px solid #F8BBD9;
+    padding: 4px;
+}
+           </string>
+          </property>
+          <layout class="QHBoxLayout" name="datenschutzLayout">
+           <property name="spacing"><number>10</number></property>
+           <property name="leftMargin"><number>10</number></property>
+           <property name="topMargin"><number>10</number></property>
+           <property name="rightMargin"><number>10</number></property>
+           <property name="bottomMargin"><number>10</number></property>
+
+           <item>
+            <widget class="QCheckBox" name="cbDatenschutz">
+             <property name="text"><string></string></property>
+             <property name="styleSheet">
+              <string notr="true">
+QCheckBox::indicator{width:18px;height:18px;border-radius:5px;border:2px solid #F48FB1;background:#FFFFFF;}
+QCheckBox::indicator:checked{background:#E91E63;border:2px solid #E91E63;}
+QCheckBox::indicator:hover{border:2px solid #E91E63;}
+              </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblDatenschutz">
+             <property name="text"><string>Ich habe die &lt;b&gt;Datenschutzerklärung&lt;/b&gt; gelesen und stimme der Verarbeitung meiner Daten zu. &lt;b&gt;*&lt;/b&gt;</string></property>
+             <property name="wordWrap"><bool>true</bool></property>
+             <property name="styleSheet"><string notr="true">QLabel{color:#757575;font-size:12px;font-family:"Segoe UI",Arial,sans-serif;background:transparent;}</string></property>
+            </widget>
+           </item>
+
+          </layout>
+         </widget>
+        </item>
+
+        <item><spacer name="sp6"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeType"><enum>QSizePolicy::Fixed</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>8</height></size></property></spacer></item>
+
+        <!-- ── Newsletter Checkbox (optional) ── -->
+        <item>
+         <widget class="QFrame" name="frameNewsletter">
+          <property name="styleSheet">
+           <string notr="true">
+QFrame#frameNewsletter {
+    background-color: rgba(255,255,255,0.55);
+    border-radius: 11px;
+    border: 1.5px solid #F8BBD9;
+    padding: 4px;
+}
+           </string>
+          </property>
+          <layout class="QHBoxLayout" name="newsletterLayout">
+           <property name="spacing"><number>10</number></property>
+           <property name="leftMargin"><number>10</number></property>
+           <property name="topMargin"><number>10</number></property>
+           <property name="rightMargin"><number>10</number></property>
+           <property name="bottomMargin"><number>10</number></property>
+
+           <item>
+            <widget class="QCheckBox" name="cbNewsletter">
+             <property name="text"><string></string></property>
+             <property name="styleSheet">
+              <string notr="true">
+QCheckBox::indicator{width:18px;height:18px;border-radius:5px;border:2px solid #F48FB1;background:#FFFFFF;}
+QCheckBox::indicator:checked{background:#E91E63;border:2px solid #E91E63;}
+QCheckBox::indicator:hover{border:2px solid #E91E63;}
+              </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblNewsletter">
+             <property name="text"><string>Ich möchte den &lt;b&gt;FemHealth-Newsletter&lt;/b&gt; per E-Mail erhalten – mit Tipps, Artikeln &amp; Updates. &lt;i&gt;(optional)&lt;/i&gt;</string></property>
+             <property name="wordWrap"><bool>true</bool></property>
+             <property name="styleSheet"><string notr="true">QLabel{color:#757575;font-size:12px;font-family:"Segoe UI",Arial,sans-serif;background:transparent;}</string></property>
+            </widget>
+           </item>
+
+          </layout>
+         </widget>
+        </item>
+
+        <item><spacer name="sp7"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeType"><enum>QSizePolicy::Fixed</enum></property><property name="sizeHint" stdset="0"><size><width>0</width><height>14</height></size></property></spacer></item>
+
+        <!-- ── Register Button ── -->
+        <item>
+         <widget class="QPushButton" name="registerButton">
+          <property name="minimumSize"><size><width>0</width><height>52</height></size></property>
+          <property name="text"><string>KONTO ERSTELLEN</string></property>
+          <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+          <property name="styleSheet">
+           <string notr="true">
+QPushButton {
+    background-color: qlineargradient(
+        spread:pad, x1:0, y1:0, x2:1, y2:0,
+        stop:0 #F48FB1,
+        stop:1 #E91E63
+    );
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: "Segoe UI", Arial, sans-serif;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+QPushButton:hover {
+    background-color: qlineargradient(
+        spread:pad, x1:0, y1:0, x2:1, y2:0,
+        stop:0 #F06292,
+        stop:1 #C2185B
+    );
+}
+QPushButton:pressed { background-color: #AD1457; }
+           </string>
+          </property>
+         </widget>
+        </item>
+
+        <!-- ── Already have account ── -->
+        <item>
+         <layout class="QHBoxLayout" name="loginRow">
+          <property name="spacing"><number>6</number></property>
+          <item>
+           <spacer name="lrLeft"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="alreadyLabel">
+            <property name="text"><string>Bereits registriert?</string></property>
+            <property name="styleSheet"><string notr="true">QLabel{color:#9E9E9E;font-size:12px;font-family:"Segoe UI",Arial,sans-serif;background:transparent;}</string></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="toLoginButton">
+            <property name="text"><string>Jetzt anmelden</string></property>
+            <property name="flat"><bool>true</bool></property>
+            <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+            <property name="styleSheet">
+             <string notr="true">
+QPushButton{background:transparent;color:#E91E63;border:none;font-size:12px;font-weight:bold;font-family:"Segoe UI",Arial,sans-serif;}
+QPushButton:hover{color:#AD1457;}
+             </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="lrRight"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer>
+          </item>
+         </layout>
+        </item>
+
+        <item>
+         <spacer name="bottomSpacer">
+          <property name="orientation"><enum>Qt::Vertical</enum></property>
+          <property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property>
+         </spacer>
+        </item>
+
+       </layout>
+      </widget>
+     </widget>
+    </item>
+
+   </layout>
+  </widget>
+ </widget>
+
+ <resources/>
+
+ <connections/>
+
+ <slots>
+  <slot>onRegisterClicked()</slot>
+  <slot>onToLoginClicked()</slot>
+  <slot>validateEmail()</slot>
+  <slot>validatePassword()</slot>
+ </slots>
+
+</ui>
